@@ -1,5 +1,4 @@
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Random;
 
 public class BlockQuickSort {
@@ -38,10 +37,10 @@ public class BlockQuickSort {
      *
      * @ // Values inside the range [begin, \result) are smaller than array[\result].
      * @ ensures (\forall int i; begin <= i && i < \result;
-     * @           comparator.compare(array[i], array[\result]) <= 0);
+     * @           array[i] <= array[\result]);
      * @ // Values inside the range (\result, end) are greater than array[\result].
      * @ ensures (\forall int i; \result < i && i < end;
-     * @           comparator.compare(array[i], array[\result]) >= 0);
+     * @           array[i] >= array[\result]);
      *
      * @ // Values inside the range [begin, end) are a valid permutation.
      * @ ensures (\forall int i; begin <= i && i < end;
@@ -76,16 +75,16 @@ public class BlockQuickSort {
                 //@ loop_invariant 0 <= j && j <= BLOCKSIZE;
                 //@ loop_invariant 0 <= numLeft && numLeft <= j;
                 //@ loop_invariant \num_of(int i; 0 <= i && i < j;
-                //@                 comparator.compare(array[begin + i], pivot) >= 0) == numLeft;
+                //@                 array[begin + i] >= pivot) == numLeft;
                 //@ loop_invariant \forall int k; 0 <= k && k < numLeft;
                 //@                 0 <= indexL[k] && indexL[k] < BLOCKSIZE &&
                 //@                 indexL[k] == (\num_of int l; 0 <= l && l < k;
-                //@                                comparator.compare(array[begin + l], pivot) >= 0);
+                //@                                array[begin + l] >= pivot);
                 //@ loop_invariant indexL[numLeft] == j;
                 //@ loop_decreases BLOCKSIZE - j;
                 for (int j = 0; j < BLOCKSIZE; j++) {
                     indexL[numLeft] = j;
-                    numLeft += comparator.compare(array[begin + j], pivot) >= 0 ? 1 : 0;
+                    numLeft += array[begin + j] >= pivot ? 1 : 0;
                 }
             }
             if (numRight == 0) {
@@ -93,16 +92,16 @@ public class BlockQuickSort {
                 //@ loop_invariant 0 <= j && j <= BLOCKSIZE;
                 //@ loop_invariant 0 <= numRight && numRight <= j;
                 //@ loop_invariant \num_of(int i; 0 <= i && i < j;
-                //@                 comparator.compare(pivot, array[last - i]) >= 0) == numRight;
+                //@                 pivot >= array[last - i]) == numRight;
                 //@ loop_invariant \forall int k; 0 <= k && k < numRight;
                 //@                 0 <= indexR[k] && indexR[k] < BLOCKSIZE &&
                 //@                 indexR[k] == (\num_of int l; 0 <= l && l < k;
-                //@                                comparator.compare(pivot, array[last - l]) >= 0);
+                //@                                pivot >= array[last - l]);
                 //@ loop_invariant indexR[numRight] == j;
                 //@ loop_decreases BLOCKSIZE - j;
                 for (int j = 0; j < BLOCKSIZE; j++) {
                     indexR[numRight] = j;
-                    numRight += comparator.compare(pivot, array[last - j]) >= 0 ? 1 : 0;
+                    numRight += pivot >= array[last - j] ? 1 : 0;
                 }
             }
 
@@ -111,8 +110,8 @@ public class BlockQuickSort {
             //@ loop_invariant begin + indexL[startLeft] <= begin + indexL[startLeft + j] &&
             //@                last - indexR[startRight] >= last - indexR[startRight + j];
             //@ loop_invariant \forall int k; 0 <= k && k < j;
-            //@                 comparator.compare(array[begin + indexL[startLeft + k]], pivot) >= 0 &&
-            //@                 comparator.compare(array[last - indexR[startRight + k]], pivot) <= 0;
+            //@                 array[begin + indexL[startLeft + k]] >= pivot &&
+            //@                 array[last - indexR[startRight + k]] <= pivot;
             //@ loop_decreases num - j;
             for (int j = 0; j < num; j++) {
                 swap(array, begin + indexL[startLeft + j], last - indexR[startRight + j]);
@@ -135,31 +134,31 @@ public class BlockQuickSort {
             /*@ loop_invariant 0 <= j && j <= shiftL;
               @ loop_invariant 0 <= numLeft && numLeft <= j;
               @ loop_invariant \num_of(int i; 0 <= i && i < j;
-              @                 comparator.compare(array[begin + i], pivot) >= 0) == numLeft;
+              @                 array[begin + i] >= pivot) == numLeft;
               @ loop_invariant \forall int k; 0 <= k && k < numLeft;
               @                 0 <= indexL[k] && indexL[k] < shiftL &&
               @                 indexL[k] == (\num_of int l; 0 <= l && l < k;
-              @                                comparator.compare(array[begin + l], pivot) >= 0);
+              @                                array[begin + l] >= pivot);
               @ loop_invariant indexL[numLeft] == j;
               @ loop_invariant 0 <= numRight && numRight <= j;
               @ loop_invariant \num_of(int i; 0 <= i && i < j;
-              @                 comparator.compare(pivot, array[last - i]) >= 0) == numRight;
+              @                 pivot >= array[last - i]) == numRight;
               @ loop_invariant \forall int k; 0 <= k && k < numRight;
               @                 0 <= indexR[k] && indexR[k] < shiftL &&
               @                 indexR[k] == (\num_of int l; 0 <= l && l < k;
-              @                                comparator.compare(pivot, array[last - l]) >= 0);
+              @                                pivot >= array[last - l]);
               @ loop_invariant indexR[numRight] == j;
               @ loop_decreases shiftL - j;
               @*/
             for (int j = 0; j < shiftL; j++) {
                 indexL[numLeft] = j;
-                numLeft += comparator.compare(array[begin + j], pivot) >= 0 ? 1 : 0;
+                numLeft += array[begin + j] >= pivot ? 1 : 0;
                 indexR[numRight] = j;
-                numRight += comparator.compare(pivot, array[last - j]) >= 0 ? 1 : 0;
+                numRight += pivot >= array[last - j] ? 1 : 0;
             }
             if (shiftL < shiftR) {
                 indexR[numRight] = shiftR - 1;
-                numRight += comparator.compare(pivot, array[last - shiftR + 1]) >= 0 ? 1 : 0;
+                numRight += pivot >= array[last - shiftR + 1] ? 1 : 0;
             }
         } else if (numRight != 0) {
             shiftL = (last - begin) - BLOCKSIZE + 1;
@@ -168,16 +167,16 @@ public class BlockQuickSort {
             //@ loop_invariant 0 <= j && j <= shiftL;
             //@ loop_invariant 0 <= numLeft && numLeft <= j;
             //@ loop_invariant \num_of(int i; 0 <= i && i < j;
-            //@                 comparator.compare(array[begin + i], pivot) >= 0) == numLeft;
+            //@                 array[begin + i] >= pivot) == numLeft;
             //@ loop_invariant \forall int k; 0 <= k && k < numLeft;
             //@                 0 <= indexL[k] && indexL[k] < shiftL &&
             //@                 indexL[k] == (\num_of int l; 0 <= l && l < k;
-            //@                                comparator.compare(array[begin + l], pivot) >= 0);
+            //@                                array[begin + l] >= pivot);
             //@ loop_invariant indexL[numLeft] == j;
             //@ loop_decreases shiftL - j;
             for (int j = 0; j < shiftL; j++) {
                 indexL[numLeft] = j;
-                numLeft += comparator.compare(array[begin + j], pivot) >= 0 ? 1 : 0;
+                numLeft += array[begin + j] >= pivot ? 1 : 0;
             }
         } else {
             shiftL = BLOCKSIZE;
@@ -186,16 +185,16 @@ public class BlockQuickSort {
             //@ loop_invariant 0 <= j && j <= shiftR;
             //@ loop_invariant 0 <= numRight && numRight <= j;
             //@ loop_invariant \num_of(int i; 0 <= i && i < j;
-            //@                 comparator.compare(pivot, array[last - i]) >= 0) == numRight;
+            //@                 pivot >= array[last - i]) == numRight;
             //@ loop_invariant \forall int k; 0 <= k && k < numRight;
             //@                 0 <= indexR[k] && indexR[k] < shiftR &&
             //@                 indexR[k] == (\num_of int l; 0 <= l && l < k;
-            //@                                comparator.compare(pivot, array[last - l]) >= 0);
+            //@                                pivot >= array[last - l]);
             //@ loop_invariant indexR[numRight] == j;
             //@ loop_decreases shiftR - j;
             for (int j = 0; j < shiftR; j++) {
                 indexR[numRight] = j;
-                numRight += comparator.compare(pivot, array[last - j]) >= 0 ? 1 : 0;
+                numRight += pivot >= array[last - j] ? 1 : 0;
             }
         }
 
@@ -204,20 +203,20 @@ public class BlockQuickSort {
         //@ loop_invariant begin + indexL[startLeft] <= begin + indexL[startLeft + j] &&
         //@                last - indexR[startRight] >= last - indexR[startRight + j];
         //@ loop_invariant \forall int k; 0 <= k && k < j;
-        //@                 comparator.compare(array[begin + indexL[startLeft + k]], pivot) >= 0 &&
-        //@                 comparator.compare(array[last - indexR[startRight + k]], pivot) <= 0;
+        //@                 array[begin + indexL[startLeft + k]] >= pivot &&
+        //@                 array[last - indexR[startRight + k]] <= pivot;
         //@ loop_invariant (\forall int i; begin <= i && i < begin + indexL[startLeft + j];
-        //@                  comparator.compare(array[i], array[begin + indexL[startLeft + j]]) <= 0);
+        //@                  array[i] <= array[begin + indexL[startLeft + j]]);
         //@ loop_invariant (\forall int i; last - indexR[startRight + j] < i && i <= last;
-        //@                  comparator.compare(array[i], array[last - indexR[startRight + j]]) >= 0);
+        //@                  array[i] >= array[last - indexR[startRight + j]]);
         //@ loop_invariant \num_of(int l; begin <= l && l < begin + indexL[startLeft + j];
-        //@                  comparator.compare(array[l], pivot) >= 0) ==
+        //@                  array[l] >= pivot) ==
         //@                  num - (\num_of int m; 0 <= m && m < j;
-        //@                         comparator.compare(array[begin + indexL[startLeft + m]], pivot) >= 0);
+        //@                         array[begin + indexL[startLeft + m]] >= pivot);
         //@ loop_invariant \num_of(int l; last - indexR[startRight + j] < l && l <= last;
-        //@                  comparator.compare(pivot, array[l]) >= 0) ==
+        //@                  pivot >= array[l]) ==
         //@                  num - (\num_of int m; 0 <= m && m < j;
-        //@                         comparator.compare(pivot, array[last - indexR[startRight + m]]) >= 0);
+        //@                         pivot >= array[last - indexR[startRight + m]]);
         //@ loop_decreases num - j;
         for (int j = 0; j < num; j++) {
             swap(array, begin + indexL[startLeft + j], last - indexR[startRight + j]);
@@ -246,8 +245,8 @@ public class BlockQuickSort {
             //@ loop_invariant startLeft <= lowerI && lowerI < BLOCKSIZE;
             //@ loop_invariant begin + indexL[lowerI] <= begin + indexL[startLeft] + upper;
             //@ loop_invariant \forall int k; startLeft <= k && k < lowerI;
-            //@                 comparator.compare(array[begin + indexL[k]], pivot) >= 0 &&
-            //@                 comparator.compare(array[begin + indexL[k] + 1], pivot) <= 0;
+            //@                 array[begin + indexL[k]] >= pivot &&
+            //@                 array[begin + indexL[k] + 1] <= pivot;
             //@ loop_decreases lowerI - startLeft;
             while (lowerI >= startLeft) {
                 swap(array, begin + upper--, begin + indexL[lowerI--]);
@@ -271,8 +270,8 @@ public class BlockQuickSort {
             //@ loop_invariant 0 <= lowerI && lowerI >= startRight;
             //@ loop_invariant upper == last - begin - (numRight - 1) + (startRight - lowerI);
             //@ loop_invariant \forall int k; startRight <= k && k <= lowerI;
-            //@                 comparator.compare(array[last - indexR[k]], pivot) <= 0 &&
-            //@                 comparator.compare(array[last - upper - (lowerI - k)], pivot) >= 0;
+            //@                 array[last - indexR[k]] <= pivot &&
+            //@                 array[last - upper - (lowerI - k)] >= pivot;
             //@ loop_decreases lowerI - startRight + 1;
             while (lowerI >= startRight) {
                 swap(array, last - upper--, last - indexR[lowerI--]);
@@ -294,14 +293,14 @@ public class BlockQuickSort {
      * @ ensures array.length == \old(array.length);
      *
      * @ // Values at 'i1' and 'i2' are the old values but now sorted.
-     * @ ensures (comparator.compare(\old(array[i1]), \old(array[i2])) <= 0)    ?
+     * @ ensures (\old(array[i1]) <= \old(array[i2]))    ?
      * @         (array[i1] == \old(array[i1]) && array[i2] == \old(array[i2])) :
      * @         (array[i1] == \old(array[i2]) && array[i2] == \old(array[i1]));
      *
      * @ assignable array[i1], array[i2];
      */
     public static void sortPair(int i1, int i2, int[] array) {
-        boolean smaller = comparator.compare(array[i2], array[i1]) < 0;
+        boolean smaller = array[i2] < array[i1];
         int temp = smaller ? array[i1] : array[i2];
         array[i1] = smaller ? array[i2] : array[i1];
         array[i2] = smaller ? temp : array[i2];
@@ -318,8 +317,8 @@ public class BlockQuickSort {
      * @ ensures begin <= \result && \result < end;
      *
      * @ // Result is a valid median.
-     * @ ensures comparator.compare(array[begin], array[\result]) <= 0 &&
-     * @         comparator.compare(array[\result], array[end - 1]) <= 0;
+     * @ ensures array[begin] <= array[\result] &&
+     * @         array[\result] <= array[end - 1];
      *
      * @ // The values at 'begin', 'end - 1', and 'begin + ((end - begin) / 2)' are a permutations of the values before.
      * @ ensures (\forall int i; i == begin || i == end - 1 || i == begin + ((end - begin) / 2);
@@ -332,9 +331,9 @@ public class BlockQuickSort {
      */
     public static int medianOf3(int[] array, int begin, int end) {
         int mid = begin + ((end - begin) / 2);
-        sortPair(begin, mid, array, comparator);
-        sortPair(mid, end - 1, array, comparator);
-        sortPair(begin, mid, array, comparator);
+        sortPair(begin, mid, array);
+        sortPair(mid, end - 1, array);
+        sortPair(begin, mid, array);
         return mid;
     }
 
@@ -349,10 +348,10 @@ public class BlockQuickSort {
      *
      * @ // Values inside the range [begin, \result) are smaller than array[\result].
      * @ ensures (\forall int i; begin <= i && i < \result;
-     * @           comparator.compare(array[i], array[\result]) <= 0);
+     * @           array[i] <= array[\result]);
      * @ // Values inside the range (\result, end) are greater than array[\result].
      * @ ensures (\forall int i; \result < i && i < end;
-     * @           comparator.compare(array[i], array[\result]) >= 0);
+     * @           array[i] >= array[\result]);
      *
      * @ // Values inside the range [begin, end) are a valid permutation.
      * @ ensures (\forall int i; begin <= i && i < end;
@@ -362,8 +361,8 @@ public class BlockQuickSort {
      * @ assignable array[begin .. end-1];
      */
     public static int partition(int[] array, int begin, int end) {
-        int mid = medianOf3(array, begin, end, comparator);
-        return hoareBlockPartitionSimple(array, begin + 1, end - 1, mid, comparator);
+        int mid = medianOf3(array, begin, end);
+        return hoareBlockPartitionSimple(array, begin + 1, end - 1, mid);
     }
 
     /*
@@ -374,7 +373,7 @@ public class BlockQuickSort {
      *
      * @ // Values inside the range [begin, end) are in sorted order.
      * @ ensures (\forall int i; 0 <= i && i < array.length - 1;
-     * @           comparator.compare(array[i], array[i+1]) <= 0);
+     * @           array[i] <= array[i+1]);
      *
      * @ // Values inside the range [begin, end) are a valid permutation.
      * @ ensures (\forall int i; begin <= i && i < end;
@@ -417,7 +416,7 @@ public class BlockQuickSort {
           @   // Array-related invariants:
           @   array != null && \typeof(array) == \type(int[]) &&
           @   (\forall int i, j; 0 <= i && i < j && j < array.length;
-          @     comparator.compare(array[i], array[j]) <= 0) &&
+          @     array[i] <= array[j]) &&
           @   (\forall int i; 0 <= i && i < array.length;
           @     \num_of(int j; 0 <= j && j < array.length && array[j] == array[i]) ==
           @     \num_of(int j; 0 <= j && j < array.length && \old(array[j]) == array[i])) &&
@@ -425,7 +424,7 @@ public class BlockQuickSort {
           @
           @   // The subarray [begin, end) at the top of the stack is always sorted.
           @   (\forall int i, j; begin <= i && i < j && j < end;
-          @     comparator.compare(array[i], array[j]) <= 0);
+          @     array[i] <= array[j]);
           @
           @ loop_variant
           @   // Termination measure:
@@ -445,7 +444,7 @@ public class BlockQuickSort {
               // Each segment in stack is sorted
               @ loop_invariant (\forall int i; 0 <= i && i < top / 2;
               @                  (\forall int j; stack[2 * i] <= j && j < stack[2 * i + 1] - 1;
-              @                   comparator.compare(array[j], array[j + 1]) <= 0));
+              @                   array[j] <= array[j + 1]));
               // Each segment is a valid permutation
               @ loop_invariant (\forall int i; 0 <= i && i < top / 2;
               @                  (\forall int j; stack[2 * i] <= j && j < stack[2 * i + 1];
@@ -454,12 +453,12 @@ public class BlockQuickSort {
               @                    \num_of(int l; stack[2 * i] <= l && l < stack[2 * i + 1] && \old(array[l]) == array[j]))));
               // Adjacent segments are ordered
               @ loop_invariant (\forall int i; 0 <= i && i < top / 2 - 1;
-              @                  comparator.compare(array[stack[2 * i + 1] - 1], array[stack[2 * (i + 1)]]) <= 0);
+              @                  array[stack[2 * i + 1] - 1] <= array[stack[2 * (i + 1)]]);
               @ loop_decreases end - begin;
               @*/
             while (end - begin > IS_THRESH) {
                 if (depth < depthLimit) {
-                    int pivot = partition(array, begin, end, comparator);
+                    int pivot = partition(array, begin, end);
                     if (pivot - begin > end - pivot) {
                         stack[top++] = begin;
                         stack[top++] = pivot;
@@ -471,13 +470,13 @@ public class BlockQuickSort {
                     }
                     depth++;
                 } else {
-                    Arrays.sort(array, begin, end, comparator);
+                    Arrays.sort(array, begin, end);
                     break;
                 }
             }
 
             if (end - begin <= IS_THRESH) {
-                Arrays.sort(array, begin, end, comparator);
+                Arrays.sort(array, begin, end);
             }
 
             depth--;
@@ -486,7 +485,7 @@ public class BlockQuickSort {
     }
 
     public static void quickSort(int[] array) {
-        quickSort(array, 0, array.length, comparator);
+        quickSort(array, 0, array.length);
     }
 
     public static void main(String[] args) {
@@ -498,51 +497,51 @@ class BlockQuickSortTest {
 
     public static void testQuickSortEmptyArray() {
         Integer[] array = new Integer[]{};
-        BlockQuickSort.quickSort(array, Integer::compare);
+        BlockQuickSort.quickSort(array);
         assertArrayEquals(new Integer[]{}, array);
     }
 
     public static void testQuickSortSingleElement() {
         Integer[] array = new Integer[]{3};
-        BlockQuickSort.quickSort(array, Integer::compare);
+        BlockQuickSort.quickSort(array);
         assertArrayEquals(new Integer[]{3}, array);
     }
 
     public static void testQuickSortSortedArray() {
         Integer[] array = new Integer[]{1, 2, 3, 4, 5};
-        BlockQuickSort.quickSort(array, Integer::compare);
+        BlockQuickSort.quickSort(array);
         assertArrayEquals(new Integer[]{1, 2, 3, 4, 5}, array);
     }
 
     public static void testQuickSortReverseSortedArray() {
         Integer[] array = new Integer[]{5, 4, 3, 2, 1};
-        BlockQuickSort.quickSort(array, Integer::compare);
+        BlockQuickSort.quickSort(array);
         assertArrayEquals(new Integer[]{1, 2, 3, 4, 5}, array);
     }
 
     public static void testQuickSortArrayWithDuplicates() {
         Integer[] array = new Integer[]{3, 1, 4, 1, 5, 9, 2, 6, 5, 3, 5};
-        BlockQuickSort.quickSort(array, Integer::compare);
+        BlockQuickSort.quickSort(array);
         assertArrayEquals(new Integer[]{1, 1, 2, 3, 3, 4, 5, 5, 5, 6, 9}, array);
     }
 
     public static void testQuickSortArrayWithNegativeElements() {
         Integer[] array = new Integer[]{-5, 3, -1, 2, -8, 0};
-        BlockQuickSort.quickSort(array, Integer::compare);
+        BlockQuickSort.quickSort(array);
         assertArrayEquals(new Integer[]{-8, -5, -1, 0, 2, 3}, array);
     }
 
     public static void testQuickSortArrayWithSameElements() {
         Integer[] array = new Integer[]{7, 7, 7, 7, 7, 7, 7};
-        BlockQuickSort.quickSort(array, Integer::compare);
+        BlockQuickSort.quickSort(array);
         assertArrayEquals(new Integer[]{7, 7, 7, 7, 7, 7, 7}, array);
     }
 
     public static void testQuickSortArrayWithRandomElements() {
         Integer[] array = new Random().ints(1000, 0, 10000).boxed().toArray(Integer[]::new);
         Integer[] arrayCopy = array.clone();
-        BlockQuickSort.quickSort(array, Integer::compare);
-        Arrays.sort(arrayCopy, Integer::compare);
+        BlockQuickSort.quickSort(array);
+        Arrays.sort(arrayCopy);
         assertArrayEquals(arrayCopy, array);
     }
 
