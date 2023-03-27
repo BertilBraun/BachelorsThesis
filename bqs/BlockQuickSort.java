@@ -13,6 +13,7 @@ public class BlockQuickSort {
      * @ requires array != null;
      * @ requires 0 <= i && i < array.length;
      * @ requires 0 <= j && j < array.length;
+     * @ ensures array.length == \old(array.length);
      *
      * @ // Values at 'i' and 'j' are swapped.
      * @ ensures array[i] == \old(array[j]) && array[j] == \old(array[i]);
@@ -21,8 +22,8 @@ public class BlockQuickSort {
      * @ ensures (\forall int k; 0 <= k && k < array.length && k != i && k != j; array[k] == \old(array[k]));
      * @ assignable array[i], array[j];
      */
-    public static <T> void swap(T[] array, int i, int j) {
-        T temp = array[i];
+    public static void swap(int[] array, int i, int j) {
+        int temp = array[i];
         array[i] = array[j];
         array[j] = temp;
     }
@@ -32,8 +33,7 @@ public class BlockQuickSort {
      * @ requires array != null;
      * @ requires 0 <= begin && begin < end && end <= array.length;
      * @ requires 0 <= pivotPosition && pivotPosition < array.length;
-     * @ requires \typeof(array) == \type(T[]);
-     * @ requires comparator != null;
+     * @ ensures array.length == \old(array.length);
      *
      * @ // The resulting pivot is inside the range [begin, end).
      * @ ensures begin <= \result && \result < end;
@@ -54,17 +54,16 @@ public class BlockQuickSort {
      * @ ensures (\forall int k; 0 <= k && k < array.length && (k < begin || k >= end); array[k] == \old(array[k]));
      * @ assignable array[begin .. end-1];
      */
-    public static <T> int hoareBlockPartitionSimple(
-            T[] array,
+    public static int hoareBlockPartitionSimple(
+            int[] array,
             int begin,
             int end,
-            int pivotPosition,
-            Comparator<T> comparator) {
+            int pivotPosition) {
         int[] indexL = new int[BLOCKSIZE];
         int[] indexR = new int[BLOCKSIZE];
 
         int last = end - 1;
-        T pivot = array[pivotPosition];
+        int pivot = array[pivotPosition];
         swap(array, pivotPosition, last);
         pivotPosition = last;
         last--;
@@ -296,8 +295,7 @@ public class BlockQuickSort {
      * @ requires array != null;
      * @ requires 0 <= i1 && i1 < array.length;
      * @ requires 0 <= i2 && i2 < array.length;
-     * @ requires comparator != null;
-     * @ requires \typeof(array) == \type(T[]);
+     * @ ensures array.length == \old(array.length);
      *
      * @ // Values at 'i1' and 'i2' are the old values but now sorted.
      * @ ensures (comparator.compare(\old(array[i1]), \old(array[i2])) <= 0)    ?
@@ -308,9 +306,9 @@ public class BlockQuickSort {
      * @ ensures (\forall int k; 0 <= k && k < array.length && k != i1 && k != i2; array[k] == \old(array[k]));
      * @ assignable array[i1], array[i2];
      */
-    public static <T> void sortPair(int i1, int i2, T[] array, Comparator<T> comparator) {
+    public static void sortPair(int i1, int i2, int[] array) {
         boolean smaller = comparator.compare(array[i2], array[i1]) < 0;
-        T temp = smaller ? array[i1] : array[i2];
+        int temp = smaller ? array[i1] : array[i2];
         array[i1] = smaller ? array[i2] : array[i1];
         array[i2] = smaller ? temp : array[i2];
     }
@@ -319,8 +317,7 @@ public class BlockQuickSort {
      * @ public normal_behavior
      * @ requires array != null;
      * @ requires 0 <= begin && begin < end && end <= array.length;
-     * @ requires comparator != null;
-     * @ requires \typeof(array) == \type(T[]);
+     * @ ensures array.length == \old(array.length);
      *
      * @ // Result is within the given range [begin, end)
      * @ ensures 0 <= \result && \result < array.length;
@@ -343,7 +340,7 @@ public class BlockQuickSort {
      *
      * @ assignable array[begin], array[begin + ((end - begin) / 2)], array[end - 1];
      */
-    public static <T> int medianOf3(T[] array, int begin, int end, Comparator<T> comparator) {
+    public static int medianOf3(int[] array, int begin, int end) {
         int mid = begin + ((end - begin) / 2);
         sortPair(begin, mid, array, comparator);
         sortPair(mid, end - 1, array, comparator);
@@ -355,8 +352,7 @@ public class BlockQuickSort {
      * @ public normal_behavior
      * @ requires array != null;
      * @ requires 0 <= begin && begin < end && end <= array.length;
-     * @ requires comparator != null;
-     * @ requires \typeof(array) == \type(T[]);
+     * @ ensures array.length == \old(array.length);
      *
      * @ // The resulting pivot is inside the range [begin, end).
      * @ ensures begin <= \result && \result < end;
@@ -377,7 +373,7 @@ public class BlockQuickSort {
      * @ ensures (\forall int k; 0 <= k && k < array.length && (k < begin || k >= end); array[k] == \old(array[k]));
      * @ assignable array[begin .. end-1];
      */
-    public static <T> int partition(T[] array, int begin, int end, Comparator<T> comparator) {
+    public static int partition(int[] array, int begin, int end) {
         int mid = medianOf3(array, begin, end, comparator);
         return hoareBlockPartitionSimple(array, begin + 1, end - 1, mid, comparator);
     }
@@ -386,8 +382,7 @@ public class BlockQuickSort {
      * @ public normal_behavior
      * @ requires array != null;
      * @ requires 0 <= begin && begin < end && end <= array.length;
-     * @ requires comparator != null;
-     * @ requires \typeof(array) == \type(T[]);
+     * @ ensures array.length == \old(array.length);
      *
      * @ // Values inside the range [begin, end) are in sorted order.
      * @ ensures (\forall int i; 0 <= i && i < array.length - 1;
@@ -402,7 +397,7 @@ public class BlockQuickSort {
      * @ ensures (\forall int k; 0 <= k && k < array.length && (k < begin || k >= end); array[k] == \old(array[k]));
      * @ assignable array[begin .. end-1];
      */
-    public static <T> void quickSort(T[] array, int begin, int end, Comparator<T> comparator) {
+    public static void quickSort(int[] array, int begin, int end) {
         int[] stack = new int[STACK_SIZE];
         int top = 0;
         int depth = 0;
@@ -434,7 +429,7 @@ public class BlockQuickSort {
           @   0 <= begin && begin <= end && end <= array.length &&
           @
           @   // Array-related invariants:
-          @   array != null && \typeof(array) == \type(T[]) &&
+          @   array != null && \typeof(array) == \type(int[]) &&
           @   (\forall int i, j; 0 <= i && i < j && j < array.length;
           @     comparator.compare(array[i], array[j]) <= 0) &&
           @   (\forall int i; 0 <= i && i < array.length;
@@ -504,7 +499,7 @@ public class BlockQuickSort {
         } while (top > 0);
     }
 
-    public static <T> void quickSort(T[] array, Comparator<T> comparator) {
+    public static void quickSort(int[] array) {
         quickSort(array, 0, array.length, comparator);
     }
 
