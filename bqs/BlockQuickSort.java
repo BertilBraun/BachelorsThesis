@@ -18,8 +18,6 @@ public class BlockQuickSort {
      * @ // Values at 'i' and 'j' are swapped.
      * @ ensures array[i] == \old(array[j]) && array[j] == \old(array[i]);
      *
-     * @ // Values other than 'i' and 'j' remain unchanged.
-     * @ ensures (\forall int k; 0 <= k && k < array.length && k != i && k != j; array[k] == \old(array[k]));
      * @ assignable array[i], array[j];
      */
     public static void swap(int[] array, int i, int j) {
@@ -50,8 +48,6 @@ public class BlockQuickSort {
      * @          \num_of(int j; begin <= j && j < end && array[j] == array[i]) ==
      * @          \num_of(int j; begin <= j && j < end && \old(array[j]) == array[i]));
      *
-     * @ // Values outside the range [begin, end) remain unchanged.
-     * @ ensures (\forall int k; 0 <= k && k < array.length && (k < begin || k >= end); array[k] == \old(array[k]));
      * @ assignable array[begin .. end-1];
      */
     public static int hoareBlockPartitionSimple(
@@ -302,8 +298,6 @@ public class BlockQuickSort {
      * @         (array[i1] == \old(array[i1]) && array[i2] == \old(array[i2])) :
      * @         (array[i1] == \old(array[i2]) && array[i2] == \old(array[i1]));
      *
-     * @ // Values other than 'i1' and 'i2' remain unchanged.
-     * @ ensures (\forall int k; 0 <= k && k < array.length && k != i1 && k != i2; array[k] == \old(array[k]));
      * @ assignable array[i1], array[i2];
      */
     public static void sortPair(int i1, int i2, int[] array) {
@@ -333,10 +327,6 @@ public class BlockQuickSort {
      * @                          array[j] == array[i]) ==
      * @          \num_of(int j; (j == begin || j == end - 1 || j == begin + ((end - begin) / 2)) &&
      * @                         \old(array[j]) == array[i]));
-     *
-     * @ // Values other than 'begin', 'end - 1' and 'begin + ((end - begin) / 2)' remain unchanged.
-     * @ ensures (\forall int i; begin <= i && i < end && i != begin && i != end - 1 && i != begin + ((end - begin) / 2);
-     * @          array[i] == \old(array[i]));
      *
      * @ assignable array[begin], array[begin + ((end - begin) / 2)], array[end - 1];
      */
@@ -369,8 +359,6 @@ public class BlockQuickSort {
      * @          \num_of(int j; begin <= j && j < end && array[j] == array[i]) ==
      * @          \num_of(int j; begin <= j && j < end && \old(array[j]) == array[i]));
      *
-     * @ // Values outside the range [begin, end) remain unchanged.
-     * @ ensures (\forall int k; 0 <= k && k < array.length && (k < begin || k >= end); array[k] == \old(array[k]));
      * @ assignable array[begin .. end-1];
      */
     public static int partition(int[] array, int begin, int end) {
@@ -393,8 +381,6 @@ public class BlockQuickSort {
      * @          \num_of(int j; begin <= j && j < end && array[j] == array[i]) ==
      * @          \num_of(int j; begin <= j && j < end && \old(array[j]) == array[i]));
      *
-     * @ // Values outside the range [begin, end) remain unchanged.
-     * @ ensures (\forall int k; 0 <= k && k < array.length && (k < begin || k >= end); array[k] == \old(array[k]));
      * @ assignable array[begin .. end-1];
      */
     public static void quickSort(int[] array, int begin, int end) {
