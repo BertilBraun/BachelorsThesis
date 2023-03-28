@@ -26,7 +26,7 @@
         {
             "id": "file",
             "description": "File: ",
-            "default": "bqs/BlockQuickSort",
+            "default": "bqs/BlockQuickSortTest",
             "type": "promptString"
         },
         {
