@@ -7,6 +7,45 @@ public class BlockQuickSort {
     private static final int IS_THRESH = 16;
     private static final int STACK_SIZE = 80;
 
+    // @ public normal_behavior
+    // @ requires array != null;
+    // @ requires rangePredicate != null;
+    // @ requires targetPredicate != null;
+    // @ requires function != null;
+    // @ pure;
+    int sum(int[] array, IntPredicate rangePredicate, IntPredicate targetPredicate, IntFunction function) {
+        int sum = 0;
+        for (int i = 0; i < array.length; i++) {
+            if (rangePredicate.test(i) && targetPredicate.test(array[i])) {
+                sum += function.apply(array[i]);
+            }
+        }
+        return sum;
+    }
+
+    // @ public normal_behavior
+    // @ requires array != null;
+    // @ requires rangePredicate != null;
+    // @ requires targetPredicate != null;
+    // @ pure;
+    int numOf(int[] array, IntPredicate rangePredicate, IntPredicate targetPredicate) {
+        return sum(array, rangePredicate, targetPredicate, x -> 1);
+    }
+
+    // @ public normal_behavior
+    // @ requires array != null;
+    // @ ensures \result == sum(array, x -> 0 <= x && x < array.length, x -> x > 0, x -> x);
+    int sumTest(int[] array) {
+        int sum = 0;
+        for (int i = 0; i < array.length; i++) {
+            if (array[i] > 0) {
+                sum += array[i];
+            }
+        }
+        return sum;
+    }
+
+
     /*@
      @ public normal_behavior
      @ requires array != null;
