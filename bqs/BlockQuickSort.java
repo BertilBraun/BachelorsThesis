@@ -7,47 +7,6 @@ public class BlockQuickSort {
     private static final int IS_THRESH = 16;
     private static final int STACK_SIZE = 80;
 
-    /*@ public normal_behavior
-      @ requires array != null;
-      @ requires rangePredicate != null;
-      @ requires targetPredicate != null;
-      @ requires function != null;
-      @ pure;
-      @*/
-    int sum(int[] array, IntPredicate rangePredicate, IntPredicate targetPredicate, IntFunction function) {
-        int sum = 0;
-        for (int i = 0; i < array.length; i++) {
-            if (rangePredicate.test(i) && targetPredicate.test(array[i])) {
-                sum += function.apply(array[i]);
-            }
-        }
-        return sum;
-    }
-
-    /*@ public normal_behavior
-      @ requires array != null;
-      @ requires rangePredicate != null;
-      @ requires targetPredicate != null;
-      @ pure;
-      @*/
-    int numOf(int[] array, IntPredicate rangePredicate, IntPredicate targetPredicate) {
-        return sum(array, rangePredicate, targetPredicate, x -> 1);
-    }
-
-    /*@ public normal_behavior
-      @ requires array != null;
-      @ ensures \result == sum(array, x -> 0 <= x && x < array.length, x -> x > 0, x -> x);
-      @*/
-    int sumTest(int[] array) {
-        int sum = 0;
-        for (int i = 0; i < array.length; i++) {
-            if (array[i] > 0) {
-                sum += array[i];
-            }
-        }
-        return sum;
-    }
-
     /*@
       @ public normal_behavior
       @ requires array != null;
@@ -70,18 +29,16 @@ public class BlockQuickSort {
       @ public normal_behavior
       @ requires array != null;
       @ requires 0 <= begin && begin < end && end <= array.length;
-      @ requires 0 <= pivotPosition && pivotPosition < array.length;
+      @ requires begin <= pivotPosition && pivotPosition < end;
       @ ensures array.length == \old(array.length);
       @
       @ // The resulting pivot is inside the range [begin, end).
       @ ensures begin <= \result && \result < end;
       @
       @ // Values inside the range [begin, \result) are smaller than array[\result].
-      @ ensures (\forall int i; begin <= i && i < \result;
-      @           array[i] <= array[\result]);
+      @ ensures (\forall int i; begin <= i && i < \result; array[i] <= array[\result]);
       @ // Values inside the range (\result, end) are greater than array[\result].
-      @ ensures (\forall int i; \result < i && i < end;
-      @           array[i] >= array[\result]);
+      @ ensures (\forall int i; \result < i && i < end; array[i] >= array[\result]);
       @
       @ // Values inside the range [begin, end) are a valid permutation.
       @ // ensures (\forall int i; begin <= i && i < end;
@@ -367,8 +324,9 @@ public class BlockQuickSort {
       @ ensures begin <= \result && \result < end;
       @
       @ // Result is a valid median.
-      @ ensures array[begin] <= array[\result] &&
-      @         array[\result] <= array[end - 1];
+      @ ensures array[begin] <= array[\result] && array[\result] <= array[end - 1];
+      @
+      @ ensures \result == begin + ((end - begin) / 2);
       @
       @ // The values at 'begin', 'end - 1', and 'begin + ((end - begin) / 2)' are a permutations of the values before.
       @ // ensures (\forall int i; i == begin || i == end - 1 || i == begin + ((end - begin) / 2);
@@ -390,6 +348,7 @@ public class BlockQuickSort {
     /*@
       @ public normal_behavior
       @ requires array != null;
+      @ requires end - begin > 3;
       @ requires 0 <= begin && begin < end && end <= array.length;
       @ ensures array.length == \old(array.length);
       @
@@ -397,11 +356,9 @@ public class BlockQuickSort {
       @ ensures begin <= \result && \result < end;
       @
       @ // Values inside the range [begin, \result) are smaller than array[\result].
-      @ ensures (\forall int i; begin <= i && i < \result;
-      @           array[i] <= array[\result]);
+      @ ensures (\forall int i; begin <= i && i < \result; array[i] <= array[\result]);
       @ // Values inside the range (\result, end) are greater than array[\result].
-      @ ensures (\forall int i; \result < i && i < end;
-      @           array[i] >= array[\result]);
+      @ ensures (\forall int i; \result < i && i < end; array[i] >= array[\result]);
       @
       @ // Values inside the range [begin, end) are a valid permutation.
       @ // ensures (\forall int i; begin <= i && i < end;
@@ -412,7 +369,7 @@ public class BlockQuickSort {
       @*/
     public static int partition(int[] array, int begin, int end) {
         int mid = medianOf3(array, begin, end);
-        return hoareBlockPartitionSimple(array, begin + 1, end - 1, mid);
+        return hoareBlockPartition(array, begin + 1, end - 1, mid);
     }
 
     /*@
@@ -422,8 +379,7 @@ public class BlockQuickSort {
       @ ensures array.length == \old(array.length);
       @
       @ // Values inside the range [begin, end) are in sorted order.
-      @ ensures (\forall int i; 0 <= i && i < array.length - 1;
-      @           array[i] <= array[i+1]);
+      @ ensures (\forall int i; 0 <= i && i < array.length - 1; array[i] <= array[i+1]);
       @
       @ // Values inside the range [begin, end) are a valid permutation.
       @ // ensures (\forall int i; begin <= i && i < end;
@@ -546,56 +502,56 @@ public class BlockQuickSort {
 class BlockQuickSortTest {
 
     public static void testQuickSortEmptyArray() {
-        Integer[] array = new Integer[] {};
+        int[] array = new int[] {};
         BlockQuickSort.quickSort(array);
-        assertArrayEquals(new Integer[] {}, array);
+        assertArrayEquals(new int[] {}, array);
     }
 
     public static void testQuickSortSingleElement() {
-        Integer[] array = new Integer[] { 3 };
+        int[] array = new int[] { 3 };
         BlockQuickSort.quickSort(array);
-        assertArrayEquals(new Integer[] { 3 }, array);
+        assertArrayEquals(new int[] { 3 }, array);
     }
 
     public static void testQuickSortSortedArray() {
-        Integer[] array = new Integer[] { 1, 2, 3, 4, 5 };
+        int[] array = new int[] { 1, 2, 3, 4, 5 };
         BlockQuickSort.quickSort(array);
-        assertArrayEquals(new Integer[] { 1, 2, 3, 4, 5 }, array);
+        assertArrayEquals(new int[] { 1, 2, 3, 4, 5 }, array);
     }
 
     public static void testQuickSortReverseSortedArray() {
-        Integer[] array = new Integer[] { 5, 4, 3, 2, 1 };
+        int[] array = new int[] { 5, 4, 3, 2, 1 };
         BlockQuickSort.quickSort(array);
-        assertArrayEquals(new Integer[] { 1, 2, 3, 4, 5 }, array);
+        assertArrayEquals(new int[] { 1, 2, 3, 4, 5 }, array);
     }
 
     public static void testQuickSortArrayWithDuplicates() {
-        Integer[] array = new Integer[] { 3, 1, 4, 1, 5, 9, 2, 6, 5, 3, 5 };
+        int[] array = new int[] { 3, 1, 4, 1, 5, 9, 2, 6, 5, 3, 5 };
         BlockQuickSort.quickSort(array);
-        assertArrayEquals(new Integer[] { 1, 1, 2, 3, 3, 4, 5, 5, 5, 6, 9 }, array);
+        assertArrayEquals(new int[] { 1, 1, 2, 3, 3, 4, 5, 5, 5, 6, 9 }, array);
     }
 
     public static void testQuickSortArrayWithNegativeElements() {
-        Integer[] array = new Integer[] { -5, 3, -1, 2, -8, 0 };
+        int[] array = new int[] { -5, 3, -1, 2, -8, 0 };
         BlockQuickSort.quickSort(array);
-        assertArrayEquals(new Integer[] { -8, -5, -1, 0, 2, 3 }, array);
+        assertArrayEquals(new int[] { -8, -5, -1, 0, 2, 3 }, array);
     }
 
     public static void testQuickSortArrayWithSameElements() {
-        Integer[] array = new Integer[] { 7, 7, 7, 7, 7, 7, 7 };
+        int[] array = new int[] { 7, 7, 7, 7, 7, 7, 7 };
         BlockQuickSort.quickSort(array);
-        assertArrayEquals(new Integer[] { 7, 7, 7, 7, 7, 7, 7 }, array);
+        assertArrayEquals(new int[] { 7, 7, 7, 7, 7, 7, 7 }, array);
     }
 
     public static void testQuickSortArrayWithRandomElements() {
-        Integer[] array = new Random().ints(1000, 0, 10000).boxed().toArray(Integer[]::new);
-        Integer[] arrayCopy = array.clone();
+        int[] array = new Random().ints(1000, 0, 10000).boxed().mapToInt(Integer::intValue).toArray();
+        int[] arrayCopy = array.clone();
         BlockQuickSort.quickSort(array);
         Arrays.sort(arrayCopy);
         assertArrayEquals(arrayCopy, array);
     }
 
-    public static void assertArrayEquals(Integer[] expected, Integer[] actual) {
+    public static void assertArrayEquals(int[] expected, int[] actual) {
         if (!Arrays.equals(expected, actual)) {
             System.out.println("expected: " + Arrays.toString(expected) + " but was: " + Arrays.toString(actual));
         }
