@@ -1,6 +1,3 @@
-import java.util.Arrays;
-import java.util.Random;
-
 public class BlockQuickSortTest {
 
     private static final int BLOCKSIZE = 128;
