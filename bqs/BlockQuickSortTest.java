@@ -367,7 +367,7 @@ public class BlockQuickSortTest {
       @*/
     public static int partition(int[] array, int begin, int end) {
         int mid = medianOf3(array, begin, end);
-        return hoareBlockPartition(array, begin + 1, end - 1, mid);
+        return hoareBlockPartition(array, begin + 1, end - 1, mid); // TODO check, begin + 1, end - 1 is incorrect. With begin and end it is correct.
     }
 
 }
