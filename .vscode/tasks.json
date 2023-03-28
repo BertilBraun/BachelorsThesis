@@ -6,7 +6,16 @@
         {
             "label": "Run",
             "type": "shell",
-            "command": "java -jar JJBMC.jar -tr \"${input:file}\" ${input:function}",
+            "command": "java -jar JJBMC.jar -tr \"${input:file}.java\" ${input:function}",
+            "problemMatcher": [],
+            "runOptions": {
+                "reevaluateOnRerun": false
+            }
+        },
+        {
+            "label": "RunDocker",
+            "type": "shell",
+            "command": "run.bat ${input:file} ${input:function}",
             "problemMatcher": [],
             "runOptions": {
                 "reevaluateOnRerun": false
@@ -17,7 +26,7 @@
         {
             "id": "file",
             "description": "File: ",
-            "default": "bqs/BlockQuickSort.java",
+            "default": "bqs/BlockQuickSort",
             "type": "promptString"
         },
         {
