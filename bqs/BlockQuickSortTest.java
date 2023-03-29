@@ -1,8 +1,7 @@
-
 public class BlockQuickSortTest {
 
     private static final int BLOCKSIZE = 128;
-    private static final int IS_THRESH = 16;
+    private static final int IS_THRESH = 4;
     private static final int STACK_SIZE = 80;
 
     /*@
@@ -46,17 +45,17 @@ public class BlockQuickSortTest {
     /*@
       @ public normal_behavior
       @ requires array != null;
+      @ requires end - begin >= 3;
       @ requires 0 <= begin && begin < end && end <= array.length;
       @ ensures array.length == \old(array.length);
       @
       @ // Result is within the given range [begin, end)
-      @ ensures 0 <= \result && \result < array.length;
       @ ensures begin <= \result && \result < end;
+      @ ensures \result == begin + ((end - begin) / 2);
       @
       @ // Result is a valid median.
       @ ensures array[begin] <= array[\result] && array[\result] <= array[end - 1];
       @
-      @ ensures \result == begin + ((end - begin) / 2);
       @
       @ // The values at 'begin', 'end - 1', and 'begin + ((end - begin) / 2)' are a permutations of the values before.
       @ // ensures (\forall int i; i == begin || i == end - 1 || i == begin + ((end - begin) / 2);
@@ -136,6 +135,7 @@ public class BlockQuickSortTest {
                     numLeft += array[begin + j] >= pivot ? 1 : 0;
                 }
             }
+
             if (numRight == 0) {
                 startRight = 0;
                 /*@ loop_invariant 0 <= j && j <= BLOCKSIZE;
@@ -346,7 +346,7 @@ public class BlockQuickSortTest {
     /*@
       @ public normal_behavior
       @ requires array != null;
-      @ requires end - begin > 3;
+      @ requires end - begin >= 3;
       @ requires 0 <= begin && begin < end && end <= array.length;
       @ ensures array.length == \old(array.length);
       @
@@ -367,7 +367,7 @@ public class BlockQuickSortTest {
       @*/
     public static int partition(int[] array, int begin, int end) {
         int mid = medianOf3(array, begin, end);
-        return hoareBlockPartition(array, begin + 1, end - 1, mid); // TODO check, begin + 1, end - 1 is incorrect. With begin and end it is correct.
+        // TODO check, begin + 1, end - 1 is incorrect. With begin and end it is correct. Probably requiring permutation.
+        return hoareBlockPartition(array, begin + 1, end - 1, mid);
     }
-
 }

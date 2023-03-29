@@ -25,16 +25,15 @@ public class Testing {
         }
 
         /*@ normal_behavior
-        @ requires array != null;
-        @ requires rangePredicate != null;
-        @ requires targetPredicate != null;
-        @ assignable \nothing;
-        @ pure
-        @*/
+          @ requires array != null;
+          @ requires rangePredicate != null;
+          @ requires targetPredicate != null;
+          @ assignable \nothing;
+          @ pure
+          @*/
         public static int numOf(int[] array, IntPredicate rangePredicate, IntPredicate targetPredicate) {
             return sum(array, rangePredicate, targetPredicate, x -> 1);
         }
-
     }
 
     /*@ normal_behavior

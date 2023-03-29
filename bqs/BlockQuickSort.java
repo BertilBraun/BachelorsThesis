@@ -4,7 +4,7 @@ import java.util.Random;
 public class BlockQuickSort {
 
     private static final int BLOCKSIZE = 128;
-    private static final int IS_THRESH = 16;
+    private static final int IS_THRESH = 4;
     private static final int STACK_SIZE = 80;
 
     /*@
