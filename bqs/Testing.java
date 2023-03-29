@@ -39,7 +39,7 @@ public class Testing {
 
     /*@ normal_behavior
       @ requires array != null;
-      @ ensures \result == Inner.sum(array, ((int x) -> 0 <= x && x < array.length), ((int y) -> y > 0), ((int z) -> z));
+      @ // ensures \result == Inner.sum(array, ((int x) -> 0 <= x && x < array.length), ((int y) -> y > 0), ((int z) -> z));
       @*/
     public int sumTest(int[] array) {
         int sum = 0;

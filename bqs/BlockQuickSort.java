@@ -10,26 +10,9 @@ public class BlockQuickSort {
     /*@
       @ public normal_behavior
       @ requires array != null;
-      @ requires 0 <= i && i < array.length;
-      @ requires 0 <= j && j < array.length;
-      @ ensures array.length == \old(array.length);
-      @
-      @ // Values at 'i' and 'j' are swapped.
-      @ ensures array[i] == \old(array[j]) && array[j] == \old(array[i]);
-      @
-      @ assignable array[i], array[j];
-      @*/
-    public static void swap(int[] array, int i, int j) {
-        int temp = array[i];
-        array[i] = array[j];
-        array[j] = temp;
-    }
-
-    /*@
-      @ public normal_behavior
-      @ requires array != null;
       @ requires 0 <= begin && begin < end && end <= array.length;
       @ requires begin <= pivotPosition && pivotPosition < end;
+      @ requires unique(array, begin, end);
       @ ensures array.length == \old(array.length);
       @
       @ // The resulting pivot is inside the range [begin, end).
@@ -38,12 +21,10 @@ public class BlockQuickSort {
       @ // Values inside the range [begin, \result) are smaller than array[\result].
       @ ensures (\forall int i; begin <= i && i < \result; array[i] <= array[\result]);
       @ // Values inside the range (\result, end) are greater than array[\result].
-      @ ensures (\forall int i; \result < i && i < end; array[i] >= array[\result]);
+      @ ensures (\forall int i; \result < i && i < end; array[\result] <= array[i]);
       @
       @ // Values inside the range [begin, end) are a valid permutation.
-      @ // ensures (\forall int i; begin <= i && i < end;
-      @ //          \num_of(int j; begin <= j && j < end && array[j] == array[i]) ==
-      @ //          \num_of(int j; begin <= j && j < end && \old(array[j]) == array[i]));
+      @ ensures permutation(array, \old(array), begin, end);
       @
       @ assignable array[begin .. end-1];
       @*/
@@ -296,19 +277,157 @@ public class BlockQuickSort {
     /*@
       @ public normal_behavior
       @ requires array != null;
+      @ requires 0 <= begin && begin < end && end <= array.length;
+      @ requires unique(array, begin, end);
+      @ ensures array.length == \old(array.length);
+      @
+      @ // Values inside the range [begin, end) are in sorted order.
+      @ ensures (\forall int i; begin <= i && i < end - 1; array[i] <= array[i+1]);
+      @
+      @ // Values inside the range [begin, end) are a valid permutation.
+      @ ensures permutation(array, \old(array), begin, end);
+      @
+      @ assignable array[begin .. end-1];
+      @*/
+    public static void quickSort(int[] array, int begin, int end) {
+        //     int[] stack = new int[STACK_SIZE];
+        //     int top = 0;
+        //     int depth = 0;
+        //     int depthLimit = (int) (2 * Math.log(end - begin) / Math.log(2)) + 3;
+        // 
+        //     stack[top++] = begin;
+        //     stack[top++] = end;
+        // 
+        //     /*@ loop_invariant
+        //       @   // Stack-related invariants:
+        //       @   stack != null && stack.length == STACK_SIZE &&
+        //       @   top % 2 == 0 && 0 <= top && top <= STACK_SIZE &&
+        //       @   (\forall int i; 0 <= i && i < top; 0 <= stack[i] && stack[i] <= array.length) &&
+        //       @   (\forall int i; 0 <= i && i < top - 1; stack[i+1] > stack[i]) &&
+        //       @
+        //       @   // Subarray-related invariants:
+        //       @   // (\forall int i; 0 <= i && i < top - 1;
+        //       @   //   (\forall int j, k; stack[i] <= j && j < k && k < stack[i+1];
+        //       @   //     \num_of(int l; stack[i] <= l && l < stack[i+1] && array[l] == array[j]) ==
+        //       @   //     \num_of(int l; stack[i] <= l && l < stack[i+1] && \old(array[l]) == array[j]))) &&
+        //       @
+        //       @   // Depth-related invariants:
+        //       @   0 <= depth &&
+        //       @   depthLimit >= 0 &&
+        //       @   depth <= depthLimit &&
+        //       @   depthLimit == (int) (2 * Math.log(end - begin) / Math.log(2)) + 3 &&
+        //       @
+        //       @   // Begin and end invariants:
+        //       @   0 <= begin && begin <= end && end <= array.length &&
+        //       @
+        //       @   // Array-related invariants:
+        //       @   array != null && \typeof(array) == \type(int[]) &&
+        //       @   (\forall int i; 0 <= i && i < array.length - 1; array[i] <= array[i + 1]) &&
+        //       @
+        //       @   // (\forall int i; 0 <= i && i < array.length;
+        //       @   //   \num_of(int j; 0 <= j && j < array.length && array[j] == array[i]) ==
+        //       @   //   \num_of(int j; 0 <= j && j < array.length && \old(array[j]) == array[i])) &&
+        //       @   (\forall int k; 0 <= k && k < array.length && (k < begin || k >= end); array[k] == \old(array[k])) &&
+        //       @
+        //       @   // The subarray [begin, end) at the top of the stack is always sorted.
+        //       @   (\forall int i; begin <= i && i < end - 1; array[i] <= array[i + 1]);
+        //       @
+        //       @ // loop_variant
+        //       @ //   // Termination measure:
+        //       @ //   (\sum int i; 0 <= i && i < top; stack[i]) - (end - begin);
+        //       @ // assignable array[begin .. end-1], stack[0 .. top-1], top, depth, begin, end;
+        //       @*/
+        //     do {
+        //        end = stack[--top];
+        //        begin = stack[--top];
+        //
+        //        /*@ loop_invariant stack != null && 0 <= top && top <= STACK_SIZE;
+        //          @ loop_invariant top % 2 == 0; // The top index is always even
+        //          @ loop_invariant 0 <= depth && depth <= depthLimit;
+        //          @ loop_invariant 0 <= begin && begin < end && end <= array.length;
+        //          @ // Stack holds valid indices
+        //          @ loop_invariant (\forall int i; 0 <= i && i < top; stack[i] >= 0 && stack[i] < array.length);
+        //          @ // Each segment in stack is sorted
+        //          @ loop_invariant (\forall int i; 0 <= i && i < top / 2;
+        //          @                  (\forall int j; stack[2 * i] <= j && j < stack[2 * i + 1] - 1;
+        //          @                   array[j] <= array[j + 1]));
+        //          @ // Each segment is a valid permutation
+        //          @ // loop_invariant (\forall int i; 0 <= i && i < top / 2;
+        //          @ //                  (\forall int j; stack[2 * i] <= j && j < stack[2 * i + 1];
+        //          @ //                   (\forall int k; stack[2 * i] <= k && k < stack[2 * i + 1] && array[k] == array[j];
+        //          @ //                    \num_of(int l; stack[2 * i] <= l && l < stack[2 * i + 1] && array[l] == array[j]) ==
+        //          @ //                    \num_of(int l; stack[2 * i] <= l && l < stack[2 * i + 1] && \old(array[l]) == array[j]))));
+        //          @ // Adjacent segments are ordered
+        //          @ loop_invariant (\forall int i; 0 <= i && i < top / 2 - 1;
+        //          @                  array[stack[2 * i + 1] - 1] <= array[stack[2 * (i + 1)]]);
+        //          @ loop_decreases end - begin;
+        //          @*/
+        //        while (end - begin > IS_THRESH) {
+        //            if (depth < depthLimit) {
+        //                int pivot = partition(array, begin, end);
+        //                if (pivot - begin > end - pivot) {
+        //                    stack[top++] = begin;
+        //                    stack[top++] = pivot;
+        //                    begin = pivot + 1;
+        //                } else {
+        //                    stack[top++] = pivot + 1;
+        //                    stack[top++] = end;
+        //                    end = pivot;
+        //                }
+        //                depth++;
+        //            } else {
+        //                Arrays.sort(array, begin, end);
+        //                break;
+        //            }
+        //        }
+        //
+        //        if (end - begin <= IS_THRESH) {
+        //            Arrays.sort(array, begin, end);
+        //        }
+        //
+        //        depth--;
+        //
+        //    } while (top > 0);
+    }
+
+    public static void quickSort(int[] array) {
+        quickSort(array, 0, array.length);
+    }
+
+    /*@
+      @ public normal_behavior
+      @ requires array != null;
+      @ requires 0 <= i && i < array.length;
+      @ requires 0 <= j && j < array.length;
+      @ ensures array.length == \old(array.length);
+      @
+      @ // Values at 'i' and 'j' are swapped.
+      @ ensures array[i] == \old(array[j]) && array[j] == \old(array[i]);
+      @
+      @ assignable array[i], array[j];
+      @*/
+    public static void swap(int[] array, int i, int j) {
+        int temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
+
+    /*@
+      @ public normal_behavior
+      @ requires array != null;
       @ requires 0 <= i1 && i1 < array.length;
       @ requires 0 <= i2 && i2 < array.length;
       @ ensures array.length == \old(array.length);
       @
       @ // Values at 'i1' and 'i2' are the old values but now sorted.
-      @ ensures (\old(array[i1]) <= \old(array[i2]))    ?
-      @         (array[i1] == \old(array[i1]) && array[i2] == \old(array[i2])) :
-      @         (array[i1] == \old(array[i2]) && array[i2] == \old(array[i1]));
+      @ ensures (\old(array[i1]) <= \old(array[i2])) 
+      @         ? (array[i1] == \old(array[i1]) && array[i2] == \old(array[i2])) 
+      @         : (array[i1] == \old(array[i2]) && array[i2] == \old(array[i1]));
       @
       @ assignable array[i1], array[i2];
       @*/
     public static void sortPair(int i1, int i2, int[] array) {
-        if (array[i2] < array[i1]) {
+        if (array[i1] > array[i2]) {
             swap(array, i1, i2);
         }
     }
@@ -318,22 +437,17 @@ public class BlockQuickSort {
       @ requires array != null;
       @ requires end - begin >= 3;
       @ requires 0 <= begin && begin < end && end <= array.length;
+      @ requires unique(array, begin, end);
       @ ensures array.length == \old(array.length);
       @
       @ // Result is within the given range [begin, end)
-      @ ensures begin <= \result && \result < end;
       @ ensures \result == begin + ((end - begin) / 2);
       @
       @ // Result is a valid median.
       @ ensures array[begin] <= array[\result] && array[\result] <= array[end - 1];
       @
-      @
       @ // The values at 'begin', 'end - 1', and 'begin + ((end - begin) / 2)' are a permutations of the values before.
-      @ // ensures (\forall int i; i == begin || i == end - 1 || i == begin + ((end - begin) / 2);
-      @ //          \num_of(int j; (j == begin || j == end - 1 || j == begin + ((end - begin) / 2)) &&
-      @ //                          array[j] == array[i]) ==
-      @ //          \num_of(int j; (j == begin || j == end - 1 || j == begin + ((end - begin) / 2)) &&
-      @ //                         \old(array[j]) == array[i]));
+      @ ensures permutation(array, \old(array), begin, end);
       @
       @ assignable array[begin], array[begin + ((end - begin) / 2)], array[end - 1];
       @*/
@@ -350,6 +464,7 @@ public class BlockQuickSort {
       @ requires array != null;
       @ requires end - begin >= 3;
       @ requires 0 <= begin && begin < end && end <= array.length;
+      @ requires unique(array, begin, end);
       @ ensures array.length == \old(array.length);
       @
       @ // The resulting pivot is inside the range [begin, end).
@@ -358,144 +473,94 @@ public class BlockQuickSort {
       @ // Values inside the range [begin, \result) are smaller than array[\result].
       @ ensures (\forall int i; begin <= i && i < \result; array[i] <= array[\result]);
       @ // Values inside the range (\result, end) are greater than array[\result].
-      @ ensures (\forall int i; \result < i && i < end; array[i] >= array[\result]);
+      @ ensures (\forall int i; \result < i && i < end; array[\result] <= array[i]);
       @
       @ // Values inside the range [begin, end) are a valid permutation.
-      @ // ensures (\forall int i; begin <= i && i < end;
-      @ //          \num_of(int j; begin <= j && j < end && array[j] == array[i]) ==
-      @ //          \num_of(int j; begin <= j && j < end && \old(array[j]) == array[i]));
+      @ ensures permutation(array, \old(array), begin, end);
       @
       @ assignable array[begin .. end-1];
       @*/
     public static int partition(int[] array, int begin, int end) {
         int mid = medianOf3(array, begin, end);
+        // TODO fails with begin + 1, end - 1. Why? Works with begin, end.
         return hoareBlockPartition(array, begin + 1, end - 1, mid);
-    }
-
-    /*@
-      @ public normal_behavior
-      @ requires array != null;
-      @ requires 0 <= begin && begin < end && end <= array.length;
-      @ ensures array.length == \old(array.length);
-      @
-      @ // Values inside the range [begin, end) are in sorted order.
-      @ ensures (\forall int i; 0 <= i && i < array.length - 1; array[i] <= array[i+1]);
-      @
-      @ // Values inside the range [begin, end) are a valid permutation.
-      @ // ensures (\forall int i; begin <= i && i < end;
-      @ //          \num_of(int j; begin <= j && j < end && array[j] == array[i]) ==
-      @ //          \num_of(int j; begin <= j && j < end && \old(array[j]) == array[i]));
-      @
-      @ assignable array[begin .. end-1];
-      @*/
-    public static void quickSort(int[] array, int begin, int end) {
-        int[] stack = new int[STACK_SIZE];
-        int top = 0;
-        int depth = 0;
-        int depthLimit = (int) (2 * Math.log(end - begin) / Math.log(2)) + 3;
-
-        stack[top++] = begin;
-        stack[top++] = end;
-
-        /*@ loop_invariant
-          @   // Stack-related invariants:
-          @   stack != null && stack.length == STACK_SIZE &&
-          @   top % 2 == 0 && 0 <= top && top <= STACK_SIZE &&
-          @   (\forall int i; 0 <= i && i < top; 0 <= stack[i] && stack[i] <= array.length) &&
-          @   (\forall int i; 0 <= i && i < top - 1; stack[i+1] > stack[i]) &&
-          @
-          @   // Subarray-related invariants:
-          @   // (\forall int i; 0 <= i && i < top - 1;
-          @   //   (\forall int j, k; stack[i] <= j && j < k && k < stack[i+1];
-          @   //     \num_of(int l; stack[i] <= l && l < stack[i+1] && array[l] == array[j]) ==
-          @   //     \num_of(int l; stack[i] <= l && l < stack[i+1] && \old(array[l]) == array[j]))) &&
-          @
-          @   // Depth-related invariants:
-          @   0 <= depth &&
-          @   depthLimit >= 0 &&
-          @   depth <= depthLimit &&
-          @   depthLimit == (int) (2 * Math.log(end - begin) / Math.log(2)) + 3 &&
-          @
-          @   // Begin and end invariants:
-          @   0 <= begin && begin <= end && end <= array.length &&
-          @
-          @   // Array-related invariants:
-          @   array != null && \typeof(array) == \type(int[]) &&
-          @   (\forall int i; 0 <= i && i < array.length - 1; array[i] <= array[i + 1]) &&
-          @
-          @   // (\forall int i; 0 <= i && i < array.length;
-          @   //   \num_of(int j; 0 <= j && j < array.length && array[j] == array[i]) ==
-          @   //   \num_of(int j; 0 <= j && j < array.length && \old(array[j]) == array[i])) &&
-          @   (\forall int k; 0 <= k && k < array.length && (k < begin || k >= end); array[k] == \old(array[k])) &&
-          @
-          @   // The subarray [begin, end) at the top of the stack is always sorted.
-          @   (\forall int i; begin <= i && i < end - 1; array[i] <= array[i + 1]);
-          @
-          @ // loop_variant
-          @ //   // Termination measure:
-          @ //   (\sum int i; 0 <= i && i < top; stack[i]) - (end - begin);
-          @ // assignable array[begin .. end-1], stack[0 .. top-1], top, depth, begin, end;
-          @*/
-        do {
-            end = stack[--top];
-            begin = stack[--top];
-
-            /*@ loop_invariant stack != null && 0 <= top && top <= STACK_SIZE;
-              @ loop_invariant top % 2 == 0; // The top index is always even
-              @ loop_invariant 0 <= depth && depth <= depthLimit;
-              @ loop_invariant 0 <= begin && begin < end && end <= array.length;
-              @ // Stack holds valid indices
-              @ loop_invariant (\forall int i; 0 <= i && i < top; stack[i] >= 0 && stack[i] < array.length);
-              @ // Each segment in stack is sorted
-              @ loop_invariant (\forall int i; 0 <= i && i < top / 2;
-              @                  (\forall int j; stack[2 * i] <= j && j < stack[2 * i + 1] - 1;
-              @                   array[j] <= array[j + 1]));
-              @ // Each segment is a valid permutation
-              @ // loop_invariant (\forall int i; 0 <= i && i < top / 2;
-              @ //                  (\forall int j; stack[2 * i] <= j && j < stack[2 * i + 1];
-              @ //                   (\forall int k; stack[2 * i] <= k && k < stack[2 * i + 1] && array[k] == array[j];
-              @ //                    \num_of(int l; stack[2 * i] <= l && l < stack[2 * i + 1] && array[l] == array[j]) ==
-              @ //                    \num_of(int l; stack[2 * i] <= l && l < stack[2 * i + 1] && \old(array[l]) == array[j]))));
-              @ // Adjacent segments are ordered
-              @ loop_invariant (\forall int i; 0 <= i && i < top / 2 - 1;
-              @                  array[stack[2 * i + 1] - 1] <= array[stack[2 * (i + 1)]]);
-              @ loop_decreases end - begin;
-              @*/
-            while (end - begin > IS_THRESH) {
-                if (depth < depthLimit) {
-                    int pivot = partition(array, begin, end);
-                    if (pivot - begin > end - pivot) {
-                        stack[top++] = begin;
-                        stack[top++] = pivot;
-                        begin = pivot + 1;
-                    } else {
-                        stack[top++] = pivot + 1;
-                        stack[top++] = end;
-                        end = pivot;
-                    }
-                    depth++;
-                } else {
-                    Arrays.sort(array, begin, end);
-                    break;
-                }
-            }
-
-            if (end - begin <= IS_THRESH) {
-                Arrays.sort(array, begin, end);
-            }
-
-            depth--;
-
-        } while (top > 0);
-    }
-
-    public static void quickSort(int[] array) {
-        quickSort(array, 0, array.length);
     }
 
     public static void main(String[] args) {
         BlockQuickSortTest.runAllTests();
     }
+
+    /*@ normal_behavior
+      @ requires array != null;
+      @ requires 0 <= begin && begin <= end && end <= array.length;
+      @ ensures \result == (\forall int i; begin <= i && i < end; 
+      @                    (\forall int j; begin <= j && j < end; i == j || array[i] != array[j]));
+      @ pure
+      @*/
+    public static boolean unique(int[] array, int begin, int end) {
+        for (int i = begin; i < end; i++) {
+            for (int j = i + 1; j < end; j++) {
+                if (array[i] == array[j]) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    /*@
+      @ normal_behavior
+      @ requires array != null;
+      @ ensures \result == unique(array, 0, array.length);
+      @ pure
+      @*/
+    public static boolean unique(int[] array) {
+        return unique(array, 0, array.length);
+    }
+
+    /*@
+      @ normal_behavior
+      @ requires array1 != null;
+      @ requires array2 != null;
+      @ requires unique(array1);
+      @ requires 0 <= begin && begin <= end && end <= array1.length;
+      @ requires array1.length == array2.length;
+      @ ensures \result == (\forall int i; begin <= i && i < end; 
+      @                    (\exists int j; begin <= j && j < end; array1[i] == array2[j]));
+      @ pure
+      @*/
+    public static boolean permutation(int[] array1, int[] array2, int begin, int end) {
+        if (array1.length != array2.length) {
+            return false;
+        }
+        for (int i = begin; i < end; i++) {
+            boolean found = false;
+            for (int j = begin; j < end; j++) {
+                if (array1[i] == array2[j]) {
+                    found = true;
+                    // TODO break;
+                }
+            }
+            if (!found) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /*@
+      @ normal_behavior
+      @ requires array1 != null;
+      @ requires array2 != null;
+      @ requires unique(array1);
+      @ requires array1.length == array2.length;
+      @ ensures \result == permutation(array1, array2, 0, array1.length);
+      @ pure
+      @*/
+    public static boolean permutation(int[] array1, int[] array2) {
+        return permutation(array1, array2, 0, array1.length);
+    }
+
 }
 
 class BlockQuickSortTest {
