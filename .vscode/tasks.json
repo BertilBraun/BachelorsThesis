@@ -20,13 +20,22 @@
             "runOptions": {
                 "reevaluateOnRerun": false
             }
+        },
+        {
+            "label": "Recompile",
+            "type": "shell",
+            "command": "./gradlew fatJar",
+            "problemMatcher": [],
+            "runOptions": {
+                "reevaluateOnRerun": false
+            }
         }
     ],
     "inputs": [
         {
             "id": "file",
             "description": "File: ",
-            "default": "bqs/BlockQuickSortTest",
+            "default": "bqs/BlockQuickSort",
             "type": "promptString"
         },
         {

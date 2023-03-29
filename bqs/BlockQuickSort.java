@@ -316,17 +316,17 @@ public class BlockQuickSort {
     /*@
       @ public normal_behavior
       @ requires array != null;
+      @ requires end - begin >= 3;
       @ requires 0 <= begin && begin < end && end <= array.length;
       @ ensures array.length == \old(array.length);
       @
       @ // Result is within the given range [begin, end)
-      @ ensures 0 <= \result && \result < array.length;
       @ ensures begin <= \result && \result < end;
+      @ ensures \result == begin + ((end - begin) / 2);
       @
       @ // Result is a valid median.
       @ ensures array[begin] <= array[\result] && array[\result] <= array[end - 1];
       @
-      @ ensures \result == begin + ((end - begin) / 2);
       @
       @ // The values at 'begin', 'end - 1', and 'begin + ((end - begin) / 2)' are a permutations of the values before.
       @ // ensures (\forall int i; i == begin || i == end - 1 || i == begin + ((end - begin) / 2);
@@ -348,7 +348,7 @@ public class BlockQuickSort {
     /*@
       @ public normal_behavior
       @ requires array != null;
-      @ requires end - begin > 3;
+      @ requires end - begin >= 3;
       @ requires 0 <= begin && begin < end && end <= array.length;
       @ ensures array.length == \old(array.length);
       @
@@ -402,10 +402,10 @@ public class BlockQuickSort {
           @   stack != null && stack.length == STACK_SIZE &&
           @   top % 2 == 0 && 0 <= top && top <= STACK_SIZE &&
           @   (\forall int i; 0 <= i && i < top; 0 <= stack[i] && stack[i] <= array.length) &&
-          @   (\forall int i; 0 <= i && i < top - 1; i += 2; stack[i+1] > stack[i]) &&
+          @   (\forall int i; 0 <= i && i < top - 1; stack[i+1] > stack[i]) &&
           @
           @   // Subarray-related invariants:
-          @   // (\forall int i; 0 <= i && i < top - 1; i += 2;
+          @   // (\forall int i; 0 <= i && i < top - 1;
           @   //   (\forall int j, k; stack[i] <= j && j < k && k < stack[i+1];
           @   //     \num_of(int l; stack[i] <= l && l < stack[i+1] && array[l] == array[j]) ==
           @   //     \num_of(int l; stack[i] <= l && l < stack[i+1] && \old(array[l]) == array[j]))) &&
@@ -421,21 +421,20 @@ public class BlockQuickSort {
           @
           @   // Array-related invariants:
           @   array != null && \typeof(array) == \type(int[]) &&
-          @   (\forall int i, j; 0 <= i && i < j && j < array.length;
-          @     array[i] <= array[j]) &&
+          @   (\forall int i; 0 <= i && i < array.length - 1; array[i] <= array[i + 1]) &&
+          @
           @   // (\forall int i; 0 <= i && i < array.length;
           @   //   \num_of(int j; 0 <= j && j < array.length && array[j] == array[i]) ==
           @   //   \num_of(int j; 0 <= j && j < array.length && \old(array[j]) == array[i])) &&
-          @   (\forall int k; 0 <= k && k < array.length && (k < begin || k >= end); array[k] == \old(array[k]));
+          @   (\forall int k; 0 <= k && k < array.length && (k < begin || k >= end); array[k] == \old(array[k])) &&
           @
           @   // The subarray [begin, end) at the top of the stack is always sorted.
-          @   (\forall int i, j; begin <= i && i < j && j < end;
-          @     array[i] <= array[j]);
+          @   (\forall int i; begin <= i && i < end - 1; array[i] <= array[i + 1]);
           @
           @ // loop_variant
           @ //   // Termination measure:
           @ //   (\sum int i; 0 <= i && i < top; stack[i]) - (end - begin);
-          @ assignable array[begin .. end-1], stack[0 .. top-1], top, depth, begin, end;
+          @ // assignable array[begin .. end-1], stack[0 .. top-1], top, depth, begin, end;
           @*/
         do {
             end = stack[--top];

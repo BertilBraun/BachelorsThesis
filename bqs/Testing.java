@@ -10,10 +10,12 @@ public class Testing {
           @ requires rangePredicate != null;
           @ requires targetPredicate != null;
           @ requires function != null;
-          @ assignable \nothing;
           @ pure
           @*/
-        public static int sum(int[] array, IntPredicate rangePredicate, IntPredicate targetPredicate,
+        public static int sum(
+                int[] array,
+                IntPredicate rangePredicate,
+                IntPredicate targetPredicate,
                 IntFunction function) {
             int sum = 0;
             for (int i = 0; i < array.length; i++) {
@@ -28,7 +30,6 @@ public class Testing {
           @ requires array != null;
           @ requires rangePredicate != null;
           @ requires targetPredicate != null;
-          @ assignable \nothing;
           @ pure
           @*/
         public static int numOf(int[] array, IntPredicate rangePredicate, IntPredicate targetPredicate) {
@@ -38,7 +39,7 @@ public class Testing {
 
     /*@ normal_behavior
       @ requires array != null;
-      @ ensures \result == Inner.sum(array, (x -> 0 <= x && x < array.length), (y -> y > 0), (z -> z));
+      @ ensures \result == Inner.sum(array, ((int x) -> 0 <= x && x < array.length), ((int y) -> y > 0), ((int z) -> z));
       @*/
     public int sumTest(int[] array) {
         int sum = 0;
