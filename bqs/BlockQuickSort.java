@@ -5,7 +5,7 @@ public class BlockQuickSort {
 
     private static final int BLOCKSIZE = 2; // 128
     private static final int IS_THRESH = 2; // 16
-    private static final int STACK_SIZE = 50; // 80
+    private static final int STACK_SIZE = 80;
 
     /*@
       @ public normal_behavior
@@ -47,18 +47,20 @@ public class BlockQuickSort {
         int startRight = 0;
         int num;
 
+        /* TODO */
         while (last - begin + 1 > 2 * BLOCKSIZE) {
             if (numLeft == 0) {
                 startLeft = 0;
                 /*@ loop_invariant 0 <= j && j <= BLOCKSIZE;
                   @ loop_invariant 0 <= numLeft && numLeft <= j;
-                  @ // loop_invariant (\num_of int i; 0 <= i && i < j;
-                  @ //                 array[begin + i] >= pivot) == numLeft;
+                  @ loop_invariant (\num_of int i; 0 <= i && i < j;
+                  @                 array[begin + i] >= pivot) == numLeft;
                   @ // loop_invariant (\forall int k; 0 <= k && k < numLeft;
                   @ //                 0 <= indexL[k] && indexL[k] < BLOCKSIZE &&
                   @ //                 indexL[k]) == (\num_of int l; 0 <= l && l < k;
                   @ //                                array[begin + l] >= pivot);
                   @ loop_invariant indexL[numLeft] == j;
+                  @ loop_modifies numLeft, indexL, j;
                   @ loop_decreases BLOCKSIZE - j;
                   @*/
                 for (int j = 0; j < BLOCKSIZE; j++) {
@@ -70,8 +72,8 @@ public class BlockQuickSort {
                 startRight = 0;
                 /*@ loop_invariant 0 <= j && j <= BLOCKSIZE;
                   @ loop_invariant 0 <= numRight && numRight <= j;
-                  @ // loop_invariant (\num_of int i; 0 <= i && i < j;
-                  @ //                 pivot >= array[last - i]) == numRight;
+                  @ loop_invariant (\num_of int i; 0 <= i && i < j;
+                  @                 pivot >= array[last - i]) == numRight;
                   @ // loop_invariant (\forall int k; 0 <= k && k < numRight;
                   @ //                 0 <= indexR[k] && indexR[k] < BLOCKSIZE &&
                   @ //                 indexR[k]) == (\num_of int l; 0 <= l && l < k;
@@ -114,16 +116,16 @@ public class BlockQuickSort {
             startRight = 0;
             /*@ loop_invariant 0 <= j && j <= shiftL;
               @ loop_invariant 0 <= numLeft && numLeft <= j;
-              @ // loop_invariant (\num_of int i; 0 <= i && i < j;
-              @ //                 array[begin + i] >= pivot) == numLeft;
+              @ loop_invariant (\num_of int i; 0 <= i && i < j;
+              @                 array[begin + i] >= pivot) == numLeft;
               @ // loop_invariant (\forall int k; 0 <= k && k < numLeft;
               @ //                 0 <= indexL[k] && indexL[k] < shiftL &&
               @ //                 indexL[k]) == (\num_of int l; 0 <= l && l < k;
               @ //                                array[begin + l] >= pivot);
               @ loop_invariant indexL[numLeft] == j;
               @ loop_invariant 0 <= numRight && numRight <= j;
-              @ // loop_invariant (\num_of int i; 0 <= i && i < j;
-              @ //                 pivot >= array[last - i]) == numRight;
+              @ loop_invariant (\num_of int i; 0 <= i && i < j;
+              @                 pivot >= array[last - i]) == numRight;
               @ // loop_invariant (\forall int k; 0 <= k && k < numRight;
               @ //                 0 <= indexR[k] && indexR[k] < shiftL &&
               @ //                 indexR[k]) == (\num_of int l; 0 <= l && l < k;
@@ -147,8 +149,8 @@ public class BlockQuickSort {
             startLeft = 0;
             /*@ loop_invariant 0 <= j && j <= shiftL;
               @ loop_invariant 0 <= numLeft && numLeft <= j;
-              @ // loop_invariant (\num_of int i; 0 <= i && i < j;
-              @ //                 array[begin + i] >= pivot) == numLeft;
+              @ loop_invariant (\num_of int i; 0 <= i && i < j;
+              @                 array[begin + i] >= pivot) == numLeft;
               @ // loop_invariant (\forall int k; 0 <= k && k < numLeft;
               @ //                 0 <= indexL[k] && indexL[k] < shiftL &&
               @ //                 indexL[k]) == (\num_of int l; 0 <= l && l < k;
@@ -166,8 +168,8 @@ public class BlockQuickSort {
             startRight = 0;
             /*@ loop_invariant 0 <= j && j <= shiftR;
               @ loop_invariant 0 <= numRight && numRight <= j;
-              @ // loop_invariant (\num_of int i; 0 <= i && i < j;
-              @ //                 pivot >= array[last - i]) == numRight;
+              @ loop_invariant (\num_of int i; 0 <= i && i < j;
+              @                 pivot >= array[last - i]) == numRight;
               @ // loop_invariant (\forall int k; 0 <= k && k < numRight;
               @ //                 0 <= indexR[k] && indexR[k] < shiftR &&
               @ //                 indexR[k]) == (\num_of int l; 0 <= l && l < k;
@@ -192,14 +194,14 @@ public class BlockQuickSort {
           @                  array[i] <= array[begin + indexL[startLeft + j]]);
           @ loop_invariant (\forall int i; last - indexR[startRight + j] < i && i <= last;
           @                  array[i] >= array[last - indexR[startRight + j]]);
-          @ // loop_invariant (\num_of int l; begin <= l && l < begin + indexL[startLeft + j];
-          @ //                  array[l] >= pivot) ==
-          @ //                  num - (\num_of int m; 0 <= m && m < j;
-          @ //                         array[begin + indexL[startLeft + m]] >= pivot);
-          @ // loop_invariant (\num_of int l; last - indexR[startRight + j] < l && l <= last;
-          @ //                  pivot >= array[l]) ==
-          @ //                  num - (\num_of int m; 0 <= m && m < j;
-          @ //                         pivot >= array[last - indexR[startRight + m]]);
+          @ loop_invariant (\num_of int l; begin <= l && l < begin + indexL[startLeft + j];
+          @                  array[l] >= pivot) ==
+          @                  num - (\num_of int m; 0 <= m && m < j;
+          @                         array[begin + indexL[startLeft + m]] >= pivot);
+          @ loop_invariant (\num_of int l; last - indexR[startRight + j] < l && l <= last;
+          @                  pivot >= array[l]) ==
+          @                  num - (\num_of int m; 0 <= m && m < j;
+          @                         pivot >= array[last - indexR[startRight + m]]);
           @ loop_decreases num - j;
           @*/
         for (int j = 0; j < num; j++) {
@@ -304,10 +306,11 @@ public class BlockQuickSort {
           @   (\forall int i; 0 <= i && i < top - 1; stack[i+1] > stack[i]) &&
           @
           @   // Subarray-related invariants:
-          @   // (\forall int i; 0 <= i && i < top - 1;
-          @   //   (\forall int j, k; stack[i] <= j && j < k && k < stack[i+1];
-          @   //     (\num_of int l; stack[i] <= l && l < stack[i+1] && array[l] == array[j]) ==
-          @   //     (\num_of int l; stack[i] <= l && l < stack[i+1] && \old(array[l]) == array[j]))) &&
+          @   (\forall int i; 0 <= i && i < top - 1;
+          @     (\forall int k; stack[i] < k && k < stack[i+1];
+          @     (\forall int j; stack[i] <= j && j < k;
+          @       (\num_of int l; stack[i] <= l && l < stack[i+1]; array[l] == array[j]) ==
+          @       (\num_of int l; stack[i] <= l && l < stack[i+1]; \old(array[l]) == array[j])))) &&
           @
           @   // Depth-related invariants:
           @   0 <= depth &&
@@ -321,18 +324,18 @@ public class BlockQuickSort {
           @   // Array-related invariants:
           @   (\forall int i; 0 <= i && i < array.length - 1; array[i] <= array[i + 1]) &&
           @
-          @   // (\forall int i; 0 <= i && i < array.length;
-          @   //   (\num_of int j; 0 <= j && j < array.length && array[j] == array[i]) ==
-          @   //   (\num_of int j; 0 <= j && j < array.length && \old(array[j]) == array[i])) &&
+          @   (\forall int i; 0 <= i && i < array.length;
+          @     (\num_of int j; 0 <= j && j < array.length; array[j] == array[i]) ==
+          @     (\num_of int j; 0 <= j && j < array.length; \old(array[j]) == array[i])) &&
           @   (\forall int k; 0 <= k && k < array.length; array[k] == \old(array[k]) && (k < begin || k >= end)) &&
           @
           @   // The subarray [begin, end) at the top of the stack is always sorted.
           @   (\forall int i; begin <= i && i < end - 1; array[i] <= array[i + 1]);
           @
-          @ // loop_variant
+          @ // loop_invariant
           @ //   // Termination measure:
           @ //   (\sum int i; 0 <= i && i < top; stack[i]) - (end - begin);
-          @ // assignable array[begin .. end-1], stack[0 .. top-1], top, depth, begin, end;
+          @ loop_modifies array[begin .. end-1], stack[0 .. top-1], top, depth, begin, end;
           @*/
         while (top > 0) {
             end = stack[--top];
@@ -349,11 +352,11 @@ public class BlockQuickSort {
               @                  (\forall int j; stack[2 * i] <= j && j < stack[2 * i + 1] - 1;
               @                   array[j] <= array[j + 1]));
               @ // Each segment is a valid permutation
-              @ // loop_invariant (\forall int i; 0 <= i && i < top / 2;
-              @ //                  (\forall int j; stack[2 * i] <= j && j < stack[2 * i + 1];
-              @ //                   (\forall int k; stack[2 * i] <= k && k < stack[2 * i + 1] && array[k] == array[j];
-              @ //                    (\num_of int l; stack[2 * i] <= l && l < stack[2 * i + 1] && array[l] == array[j]) ==
-              @ //                    (\num_of int l; stack[2 * i] <= l && l < stack[2 * i + 1] && \old(array[l]) == array]))));
+              @ loop_invariant (\forall int i; 0 <= i && i < top / 2;
+              @                  (\forall int j; stack[2 * i] <= j && j < stack[2 * i + 1];
+              @                   (\forall int k; stack[2 * i] <= k && k < stack[2 * i + 1]; array[k] == array[j] &&
+              @                    (\num_of int l; stack[2 * i] <= l && l < stack[2 * i + 1]; array[l] == array[j]) ==
+              @                    (\num_of int l; stack[2 * i] <= l && l < stack[2 * i + 1]; \old(array[l]) == array[j]))));
               @ // Adjacent segments are ordered
               @ loop_invariant (\forall int i; 0 <= i && i < top / 2 - 1;
               @                  array[stack[2 * i + 1] - 1] <= array[stack[2 * (i + 1)]]);
@@ -490,24 +493,24 @@ public class BlockQuickSort {
       @ pure
       @*/
     public static boolean permutation(int[] array1, int[] array2, int begin, int end) {
-        /*@
-          @ loop_invariant begin <= i && i <= end;
-          @ loop_invariant (\forall int j; begin <= j && j < i; (
-          @                 (\num_of int k; begin <= k && k < end; array1[j] == array1[k]) ==
-          @                 (\num_of int k; begin <= k && k < end; array1[j] == array2[k])));
-          @ loop_modifies i;
-          @ loop_decreases end - i;
-         */
+        // /*@
+        //   @ loop_invariant begin <= i && i <= end;
+        //   @ loop_invariant (\forall int j; begin <= j && j < i; (
+        //   @                 (\num_of int k; begin <= k && k < end; array1[j] == array1[k]) ==
+        //   @                 (\num_of int k; begin <= k && k < end; array1[j] == array2[k])));
+        //   @ loop_modifies i;
+        //   @ loop_decreases end - i;
+        //  */
         for (int i = begin; i < end; i++) {
             int count1 = 0;
             int count2 = 0;
-            /*@
-              @ loop_invariant begin <= j && j <= end;
-              @ loop_invariant count1 == (\num_of int k; begin <= k && k < j; array1[i] == array1[k]);
-              @ loop_invariant count2 == (\num_of int k; begin <= k && k < j; array1[i] == array2[k]);
-              @ loop_modifies j, count1, count2;
-              @ loop_decreases end - j;
-             */
+            // /*@
+            //   @ loop_invariant begin <= j && j <= end;
+            //   @ loop_invariant count1 == (\num_of int k; begin <= k && k < j; array1[i] == array1[k]);
+            //   @ loop_invariant count2 == (\num_of int k; begin <= k && k < j; array1[i] == array2[k]);
+            //   @ loop_modifies j, count1, count2;
+            //   @ loop_decreases end - j;
+            //  */
             for (int j = begin; j < end; j++) {
                 if (array1[i] == array1[j]) {
                     count1++;

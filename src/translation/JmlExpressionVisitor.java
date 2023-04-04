@@ -268,7 +268,7 @@ public class JmlExpressionVisitor extends JmlTreeCopier {
         CLI.expressionMap.put("quantVar" + (numQuantvars - 1) + that.decls.get(0).getName().toString(), that.decls.get(0).getName().toString());
         RangeExtractor re = new RangeExtractor(maker, that.decls.get(0).sym);
         if (copy.range == null) {
-            throw new UnsupportedException("Only quantifiers with given ranges supported.");
+            throw new UnsupportedException("Only quantifiers with given ranges supported.  (" + that + ")");
         }
         JCExpression range = super.copy(copy.range);
         re.extractRange(range);
