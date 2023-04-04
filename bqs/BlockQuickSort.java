@@ -12,7 +12,6 @@ public class BlockQuickSort {
       @ requires array != null;
       @ requires 0 <= begin && begin < end && end <= array.length;
       @ requires begin <= pivotPosition && pivotPosition < end;
-      @ requires unique(array, begin, end);
       @ ensures array.length == \old(array.length);
       @
       @ // The resulting pivot is inside the range [begin, end).
@@ -278,7 +277,6 @@ public class BlockQuickSort {
       @ public normal_behavior
       @ requires array != null;
       @ requires 0 <= begin && begin < end && end <= array.length;
-      @ requires unique(array, begin, end);
       @ ensures array.length == \old(array.length);
       @
       @ // Values inside the range [begin, end) are in sorted order.
@@ -437,7 +435,6 @@ public class BlockQuickSort {
       @ requires array != null;
       @ requires end - begin >= 3;
       @ requires 0 <= begin && begin < end && end <= array.length;
-      @ requires unique(array, begin, end);
       @ ensures array.length == \old(array.length);
       @
       @ // Result is within the given range [begin, end)
@@ -464,7 +461,6 @@ public class BlockQuickSort {
       @ requires array != null;
       @ requires end - begin >= 3;
       @ requires 0 <= begin && begin < end && end <= array.length;
-      @ requires unique(array, begin, end);
       @ ensures array.length == \old(array.length);
       @
       @ // The resulting pivot is inside the range [begin, end).
@@ -490,77 +486,53 @@ public class BlockQuickSort {
         BlockQuickSortTest.runAllTests();
     }
 
-    /*@ normal_behavior
-      @ requires array != null;
-      @ requires 0 <= begin && begin <= end && end <= array.length;
-      @ ensures \result == (\forall int i; begin <= i && i < end; 
-      @                    (\forall int j; begin <= j && j < end; i == j || array[i] != array[j]));
-      @ pure
-      @*/
-    public static boolean unique(int[] array, int begin, int end) {
-        for (int i = begin; i < end; i++) {
-            for (int j = i + 1; j < end; j++) {
-                if (array[i] == array[j]) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-    /*@
-      @ normal_behavior
-      @ requires array != null;
-      @ ensures \result == unique(array, 0, array.length);
-      @ pure
-      @*/
-    public static boolean unique(int[] array) {
-        return unique(array, 0, array.length);
-    }
-
     /*@
       @ normal_behavior
       @ requires array1 != null;
       @ requires array2 != null;
-      @ requires unique(array1);
       @ requires 0 <= begin && begin <= end && end <= array1.length;
       @ requires array1.length == array2.length;
-      @ ensures \result == (\forall int i; begin <= i && i < end; 
-      @                    (\exists int j; begin <= j && j < end; array1[i] == array2[j]));
+      @ ensures array1.length == \old(array1.length);
+      @ ensures array2.length == \old(array2.length);
+      @ ensures \result == (\forall int i; begin <= i && i < end; (
+      @                     (\num_of int j; begin <= j && j < end; array1[i] == array1[j]) ==
+      @                     (\num_of int j; begin <= j && j < end; array1[i] == array2[j])
+      @                    ));
       @ pure
       @*/
     public static boolean permutation(int[] array1, int[] array2, int begin, int end) {
-        if (array1.length != array2.length) {
-            return false;
-        }
+        /*@
+          @ loop_invariant begin <= i && i <= end;
+          @ loop_invariant (\forall int j; begin <= j && j < i; (
+          @                 (\num_of int k; begin <= k && k < end; array1[j] == array1[k]) ==
+          @                 (\num_of int k; begin <= k && k < end; array1[j] == array2[k])));
+          @ loop_modifies i;
+          @ loop_decreases end - i;
+         */
         for (int i = begin; i < end; i++) {
-            boolean found = false;
+            int count1 = 0;
+            int count2 = 0;
+            /*@
+              @ loop_invariant begin <= j && j < end;
+              @ loop_invariant count1 == (\num_of int k; begin <= k && k < j; array1[i] == array1[k]);
+              @ loop_invariant count2 == (\num_of int k; begin <= k && k < j; array1[i] == array2[k]);
+              @ loop_modifies j, count1, count2;
+              @ loop_decreases end - j;
+             */
             for (int j = begin; j < end; j++) {
+                if (array1[i] == array1[j]) {
+                    count1++;
+                }
                 if (array1[i] == array2[j]) {
-                    found = true;
-                    // TODO break;
+                    count2++;
                 }
             }
-            if (!found) {
+            if (count1 != count2) {
                 return false;
             }
         }
         return true;
     }
-
-    /*@
-      @ normal_behavior
-      @ requires array1 != null;
-      @ requires array2 != null;
-      @ requires unique(array1);
-      @ requires array1.length == array2.length;
-      @ ensures \result == permutation(array1, array2, 0, array1.length);
-      @ pure
-      @*/
-    public static boolean permutation(int[] array1, int[] array2) {
-        return permutation(array1, array2, 0, array1.length);
-    }
-
 }
 
 class BlockQuickSortTest {
