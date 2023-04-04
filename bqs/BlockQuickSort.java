@@ -319,13 +319,12 @@ public class BlockQuickSort {
           @   0 <= begin && begin <= end && end <= array.length &&
           @
           @   // Array-related invariants:
-          @   array != null && \typeof(array) == \type(int[]) &&
           @   (\forall int i; 0 <= i && i < array.length - 1; array[i] <= array[i + 1]) &&
           @
           @   // (\forall int i; 0 <= i && i < array.length;
           @   //   (\num_of int j; 0 <= j && j < array.length && array[j] == array[i]) ==
           @   //   (\num_of int j; 0 <= j && j < array.length && \old(array[j]) == array[i])) &&
-          @   (\forall int k; 0 <= k && k < array.length && (k < begin || k >= end); array[k] == \old(array[k])) &&
+          @   (\forall int k; 0 <= k && k < array.length; array[k] == \old(array[k]) && (k < begin || k >= end)) &&
           @
           @   // The subarray [begin, end) at the top of the stack is always sorted.
           @   (\forall int i; begin <= i && i < end - 1; array[i] <= array[i + 1]);
@@ -335,7 +334,7 @@ public class BlockQuickSort {
           @ //   (\sum int i; 0 <= i && i < top; stack[i]) - (end - begin);
           @ // assignable array[begin .. end-1], stack[0 .. top-1], top, depth, begin, end;
           @*/
-        do {
+        while (top > 0) {
             end = stack[--top];
             begin = stack[--top];
 
@@ -360,32 +359,26 @@ public class BlockQuickSort {
               @                  array[stack[2 * i + 1] - 1] <= array[stack[2 * (i + 1)]]);
               @ loop_decreases end - begin;
               @*/
-            while (end - begin > IS_THRESH) {
-                if (depth < depthLimit) {
-                    int pivot = partition(array, begin, end);
-                    if (pivot - begin > end - pivot) {
-                        stack[top++] = begin;
-                        stack[top++] = pivot;
-                        begin = pivot + 1;
-                    } else {
-                        stack[top++] = pivot + 1;
-                        stack[top++] = end;
-                        end = pivot;
-                    }
-                    depth++;
+            while (end - begin > IS_THRESH && depth < depthLimit) {
+                int pivot = partition(array, begin, end);
+                if (pivot - begin > end - pivot) {
+                    stack[top++] = begin;
+                    stack[top++] = pivot;
+                    begin = pivot + 1;
                 } else {
-                    Arrays.sort(array, begin, end);
-                    break;
+                    stack[top++] = pivot + 1;
+                    stack[top++] = end;
+                    end = pivot;
                 }
+                depth++;
             }
 
-            if (end - begin <= IS_THRESH) {
+            if (end - begin <= IS_THRESH || depth >= depthLimit) {
                 Arrays.sort(array, begin, end);
             }
 
             depth--;
-
-        } while (top > 0);
+        }
     }
 
     public static void quickSort(int[] array) {
