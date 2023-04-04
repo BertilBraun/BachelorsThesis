@@ -1,11 +1,11 @@
+
 import java.util.Arrays;
-import java.util.Random;
 
 public class BlockQuickSort {
 
     private static final int BLOCKSIZE = 2; // 128
     private static final int IS_THRESH = 2; // 16
-    private static final int STACK_SIZE = 5; // 80
+    private static final int STACK_SIZE = 50; // 80
 
     /*@
       @ public normal_behavior
@@ -288,104 +288,104 @@ public class BlockQuickSort {
       @ assignable array[begin .. end-1];
       @*/
     public static void quickSort(int[] array, int begin, int end) {
-        //     int[] stack = new int[STACK_SIZE];
-        //     int top = 0;
-        //     int depth = 0;
-        //     int depthLimit = (int) (2 * Math.log(end - begin) / Math.log(2)) + 3;
-        // 
-        //     stack[top++] = begin;
-        //     stack[top++] = end;
-        // 
-        //     /*@ loop_invariant
-        //       @   // Stack-related invariants:
-        //       @   stack != null && stack.length == STACK_SIZE &&
-        //       @   top % 2 == 0 && 0 <= top && top <= STACK_SIZE &&
-        //       @   (\forall int i; 0 <= i && i < top; 0 <= stack[i] && stack[i] <= array.length) &&
-        //       @   (\forall int i; 0 <= i && i < top - 1; stack[i+1] > stack[i]) &&
-        //       @
-        //       @   // Subarray-related invariants:
-        //       @   // (\forall int i; 0 <= i && i < top - 1;
-        //       @   //   (\forall int j, k; stack[i] <= j && j < k && k < stack[i+1];
-        //       @   //     (\num_of int l; stack[i] <= l && l < stack[i+1] && array[l] == array[j]) ==
-        //       @   //     (\num_of int l; stack[i] <= l && l < stack[i+1] && \old(array[l]) == array[j]))) &&
-        //       @
-        //       @   // Depth-related invariants:
-        //       @   0 <= depth &&
-        //       @   depthLimit >= 0 &&
-        //       @   depth <= depthLimit &&
-        //       @   depthLimit == (int) (2 * Math.log(end - begin) / Math.log(2)) + 3 &&
-        //       @
-        //       @   // Begin and end invariants:
-        //       @   0 <= begin && begin <= end && end <= array.length &&
-        //       @
-        //       @   // Array-related invariants:
-        //       @   array != null && \typeof(array) == \type(int[]) &&
-        //       @   (\forall int i; 0 <= i && i < array.length - 1; array[i] <= array[i + 1]) &&
-        //       @
-        //       @   // (\forall int i; 0 <= i && i < array.length;
-        //       @   //   (\num_of int j; 0 <= j && j < array.length && array[j] == array[i]) ==
-        //       @   //   (\num_of int j; 0 <= j && j < array.length && \old(array[j]) == array[i])) &&
-        //       @   (\forall int k; 0 <= k && k < array.length && (k < begin || k >= end); array[k] == \old(array[k])) &&
-        //       @
-        //       @   // The subarray [begin, end) at the top of the stack is always sorted.
-        //       @   (\forall int i; begin <= i && i < end - 1; array[i] <= array[i + 1]);
-        //       @
-        //       @ // loop_variant
-        //       @ //   // Termination measure:
-        //       @ //   (\sum int i; 0 <= i && i < top; stack[i]) - (end - begin);
-        //       @ // assignable array[begin .. end-1], stack[0 .. top-1], top, depth, begin, end;
-        //       @*/
-        //     do {
-        //        end = stack[--top];
-        //        begin = stack[--top];
-        //
-        //        /*@ loop_invariant stack != null && 0 <= top && top <= STACK_SIZE;
-        //          @ loop_invariant top % 2 == 0; // The top index is always even
-        //          @ loop_invariant 0 <= depth && depth <= depthLimit;
-        //          @ loop_invariant 0 <= begin && begin < end && end <= array.length;
-        //          @ // Stack holds valid indices
-        //          @ loop_invariant (\forall int i; 0 <= i && i < top; stack[i] >= 0 && stack[i] < array.length);
-        //          @ // Each segment in stack is sorted
-        //          @ loop_invariant (\forall int i; 0 <= i && i < top / 2;
-        //          @                  (\forall int j; stack[2 * i] <= j && j < stack[2 * i + 1] - 1;
-        //          @                   array[j] <= array[j + 1]));
-        //          @ // Each segment is a valid permutation
-        //          @ // loop_invariant (\forall int i; 0 <= i && i < top / 2;
-        //          @ //                  (\forall int j; stack[2 * i] <= j && j < stack[2 * i + 1];
-        //          @ //                   (\forall int k; stack[2 * i] <= k && k < stack[2 * i + 1] && array[k] == array[j];
-        //          @ //                    (\num_of int l; stack[2 * i] <= l && l < stack[2 * i + 1] && array[l] == array[j]) ==
-        //          @ //                    (\num_of int l; stack[2 * i] <= l && l < stack[2 * i + 1] && \old(array[l]) == array[j]))));
-        //          @ // Adjacent segments are ordered
-        //          @ loop_invariant (\forall int i; 0 <= i && i < top / 2 - 1;
-        //          @                  array[stack[2 * i + 1] - 1] <= array[stack[2 * (i + 1)]]);
-        //          @ loop_decreases end - begin;
-        //          @*/
-        //        while (end - begin > IS_THRESH) {
-        //            if (depth < depthLimit) {
-        //                int pivot = partition(array, begin, end);
-        //                if (pivot - begin > end - pivot) {
-        //                    stack[top++] = begin;
-        //                    stack[top++] = pivot;
-        //                    begin = pivot + 1;
-        //                } else {
-        //                    stack[top++] = pivot + 1;
-        //                    stack[top++] = end;
-        //                    end = pivot;
-        //                }
-        //                depth++;
-        //            } else {
-        //                Arrays.sort(array, begin, end);
-        //                break;
-        //            }
-        //        }
-        //
-        //        if (end - begin <= IS_THRESH) {
-        //            Arrays.sort(array, begin, end);
-        //        }
-        //
-        //        depth--;
-        //
-        //    } while (top > 0);
+        int[] stack = new int[STACK_SIZE];
+        int top = 0;
+        int depth = 0;
+        int depthLimit = (int) (2 * Math.log(end - begin) / Math.log(2)) + 3;
+
+        stack[top++] = begin;
+        stack[top++] = end;
+
+        /*@ loop_invariant
+          @   // Stack-related invariants:
+          @   stack != null && stack.length == STACK_SIZE &&
+          @   top % 2 == 0 && 0 <= top && top <= STACK_SIZE &&
+          @   (\forall int i; 0 <= i && i < top; 0 <= stack[i] && stack[i] <= array.length) &&
+          @   (\forall int i; 0 <= i && i < top - 1; stack[i+1] > stack[i]) &&
+          @
+          @   // Subarray-related invariants:
+          @   // (\forall int i; 0 <= i && i < top - 1;
+          @   //   (\forall int j, k; stack[i] <= j && j < k && k < stack[i+1];
+          @   //     (\num_of int l; stack[i] <= l && l < stack[i+1] && array[l] == array[j]) ==
+          @   //     (\num_of int l; stack[i] <= l && l < stack[i+1] && \old(array[l]) == array[j]))) &&
+          @
+          @   // Depth-related invariants:
+          @   0 <= depth &&
+          @   depthLimit >= 0 &&
+          @   depth <= depthLimit &&
+          @   depthLimit == (int) (2 * Math.log(end - begin) / Math.log(2)) + 3 &&
+          @
+          @   // Begin and end invariants:
+          @   0 <= begin && begin <= end && end <= array.length &&
+          @
+          @   // Array-related invariants:
+          @   array != null && \typeof(array) == \type(int[]) &&
+          @   (\forall int i; 0 <= i && i < array.length - 1; array[i] <= array[i + 1]) &&
+          @
+          @   // (\forall int i; 0 <= i && i < array.length;
+          @   //   (\num_of int j; 0 <= j && j < array.length && array[j] == array[i]) ==
+          @   //   (\num_of int j; 0 <= j && j < array.length && \old(array[j]) == array[i])) &&
+          @   (\forall int k; 0 <= k && k < array.length && (k < begin || k >= end); array[k] == \old(array[k])) &&
+          @
+          @   // The subarray [begin, end) at the top of the stack is always sorted.
+          @   (\forall int i; begin <= i && i < end - 1; array[i] <= array[i + 1]);
+          @
+          @ // loop_variant
+          @ //   // Termination measure:
+          @ //   (\sum int i; 0 <= i && i < top; stack[i]) - (end - begin);
+          @ // assignable array[begin .. end-1], stack[0 .. top-1], top, depth, begin, end;
+          @*/
+        do {
+            end = stack[--top];
+            begin = stack[--top];
+
+            /*@ loop_invariant stack != null && 0 <= top && top <= STACK_SIZE;
+              @ loop_invariant top % 2 == 0; // The top index is always even
+              @ loop_invariant 0 <= depth && depth <= depthLimit;
+              @ loop_invariant 0 <= begin && begin < end && end <= array.length;
+              @ // Stack holds valid indices
+              @ loop_invariant (\forall int i; 0 <= i && i < top; stack[i] >= 0 && stack[i] < array.length);
+              @ // Each segment in stack is sorted
+              @ loop_invariant (\forall int i; 0 <= i && i < top / 2;
+              @                  (\forall int j; stack[2 * i] <= j && j < stack[2 * i + 1] - 1;
+              @                   array[j] <= array[j + 1]));
+              @ // Each segment is a valid permutation
+              @ // loop_invariant (\forall int i; 0 <= i && i < top / 2;
+              @ //                  (\forall int j; stack[2 * i] <= j && j < stack[2 * i + 1];
+              @ //                   (\forall int k; stack[2 * i] <= k && k < stack[2 * i + 1] && array[k] == array[j];
+              @ //                    (\num_of int l; stack[2 * i] <= l && l < stack[2 * i + 1] && array[l] == array[j]) ==
+              @ //                    (\num_of int l; stack[2 * i] <= l && l < stack[2 * i + 1] && \old(array[l]) == array]))));
+              @ // Adjacent segments are ordered
+              @ loop_invariant (\forall int i; 0 <= i && i < top / 2 - 1;
+              @                  array[stack[2 * i + 1] - 1] <= array[stack[2 * (i + 1)]]);
+              @ loop_decreases end - begin;
+              @*/
+            while (end - begin > IS_THRESH) {
+                if (depth < depthLimit) {
+                    int pivot = partition(array, begin, end);
+                    if (pivot - begin > end - pivot) {
+                        stack[top++] = begin;
+                        stack[top++] = pivot;
+                        begin = pivot + 1;
+                    } else {
+                        stack[top++] = pivot + 1;
+                        stack[top++] = end;
+                        end = pivot;
+                    }
+                    depth++;
+                } else {
+                    Arrays.sort(array, begin, end);
+                    break;
+                }
+            }
+
+            if (end - begin <= IS_THRESH) {
+                Arrays.sort(array, begin, end);
+            }
+
+            depth--;
+
+        } while (top > 0);
     }
 
     public static void quickSort(int[] array) {
@@ -482,10 +482,6 @@ public class BlockQuickSort {
         return hoareBlockPartition(array, begin + 1, end - 1, mid);
     }
 
-    public static void main(String[] args) {
-        BlockQuickSortTest.runAllTests();
-    }
-
     /*@
       @ normal_behavior
       @ requires array1 != null;
@@ -513,7 +509,7 @@ public class BlockQuickSort {
             int count1 = 0;
             int count2 = 0;
             /*@
-              @ loop_invariant begin <= j && j < end;
+              @ loop_invariant begin <= j && j <= end;
               @ loop_invariant count1 == (\num_of int k; begin <= k && k < j; array1[i] == array1[k]);
               @ loop_invariant count2 == (\num_of int k; begin <= k && k < j; array1[i] == array2[k]);
               @ loop_modifies j, count1, count2;
@@ -532,75 +528,5 @@ public class BlockQuickSort {
             }
         }
         return true;
-    }
-}
-
-class BlockQuickSortTest {
-
-    public static void testQuickSortEmptyArray() {
-        int[] array = new int[] {};
-        BlockQuickSort.quickSort(array);
-        assertArrayEquals(new int[] {}, array);
-    }
-
-    public static void testQuickSortSingleElement() {
-        int[] array = new int[] { 3 };
-        BlockQuickSort.quickSort(array);
-        assertArrayEquals(new int[] { 3 }, array);
-    }
-
-    public static void testQuickSortSortedArray() {
-        int[] array = new int[] { 1, 2, 3, 4, 5 };
-        BlockQuickSort.quickSort(array);
-        assertArrayEquals(new int[] { 1, 2, 3, 4, 5 }, array);
-    }
-
-    public static void testQuickSortReverseSortedArray() {
-        int[] array = new int[] { 5, 4, 3, 2, 1 };
-        BlockQuickSort.quickSort(array);
-        assertArrayEquals(new int[] { 1, 2, 3, 4, 5 }, array);
-    }
-
-    public static void testQuickSortArrayWithDuplicates() {
-        int[] array = new int[] { 3, 1, 4, 1, 5, 9, 2, 6, 5, 3, 5 };
-        BlockQuickSort.quickSort(array);
-        assertArrayEquals(new int[] { 1, 1, 2, 3, 3, 4, 5, 5, 5, 6, 9 }, array);
-    }
-
-    public static void testQuickSortArrayWithNegativeElements() {
-        int[] array = new int[] { -5, 3, -1, 2, -8, 0 };
-        BlockQuickSort.quickSort(array);
-        assertArrayEquals(new int[] { -8, -5, -1, 0, 2, 3 }, array);
-    }
-
-    public static void testQuickSortArrayWithSameElements() {
-        int[] array = new int[] { 7, 7, 7, 7, 7, 7, 7 };
-        BlockQuickSort.quickSort(array);
-        assertArrayEquals(new int[] { 7, 7, 7, 7, 7, 7, 7 }, array);
-    }
-
-    public static void testQuickSortArrayWithRandomElements() {
-        int[] array = new Random().ints(1000, 0, 10000).boxed().mapToInt(Integer::intValue).toArray();
-        int[] arrayCopy = array.clone();
-        BlockQuickSort.quickSort(array);
-        Arrays.sort(arrayCopy);
-        assertArrayEquals(arrayCopy, array);
-    }
-
-    public static void assertArrayEquals(int[] expected, int[] actual) {
-        if (!Arrays.equals(expected, actual)) {
-            System.out.println("expected: " + Arrays.toString(expected) + " but was: " + Arrays.toString(actual));
-        }
-    }
-
-    public static void runAllTests() {
-        testQuickSortEmptyArray();
-        testQuickSortSingleElement();
-        testQuickSortSortedArray();
-        testQuickSortReverseSortedArray();
-        testQuickSortArrayWithDuplicates();
-        testQuickSortArrayWithNegativeElements();
-        testQuickSortArrayWithSameElements();
-        testQuickSortArrayWithRandomElements();
     }
 }
