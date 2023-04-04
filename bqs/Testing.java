@@ -3,6 +3,20 @@ import java.util.function.IntPredicate;
 
 public class Testing {
 
+    /*@ normal_behavior
+      @ requires array != null;
+      @ ensures \result == (\num_of int i; 0 <= i && i < array.length && i != 1; array[i] > 0);
+      @*/
+    public int test(int[] array) {
+        int count = 0;
+        for (int i = 0; i < array.length; i++) {
+            if (array[i] > 0) {
+                count++;
+            }
+        }
+        return count;
+    }
+
     public static class Inner {
 
         /*@ normal_behavior

@@ -110,6 +110,7 @@ public class JmlExpressionVisitor extends JmlTreeCopier {
     private static int intVarCounter = 0;
     private static int paramVarCounter = 0;
     private static int numQuantvars = 0;
+    private static int countVarCounter = 0;
     private static int oldVarCounter = 0;
     private static List<Symbol.VarSymbol> loopLocalVars = List.nil();
     private final Maker maker;
@@ -400,7 +401,41 @@ public class JmlExpressionVisitor extends JmlTreeCopier {
                 throw new TranslationException("Quantified expressions may not occur in Java-mode: " + that);
             }
         } else if (copy.op == JmlTokenKind.BSNUMOF) {
-            throw new UnsupportedException("The program appears to contain unbounded quantifiers which are not supported by this tool (" + copy + ").");
+            // Create a variable to store the count of elements satisfying the condition
+            JCVariableDecl countVar = treeutils.makeVarDef(syms.intType, names.fromString("count_" + countVarCounter++),
+                    currentSymbol, treeutils.makeLit(TranslationUtils.getCurrentPosition(), syms.intType, 0));
+            neededVariableDefs = neededVariableDefs.append(countVar);
+
+            // Create a loop to iterate over the range and evaluate the condition
+            List<JCStatement> loopBody = newStatements;
+            newStatements = List.nil();
+            JCExpression value = super.copy(copy.value);
+            for (Map.Entry<String, String> e : variableReplacements.entrySet()) {
+                value = TranslationUtils.replaceVarName(e.getKey(), e.getValue(), value);
+                range = TranslationUtils.replaceVarName(e.getKey(), e.getValue(), range);
+            }
+            JCStatement incrementCountVar = maker.Exec(maker.Unary(Tag.PREINC, maker.Ident(countVar)));
+            JCIf ifCondTrue = maker.If(value, incrementCountVar, null);
+            newStatements = newStatements.append(ifCondTrue);
+
+            // Create the for-loop with the loop body
+            String loopVarName = that.decls.get(0).getName().toString();
+            if (variableReplacements.containsKey(that.decls.get(0).getName().toString())) {
+                loopVarName = variableReplacements.get(that.decls.get(0).getName().toString());
+            }
+            JCForLoop forLoop = TranslationUtils.makeStandardLoopFromRange(range, newStatements, loopVarName,
+                    currentSymbol, re.getMin());
+            loopBody = loopBody.append(forLoop);
+
+            // Restore the previous state and remove the variable replacements and quantifier variables
+            newStatements = loopBody;
+            variableReplacements.remove(that.decls.get(0).getName().toString());
+            quantifierVars.remove(that.decls.get(0).sym);
+
+            // Return the count variable as the result of the expression
+            JCExpression translatedExpression = maker.Ident(countVar);
+            CLI.expressionMap.put(translatedExpression.toString(), that.toString());
+            return translatedExpression;
         } else {
             throw new UnsupportedException("Unkown token type in quantified Expression: " + copy.op);
         }
