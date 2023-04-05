@@ -377,11 +377,29 @@ public class BlockQuickSort {
             }
 
             if (end - begin <= IS_THRESH || depth >= depthLimit) {
-                Arrays.sort(array, begin, end);
+                insertionSort(array, begin, end);
             }
 
             depth--;
         }
+    }
+
+    /*@
+      @ public normal_behavior
+      @ requires array != null;
+      @ requires 0 <= begin && begin < end && end <= array.length;
+      @ ensures array.length == \old(array.length);
+      @
+      @ // Values inside the range [begin, end) are in sorted order.
+      @ ensures (\forall int i; begin <= i && i < end - 1; array[i] <= array[i+1]);
+      @
+      @ // Values inside the range [begin, end) are a valid permutation.
+      @ ensures permutation(array, \old(array), begin, end);
+      @
+      @ assignable array[begin .. end-1];
+      @*/
+    public static void insertionSort(int[] array, int begin, int end) {
+        Arrays.sort(array, begin, end);
     }
 
     public static void quickSort(int[] array) {

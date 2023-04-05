@@ -110,7 +110,7 @@ public class JmlExpressionVisitor extends JmlTreeCopier {
     private static int intVarCounter = 0;
     private static int paramVarCounter = 0;
     private static int numQuantvars = 0;
-    private static int countVarCounter = 0;
+    private static int sumVarCounter = 0;
     private static int oldVarCounter = 0;
     private static List<Symbol.VarSymbol> loopLocalVars = List.nil();
     private final Maker maker;
@@ -400,45 +400,57 @@ public class JmlExpressionVisitor extends JmlTreeCopier {
             } else {
                 throw new TranslationException("Quantified expressions may not occur in Java-mode: " + that);
             }
-        } else if (copy.op == JmlTokenKind.BSNUMOF) {
-            // Create a variable to store the count of elements satisfying the condition
-            JCVariableDecl countVar = treeutils.makeVarDef(syms.intType, names.fromString("count_" + countVarCounter++),
-                    currentSymbol, treeutils.makeLit(TranslationUtils.getCurrentPosition(), syms.intType, 0));
-            neededVariableDefs = neededVariableDefs.append(countVar);
-
-            // Create a loop to iterate over the range and evaluate the condition
-            List<JCStatement> loopBody = newStatements;
-            newStatements = List.nil();
+        } else if (copy.op == JmlTokenKind.BSSUM) {
             JCExpression value = super.copy(copy.value);
-            for (Map.Entry<String, String> e : variableReplacements.entrySet()) {
-                value = TranslationUtils.replaceVarName(e.getKey(), e.getValue(), value);
-                range = TranslationUtils.replaceVarName(e.getKey(), e.getValue(), range);
-            }
-            JCStatement incrementCountVar = maker.Exec(maker.Unary(Tag.PREINC, maker.Ident(countVar)));
-            JCIf ifCondTrue = maker.If(value, incrementCountVar, null);
-            newStatements = newStatements.append(ifCondTrue);
-
-            // Create the for-loop with the loop body
-            String loopVarName = that.decls.get(0).getName().toString();
-            if (variableReplacements.containsKey(that.decls.get(0).getName().toString())) {
-                loopVarName = variableReplacements.get(that.decls.get(0).getName().toString());
-            }
-            JCForLoop forLoop = TranslationUtils.makeStandardLoopFromRange(range, newStatements, loopVarName,
-                    currentSymbol, re.getMin());
-            loopBody = loopBody.append(forLoop);
-
-            // Restore the previous state and remove the variable replacements and quantifier variables
-            newStatements = loopBody;
-            variableReplacements.remove(that.decls.get(0).getName().toString());
-            quantifierVars.remove(that.decls.get(0).sym);
-
-            // Return the count variable as the result of the expression
-            JCExpression translatedExpression = maker.Ident(countVar);
-            CLI.expressionMap.put(translatedExpression.toString(), that.toString());
-            return translatedExpression;
+            return generateSum(that, value, range, re);
+        } else if (copy.op == JmlTokenKind.BSNUMOF) {
+            // Quite obviously \num_of ...; R; V is equivalent to \sum ... ; R; V ? 1 : 0
+            JCExpression value = super.copy(copy.value);
+            // Modify the value expression for num_of
+            value = maker.Conditional(value, maker.Literal(1), maker.Literal(0));
+            return generateSum(that, value, range, re);
         } else {
             throw new UnsupportedException("Unkown token type in quantified Expression: " + copy.op);
         }
+    }
+
+    private JCExpression generateSum(JmlQuantifiedExpr that, JCExpression value, JCExpression range,
+            RangeExtractor re) {
+        // Create a variable to store the result of the sum or count
+        JCVariableDecl resultVar = treeutils.makeVarDef(syms.intType, names.fromString("sum_" + sumVarCounter++),
+                currentSymbol,
+                treeutils.makeLit(TranslationUtils.getCurrentPosition(), syms.intType, 0));
+        neededVariableDefs = neededVariableDefs.append(resultVar);
+
+        // Create a loop to iterate over the range and process the values
+        List<JCStatement> loopBody = newStatements;
+        newStatements = List.nil();
+        for (Map.Entry<String, String> e : variableReplacements.entrySet()) {
+            value = TranslationUtils.replaceVarName(e.getKey(), e.getValue(), value);
+            range = TranslationUtils.replaceVarName(e.getKey(), e.getValue(), range);
+        }
+        JCStatement addToResultVar = maker
+                .Exec(maker.Assignop(Tag.PLUS_ASG, maker.Ident(resultVar), value).setType(syms.intType));
+        newStatements = newStatements.append(addToResultVar);
+
+        // Create the for-loop with the loop body
+        String loopVarName = that.decls.get(0).getName().toString();
+        if (variableReplacements.containsKey(that.decls.get(0).getName().toString())) {
+            loopVarName = variableReplacements.get(that.decls.get(0).getName().toString());
+        }
+        JCForLoop forLoop = TranslationUtils.makeStandardLoopFromRange(range, newStatements, loopVarName, currentSymbol,
+                re.getMin());
+        loopBody = loopBody.append(forLoop);
+
+        // Restore the previous state and remove the variable replacements and quantifier variables
+        newStatements = loopBody;
+        variableReplacements.remove(that.decls.get(0).getName().toString());
+        quantifierVars.remove(that.decls.get(0).sym);
+
+        // Return the result variable as the result of the expression
+        JCExpression translatedExpression = maker.Ident(resultVar);
+        CLI.expressionMap.put(translatedExpression.toString(), that.toString());
+        return translatedExpression;
     }
 
     @Override
