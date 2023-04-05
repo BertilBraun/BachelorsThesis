@@ -6,7 +6,7 @@
         {
             "label": "Run",
             "type": "shell",
-            "command": "java -jar JJBMC.jar -tr -c -timeout=300000 \"${input:file}.java\" ${input:function}",
+            "command": "java -jar JJBMC.jar -tr -c -timeout=1800000 \"${input:file}.java\" ${input:function}",
             "problemMatcher": [],
             "runOptions": {
                 "reevaluateOnRerun": false
@@ -33,7 +33,7 @@
         {
             "label": "Recompile and Run",
             "type": "shell",
-            "command": "./gradlew fatJar && java -jar JJBMC.jar -tr -c -timeout=300000 \"${input:file}.java\" ${input:function}",
+            "command": "./gradlew fatJar && java -jar JJBMC.jar -tr -c -timeout=1800000 \"${input:file}.java\" ${input:function}",
             "problemMatcher": [],
             "runOptions": {
                 "reevaluateOnRerun": false
