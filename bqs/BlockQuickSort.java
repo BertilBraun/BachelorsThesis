@@ -47,7 +47,29 @@ public class BlockQuickSort {
         int startRight = 0;
         int num;
 
-        /* TODO */
+        /*@ loop_invariant begin <= last && last < array.length;
+          @ loop_invariant 0 <= numLeft && numLeft <= BLOCKSIZE;
+          @ loop_invariant 0 <= numRight && numRight <= BLOCKSIZE;
+          @
+          @ // Elements in indexL and indexR arrays are correct and within the range [0, BLOCKSIZE)
+          @ loop_invariant (\forall int k; 0 <= k && k < numLeft; 0 <= indexL[k] && indexL[k] < BLOCKSIZE) &&
+          @                 (\forall int k; 0 <= k && k < numRight; 0 <= indexR[k] && indexR[k] < BLOCKSIZE);
+          @
+          @ // num is the minimum value of numLeft and numRight
+          @ // loop_invariant num == Math.min(numLeft, numRight);
+          @
+          @ // After each iteration, the elements in the range [begin, begin + indexL[startLeft]) and [last - indexR[startRight], last] remain unchanged
+          @ // loop_invariant (\forall int i; 0 <= i && i < startLeft; array[begin + indexL[i]] == \old(array[begin + indexL[i]])) &&
+          @ //                 (\forall int i; 0 <= i && i < startRight; array[last - indexR[i]] == \old(array[last - indexR[i]]));
+          @
+          @ // The elements in the range [begin + indexL[startLeft], begin + indexL[startLeft + num]) are greater than or equal to pivot
+          @ // The elements in the range [last - indexR[startRight], last - indexR[startRight + num]) are less than or equal to pivot
+          @ // loop_invariant (\forall int i; startLeft <= i && i < startLeft + j; array[begin + indexL[i]] <= pivot) &&
+          @ //                 (\forall int i; startRight <= i && i < startRight + j; array[last - indexR[i]] >= pivot);
+          @
+          @ loop_modifies array, last, begin, numLeft, numRight, startLeft, startRight;
+          @ loop_decreases (last - begin + 1) - 2 * BLOCKSIZE;
+          @*/
         while (last - begin + 1 > 2 * BLOCKSIZE) {
             if (numLeft == 0) {
                 startLeft = 0;
@@ -57,7 +79,7 @@ public class BlockQuickSort {
                   @ // Maintain indexL array
                   @ loop_invariant (\forall int k; 0 <= k && k < numLeft; 0 <= indexL[k] && indexL[k] < j && array[begin + indexL[k]] >= pivot);
                   @
-                  @ loop_modifies numLeft, indexL[*], j;
+                  @ loop_modifies numLeft, indexL, j;
                   @ loop_decreases BLOCKSIZE - j;
                   @*/
                 for (int j = 0; j < BLOCKSIZE; j++) {
@@ -73,7 +95,7 @@ public class BlockQuickSort {
                   @ // Maintain indexR array
                   @ loop_invariant (\forall int k; 0 <= k && k < numRight; 0 <= indexR[k] && indexR[k] < j && pivot >= array[last - indexR[k]]);
                   @
-                  @ loop_modifies numRight, indexR[*], j;
+                  @ loop_modifies numRight, indexR, j;
                   @ loop_decreases BLOCKSIZE - j;
                   @*/
                 for (int j = 0; j < BLOCKSIZE; j++) {
@@ -83,15 +105,15 @@ public class BlockQuickSort {
             }
 
             num = Math.min(numLeft, numRight);
-            /*@ loop_invariant 0 <= j && j <= num;
-              @ // The elements in the range [begin, begin + indexL[startLeft]) and [last - indexR[startRight], last] remain unchanged
-              @ loop_invariant (\forall int i; 0 <= i && i < startLeft; array[begin + indexL[i]] == \old(array[begin + indexL[i]])) &&
-              @                 (\forall int i; 0 <= i && i < startRight; array[last - indexR[i]] == \old(array[last - indexR[i]]));
-              @ // The elements in the range [begin + indexL[startLeft + j], begin + indexL[startLeft + num]) and [last - indexR[startRight + num], last - indexR[startRight + j]) are rearranged such that elements smaller than the pivot are moved to the left of the pivot and elements greater than the pivot are moved to the right of the pivot
-              @ loop_invariant (\forall int i; startLeft <= i && i < startLeft + j; array[begin + indexL[i]] <= pivot) &&
-              @                 (\forall int i; startRight <= i && i < startRight + j; array[last - indexR[i]] >= pivot);
-              @ loop_modifies array[*], j;
-              @*/
+            // /*@ loop_invariant 0 <= j && j <= num;
+            //   @ // The elements in the range [begin, begin + indexL[startLeft]) and [last - indexR[startRight], last] remain unchanged
+            //   @ loop_invariant (\forall int i; 0 <= i && i < startLeft; array[begin + indexL[i]] == \old(array[begin + indexL[i]])) &&
+            //   @                 (\forall int i; 0 <= i && i < startRight; array[last - indexR[i]] == \old(array[last - indexR[i]]));
+            //   @ // The elements in the range [begin + indexL[startLeft + j], begin + indexL[startLeft + num]) and [last - indexR[startRight + num], last - indexR[startRight + j]) are rearranged such that elements smaller than the pivot are moved to the left of the pivot and elements greater than the pivot are moved to the right of the pivot
+            //   @ loop_invariant (\forall int i; startLeft <= i && i < startLeft + j; array[begin + indexL[i]] <= pivot) &&
+            //   @                 (\forall int i; startRight <= i && i < startRight + j; array[last - indexR[i]] >= pivot);
+            //   @ loop_modifies array, j;
+            //   @*/
             for (int j = 0; j < num; j++) {
                 swap(array, begin + indexL[startLeft + j], last - indexR[startRight + j]);
             }
@@ -118,7 +140,7 @@ public class BlockQuickSort {
               @ loop_invariant (\forall int k; 0 <= k && k < numRight; pivot >= array[last - indexR[k]]);
               @
               @ loop_decreases shiftL - j;
-              @ loop_modifies indexL[*], numLeft, indexR[*], numRight, j;
+              @ loop_modifies indexL, numLeft, indexR, numRight, j;
               @*/
             for (int j = 0; j < shiftL; j++) {
                 indexL[numLeft] = j;
@@ -141,7 +163,7 @@ public class BlockQuickSort {
               @ loop_invariant (\forall int i; 0 <= i && i < numLeft; indexL[i] >= 0 && indexL[i] < shiftL);
               @ // All elements in indexL are >= pivot
               @ loop_invariant (\forall int i; 0 <= i && i < numLeft; array[begin + indexL[i]] >= pivot);
-              @ loop_modifies indexL[*], numLeft, j;
+              @ loop_modifies indexL, numLeft, j;
               @ loop_decreases shiftL - j;
               @*/
             for (int j = 0; j < shiftL; j++) {
@@ -156,7 +178,7 @@ public class BlockQuickSort {
               @ loop_invariant 0 <= numRight && numRight <= j;
               @ loop_invariant (\forall int i; 0 <= i && i < numRight; last - indexR[i] >= begin && last - indexR[i] <= last);
               @ loop_invariant (\forall int i; 0 <= i && i < numRight; array[last - indexR[i]] <= pivot);
-              @ loop_modifies numRight, indexR[*], j;
+              @ loop_modifies numRight, indexR, j;
               @ loop_decreases shiftR - j;
               @*/
             for (int j = 0; j < shiftR; j++) {
@@ -178,7 +200,7 @@ public class BlockQuickSort {
           @ loop_invariant (\forall int i; 0 <= i && i < j; array[begin + indexL[startLeft + i]] <= array[last - indexR[startRight + i]]);
           @ // Ensures that the loop maintains the desired property (elements smaller than the pivot on the left, elements greater than the pivot on the right) for the current indices in indexL and indexR
           @
-          @ loop_modifies array[*], indexL[*], indexR[*];
+          @ loop_modifies array, indexL, indexR;
           @ loop_decreases num - j;
           @*/
         for (int j = 0; j < num; j++) {
@@ -200,18 +222,19 @@ public class BlockQuickSort {
             //@ loop_invariant upper >= -1 && upper < last - begin;
             //@ loop_invariant (lowerI == startLeft - 1) || (indexL[lowerI] == upper);
             //@ loop_modifies upper, lowerI;
-            //@ loop_decreases startLeft + 1 - lowerI;
+            //@ loop_decreases lowerI - startLeft + 1;
             while (lowerI >= startLeft && indexL[lowerI] == upper) {
                 upper--;
                 lowerI--;
             }
 
-            //@ loop_invariant lowerI >= startLeft - 1 && lowerI < numLeft;
-            //@ loop_invariant upper >= -1 && upper < last - begin;
-            //@ loop_invariant (\forall int i; 0 <= i && i < startLeft; array[begin + indexL[i]] < pivot);
-            //@ loop_invariant (\forall int i; startLeft <= i && i < lowerI + 1; array[begin + indexL[i]] >= pivot);
-            //@ loop_modifies array[begin .. last], upper, lowerI;
-            //@ loop_decreases startLeft + 1 - lowerI;
+            /*@ loop_invariant lowerI >= startLeft - 1 && lowerI < numLeft;
+              @ loop_invariant upper >= -1 && upper < last - begin;
+              @ loop_invariant (\forall int i; 0 <= i && i < startLeft; array[begin + indexL[i]] < pivot);
+              @ loop_invariant (\forall int i; startLeft <= i && i < lowerI + 1; array[begin + indexL[i]] >= pivot);
+              @ loop_modifies array[begin .. last], upper, lowerI;
+              @ loop_decreases lowerI - startLeft + 1;
+              @*/
             while (lowerI >= startLeft) {
                 swap(array, begin + upper--, begin + indexL[lowerI--]);
             }
@@ -222,22 +245,23 @@ public class BlockQuickSort {
             int lowerI = startRight + numRight - 1;
             int upper = last - begin;
 
-            //@ loop_invariant lowerI >= startRight - 1 && lowerI < numLeft;
-            //@ loop_invariant upper >= -1 && upper < last - begin;
-            //@ loop_invariant (lowerI == startRight - 1) || (indexL[lowerI] == upper);
-            //@ loop_modifies upper, lowerI;
-            //@ loop_decreases startRight + 1 - lowerI;
+            /*@ loop_invariant startRight <= lowerI && lowerI <= numRight;
+              @ loop_invariant upper >= 0 && upper <= last - begin;
+              @ loop_invariant lowerI == startRight + numRight - 1 - (last - begin - upper);
+              @ loop_modifies upper, lowerI;
+              @ loop_decreases lowerI - startRight;
+              @*/
             while (lowerI >= startRight && indexR[lowerI] == upper) {
                 upper--;
                 lowerI--;
             }
 
-            //@ loop_invariant lowerI >= startRight - 1 && lowerI < numLeft;
-            //@ loop_invariant upper >= -1 && upper < last - begin;
-            //@ loop_invariant (\forall int i; 0 <= i && i < startRight; array[begin + indexL[i]] < pivot);
-            //@ loop_invariant (\forall int i; startRight <= i && i < lowerI + 1; array[begin + indexL[i]] >= pivot);
-            //@ loop_modifies array[begin .. last], upper, lowerI;
-            //@ loop_decreases startRight + 1 - lowerI;
+            /*@ loop_invariant startRight <= lowerI && lowerI <= numRight;
+              @ loop_invariant upper >= 0 && upper <= last - begin;
+              @ loop_invariant lowerI == startRight + numRight - 1 - (last - begin - upper);
+              @ loop_modifies array[last - upper .. last - indexR[lowerI]], upper, lowerI;
+              @ loop_decreases lowerI - startRight;
+              @*/
             while (lowerI >= startRight) {
                 swap(array, last - upper--, last - indexR[lowerI--]);
             }
@@ -297,7 +321,7 @@ public class BlockQuickSort {
           @ // Termination measure:
           @ loop_decreases (depthLimit - depth) * array.length + (\sum int i; 0 <= i && i < top; i % 2 == 0 ? stack[i+1] - stack[i] : 0);
           @
-          @ loop_modifies array[*], stack[*], top, depth, begin, end;
+          @ loop_modifies array, stack, top, depth, begin, end;
           @*/
         while (top > 0) {
             end = stack[--top];
@@ -505,8 +529,7 @@ public class BlockQuickSort {
         return hoareBlockPartition(array, begin + 1, end - 1, mid);
     }
 
-    /*@
-      @ normal_behavior
+    /*@ public normal_behavior
       @ requires array1 != null;
       @ requires array2 != null;
       @ requires 0 <= begin && begin <= end && end <= array1.length;

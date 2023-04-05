@@ -195,9 +195,9 @@ public class NormalizeVisitor extends JmlTreeCopier {
         } else if (that.op == JmlTokenKind.BSFORALL) {
             return M.JmlQuantifiedExpr(JmlTokenKind.BSEXISTS, that.decls, that.range, expr);
         } else if (that.op == JmlTokenKind.BSNUMOF) {
-            return M.JmlQuantifiedExpr(JmlTokenKind.BSNUMOF, that.decls, that.range, expr);
+            return M.JmlQuantifiedExpr(JmlTokenKind.BSNUMOF, that.decls, that.range, that.value);
         } else if (that.op == JmlTokenKind.BSSUM) {
-            return M.JmlQuantifiedExpr(JmlTokenKind.BSSUM, that.decls, that.range, expr);
+            return M.JmlQuantifiedExpr(JmlTokenKind.BSSUM, that.decls, that.range, that.value);
         } else {
             throw new UnsupportedException("Unknown quantifier type: " + that.op);
         }
