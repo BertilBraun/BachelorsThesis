@@ -1,10 +1,7 @@
-
-import java.util.Arrays;
-
 public class BlockQuickSort {
 
-    private static final int BLOCKSIZE = 2; // 128
-    private static final int IS_THRESH = 2; // 16
+    private static final int BLOCKSIZE = 2; // \paper(128)
+    private static final int IS_THRESH = 3; // \paper(16) must be a minimum of 3, since we use 3 elements for pivot selection
     private static final int STACK_SIZE = 80;
 
     /*@
@@ -16,6 +13,7 @@ public class BlockQuickSort {
       @
       @ // The resulting pivot is inside the range [begin, end).
       @ ensures begin <= \result && \result < end;
+      @ ensures array[\result] == \old(array[pivotPosition]);
       @
       @ // Values inside the range [begin, \result) are smaller than array[\result].
       @ ensures (\forall int i; begin <= i && i < \result; array[i] <= array[\result]);
@@ -45,7 +43,7 @@ public class BlockQuickSort {
         int numRight = 0;
         int startLeft = 0;
         int startRight = 0;
-        int num;
+        int num = 0;
 
         /*@ loop_invariant \old(begin) <= begin && begin <= last && last < \old(end);
           @ loop_invariant 0 <= numLeft && numLeft <= BLOCKSIZE;
@@ -426,13 +424,13 @@ public class BlockQuickSort {
     public static void quickSortRec(int[] array, int begin, int end) {
         int depth = 0;
         int depthLimit = (int) (2 * Math.log(end - begin) / Math.log(2)) + 3;
-        quickSortRec(array, begin, end, depth, depthLimit);
+        quickSortRecImpl(array, begin, end, depth, depthLimit);
     }
 
     /*@
       @ public normal_behavior
       @ requires array != null;
-      @ requires 0 <= begin && begin < end && end <= array.length;
+      @ requires 0 <= begin && begin <= end && end <= array.length;
       @ requires 0 <= depth && depth <= depthLimit;
       @ ensures array.length == \old(array.length);
       @
@@ -444,7 +442,7 @@ public class BlockQuickSort {
       @
       @ assignable array[begin .. end-1];
       @*/
-    public static void quickSortRec(int[] array, int begin, int end, int depth, int depthLimit) {
+    public static void quickSortRecImpl(int[] array, int begin, int end, int depth, int depthLimit) {
 
         if (end - begin <= IS_THRESH || depth >= depthLimit) {
             insertionSort(array, begin, end);
@@ -452,14 +450,14 @@ public class BlockQuickSort {
         }
 
         int pivot = partition(array, begin, end);
-        quickSortRec(array, begin, pivot, depth + 1, depthLimit);
-        quickSortRec(array, pivot + 1, end, depth + 1, depthLimit);
+        quickSortRecImpl(array, begin, pivot, depth + 1, depthLimit);
+        quickSortRecImpl(array, pivot, end, depth + 1, depthLimit);
     }
 
     /*@
       @ public normal_behavior
       @ requires array != null;
-      @ requires 0 <= begin && begin < end && end <= array.length;
+      @ requires 0 <= begin && begin <= end && end <= array.length;
       @ ensures array.length == \old(array.length);
       @
       @ // Values inside the range [begin, end) are in sorted order.
@@ -471,7 +469,13 @@ public class BlockQuickSort {
       @ assignable array[begin .. end-1];
       @*/
     public static void insertionSort(int[] array, int begin, int end) {
-        Arrays.sort(array, begin, end);
+        for (int i = begin; i < end; i++) {
+            int j = i;
+            while (j > begin && array[j - 1] > array[j]) {
+                swap(array, j, j - 1);
+                j--;
+            }
+        }
     }
 
     public static void quickSort(int[] array) {
@@ -553,9 +557,9 @@ public class BlockQuickSort {
       @ ensures begin <= \result && \result < end;
       @
       @ // Values inside the range [begin, \result) are smaller than array[\result].
-      @ ensures (\forall int i; begin <= i && i < \result; array[i] <= array[\result]);
+      @ ensures (\forall int i; begin <= i && i <= \result; array[i] <= array[\result]);
       @ // Values inside the range (\result, end) are greater than array[\result].
-      @ ensures (\forall int i; \result < i && i < end; array[\result] <= array[i]);
+      @ ensures (\forall int i; \result <= i && i < end; array[\result] <= array[i]);
       @
       @ // Values inside the range [begin, end) are a valid permutation.
       @ ensures permutation(array, \old(array), begin, end);
@@ -564,12 +568,11 @@ public class BlockQuickSort {
       @*/
     public static int partition(int[] array, int begin, int end) {
         int mid = medianOf3(array, begin, end);
-        /* TODO Why?! Fails with begin + 1, end - 1. Worked with begin, end. */
         return hoareBlockPartition(array, begin + 1, end - 1, mid);
     }
 
-    /* TODO Why?! */
-    /*@ public normal_behavior
+    /*@ 
+      @ public normal_behavior
       @ requires array1 != null;
       @ requires array2 != null;
       @ requires 0 <= begin && begin <= end && end <= array1.length;
