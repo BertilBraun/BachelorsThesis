@@ -57,7 +57,7 @@ public class BlockQuickSort {
           @
           @ // num is the minimum value of numLeft and numRight
           @ loop_invariant num == ((numLeft >= numRight) ? numRight : numLeft);
-          @          @
+          @
           @ // The elements in the range [begin + indexL[startLeft], begin + indexL[startLeft + num]) are greater than or equal to pivot
           @ loop_invariant (\forall int i; begin <= i && i < begin + BLOCKSIZE; 
           @                 (\exists int j; 0 <= j && j < numLeft; indexL[j] == i - begin) 
