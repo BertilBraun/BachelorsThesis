@@ -1,16 +1,16 @@
 import os
 import subprocess
+from concurrent.futures import ProcessPoolExecutor
 
 # this file should run a command for multiple inputs sequentially
 
-MS_OF_72_HOURS = 259200000
+MS_OF_24_HOURS = 24 * 60 * 60 * 1000
 
-CMD = "java -jar ../../../../JJBMC.jar -mas {mas} -u {u} {fil} -sc -tr -c -kt -timeout={timeout} BlockQuickSort.java {function}"
+CMD = "java -jar ../../../../JJBMC.jar -mas {mas} -u {u}{fil} -sc -tr -c -kt -timeout={timeout} BlockQuickSort.java {function}"
 
 FUNCTIONS = [
     "swap",
     "sortPair",
-    "permutation",
     "permutation",
     "medianOf3",
     "partition",
@@ -23,22 +23,25 @@ FUNCTIONS = [
 
 BOUNDS = list(range(3, 4)) # TODO 10
 
-BASE_FOLDER = "bqs/results"
+HOME_FOLDER = os.getcwd()
+BASE_FOLDER = HOME_FOLDER + "/bqs/results"
+
+MAX_WORKERS = 4
 
 def process_JJBMC_example(folder, bound, function, force_loop_inline):
 
     # Copy the java file in the folder
     
-    os.system(f"cp bqs/BlockQuickSort.java {folder}/BlockQuickSort.java")
+    os.system(f"cp {HOME_FOLDER}/bqs/BlockQuickSort.java {folder}/BlockQuickSort.java")
     
     # Start with -mas -u -t set properly to complete in 72h
     
     cmd = CMD.format(
         mas=bound, 
         u=bound + 2, 
-        timeout=MS_OF_72_HOURS, 
+        timeout=MS_OF_24_HOURS, 
         function=function, 
-        fil='-fil' if force_loop_inline else ''
+        fil=' -fil' if force_loop_inline else ''
     )
     print("Running command: " + cmd)
     
@@ -46,7 +49,7 @@ def process_JJBMC_example(folder, bound, function, force_loop_inline):
     os.chdir(folder)
     p = subprocess.Popen(cmd.split(' '), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
-    with open("JJBMC output.txt", "w") as f:
+    with open("JJBMC output{0}.txt".format(' fil' if force_loop_inline else ''), "w") as f:
         # Write stdout and stderr to file
         stdout = p.stdout.read().decode("utf-8")
         stderr = p.stderr.read().decode("utf-8")
@@ -56,22 +59,31 @@ def process_JJBMC_example(folder, bound, function, force_loop_inline):
         f.write(stderr)
         
     p.wait()        
-    os.chdir("../../../..")
+    os.chdir(HOME_FOLDER)
     
     
 def process_JBMC_example(folder, bound, function):
     pass # TODO do the same for JBMC
     # Run command via jbmc CLASS_FILE (without .class) --unwind bound+2 --java-max-input-array-length bound --function function --trace --stop-on-fail --timestamp monotonic
 
-for bound in BOUNDS:
-    for function in FUNCTIONS:
-        # Create a new folder for each
-        
-        folder = f"{BASE_FOLDER}/{bound}/{function}"
-        os.makedirs(folder, exist_ok=True)
-        
-        process_JJBMC_example(folder, bound, function, True)
-        process_JJBMC_example(folder, bound, function, False)
-        process_JBMC_example(folder, bound, function)
-        
-        
+
+def worker(bound, function):
+    folder = f"{BASE_FOLDER}/{bound}/{function}"
+    os.makedirs(folder, exist_ok=True)
+
+    process_JJBMC_example(folder, bound, function, True)
+    process_JJBMC_example(folder, bound, function, False)
+    process_JBMC_example(folder, bound, function)
+
+if __name__ == "__main__":
+    tasks = []
+
+    for bound in BOUNDS:
+        for function in FUNCTIONS:
+            tasks.append((bound, function))
+
+    with ProcessPoolExecutor(max_workers=MAX_WORKERS) as executor:
+        futures = [executor.submit(worker, *task) for task in tasks]
+
+        for future in futures:
+            future.result()
