@@ -6,8 +6,10 @@ from concurrent.futures import ProcessPoolExecutor
 
 MS_OF_24_HOURS = 24 * 60 * 60 * 1000
 
-CMD = "java -jar ../../../../JJBMC.jar -mas {mas} -u {u}{fil} -sc -tr -c -kt -timeout={timeout} BlockQuickSort.java {function}"
+JJBMC_CMD = "java -jar ../../../../JJBMC.jar -mas {mas} -u {u}{fil} -sc -tr -c -kt -timeout={timeout} BlockQuickSort.java {function}"
 
+JBMC_CMD = "jbmc {file} --unwind {u} --java-max-input-array-length {mas} --function {function} --trace --stop-on-fail --timestamp monotonic"
+    
 FUNCTIONS = [
     "swap",
     "sortPair",
@@ -36,7 +38,7 @@ def process_JJBMC_example(folder, bound, function, force_loop_inline):
     
     # Start with -mas -u -t set properly to complete in 72h
     
-    cmd = CMD.format(
+    cmd = JJBMC_CMD.format(
         mas=bound, 
         u=bound + 2, 
         timeout=MS_OF_24_HOURS, 
@@ -58,13 +60,48 @@ def process_JJBMC_example(folder, bound, function, force_loop_inline):
         f.write(stdout)
         f.write(stderr)
         
-    p.wait()        
+    try:
+        p.wait(timeout=MS_OF_24_HOURS / 1000)
+    except subprocess.TimeoutExpired:
+        print(f"JJBMC process (force_loop_inline={force_loop_inline}) timed out after 24 hours.")
+        p.terminate()       
     os.chdir(HOME_FOLDER)
     
     
-def process_JBMC_example(folder, bound, function):
-    pass # TODO do the same for JBMC
-    # Run command via jbmc CLASS_FILE (without .class) --unwind bound+2 --java-max-input-array-length bound --function function --trace --stop-on-fail --timestamp monotonic
+def process_JBMC_example(folder, file, bound, function):
+        # Compile the Java file
+    file = f"JBMC_BlockQuickSort_{function}"
+    os.system(f"cp {HOME_FOLDER}/bqs/jbmc/{file}.java {folder}/{file}.java")
+
+    # Compile the Java file
+    os.system(f"javac {folder}/{file}.java")
+    
+    cmd = JBMC_CMD.format(
+        file=file,
+        mas=bound,
+        u=bound + 2,
+        function=function
+    )
+    print("Running command: " + cmd)
+
+    os.chdir(folder)
+    p = subprocess.Popen(cmd.split(' '), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+    with open("JBMC output.txt", "w") as f:
+        # Write stdout and stderr to file
+        stdout = p.stdout.read().decode("utf-8")
+        stderr = p.stderr.read().decode("utf-8")
+        print(stdout)
+        print(stderr)
+        f.write(stdout)
+        f.write(stderr)
+
+    try:
+        p.wait(timeout=MS_OF_24_HOURS / 1000)
+    except subprocess.TimeoutExpired:
+        print("JBMC process timed out after 24 hours.")
+        p.terminate()
+    os.chdir(HOME_FOLDER)
 
 
 def worker(bound, function):
