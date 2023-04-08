@@ -793,8 +793,8 @@ public class JmlExpressionVisitor extends JmlTreeCopier {
         JCBlock ifbody = maker.Block(0L, ifbodystatements.append(assumefalse));
         newStatements = statements.appendList(prepareOldVarsSt)
                 .appendList(assertInitInvs)
-                .appendList(oldDecreases)
                 .appendList(havocStatements)
+                .appendList(oldDecreases)
                 .appendList(assumeInvs)
                 .append(maker.If(that.cond, ifbody, null));
 
