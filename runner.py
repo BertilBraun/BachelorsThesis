@@ -1,12 +1,13 @@
 import os
 import subprocess
+import shutil
 from concurrent.futures import ProcessPoolExecutor
 
 # this file should run a command for multiple inputs sequentially
 
 MS_OF_24_HOURS = 24 * 60 * 60 * 1000
 
-JJBMC_CMD = "java -jar ../../../../JJBMC.jar -mas {mas} -u {u}{inline} -sc -tr -c -kt -timeout={timeout} BlockQuickSort.java {function}"
+JJBMC_CMD = "java -jar ../../../../JJBMC.jar -mas {mas} -u {u}{inline} -tr -c -kt -timeout={timeout} BlockQuickSort.java {function}"
 
 FUNCTIONS = [
     "swap",
@@ -17,7 +18,7 @@ FUNCTIONS = [
     "insertionSort",
     "quickSortRec",
     "quickSortRecImpl",
-    "hoareBlockPartition",
+    # "hoareBlockPartition",
     "permutation",
 ]
 
@@ -32,16 +33,14 @@ def process_JJBMC_example(folder, bound, function, inline_arg):
 
     # Copy the java file in the folder
     
-    os.system(f"cp {HOME_FOLDER}/bqs/BlockQuickSort.java {folder}/BlockQuickSort.java")
-    
-    # Start with -mas -u -t set properly to complete in 72h
+    shutil.copyfile(f"{HOME_FOLDER}/bqs/BlockQuickSort.java", f"{folder}/BlockQuickSort.java")
     
     cmd = JJBMC_CMD.format(
         mas=bound, 
         u=bound + 2, 
         timeout=MS_OF_24_HOURS, 
         function=function, 
-        fil=inline_arg
+        inline=inline_arg
     )
     print("Running command: " + cmd)
     
@@ -55,6 +54,7 @@ def process_JJBMC_example(folder, bound, function, inline_arg):
         stderr = p.stderr.read().decode("utf-8")
         print(stdout)
         print(stderr)
+        print(f"Finished running function {function} with bound {bound} and inline arg {inline_arg}")
         f.write(stdout)
         f.write(stderr)
         
@@ -70,15 +70,21 @@ def worker(bound, function):
     process_JJBMC_example(folder, bound, function, ' -fil')
     process_JJBMC_example(folder, bound, function, ' -fi')
 
+
+def run(tasks):
+    with ProcessPoolExecutor(max_workers=MAX_WORKERS) as executor:
+        futures = [executor.submit(worker, *task) for task in tasks]
+
+        for future in futures:
+            future.result()
+            
+            
 if __name__ == "__main__":
     tasks = []
 
     for bound in BOUNDS:
         for function in FUNCTIONS:
             tasks.append((bound, function))
-
-    with ProcessPoolExecutor(max_workers=MAX_WORKERS) as executor:
-        futures = [executor.submit(worker, *task) for task in tasks]
-
-        for future in futures:
-            future.result()
+            
+    run(tasks)
+    run([(bound, "hoareBlockPartition") for bound in BOUNDS])
