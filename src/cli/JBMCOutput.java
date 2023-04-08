@@ -37,15 +37,18 @@ public class JBMCOutput {
             return "";
         }
 
+        sb.append("----------------------START TRACE---------------\n");
         sb.append("Trace for PVC: " + property + " in line " + lineNumbers.get(idx) + "\n");
         trace.filterAssignments();
         trace.getFinalVals();
-        if (printGuesses) {
+        if (printGuesses && false) {
+            sb.append("----------- FILTERED ASSIGNMENTS ------------\n");
             for (Assignment a : trace.filteredAssignments) {
                 if (a.guess != null) {
                     sb.append(a + "\n");
                 }
             }
+            sb.append("---------------------------------------------\n");
         }
         if (asserts.get(idx) != null) {
             String assertion = asserts.get(idx);
@@ -57,7 +60,9 @@ public class JBMCOutput {
             sb.append(printFinalVals(traces.get(idx)));
         } else {
             sb.append("Fail in line " + lineNumbers.get(idx) + ": " + reasons.get(idx) + "\n");
+            sb.append(printFinalVals(traces.get(idx)));
         }
+        sb.append("-----------------END TRACE-------------------\n");
         sb.append("\n");
         return sb.toString();
     }
@@ -102,7 +107,6 @@ public class JBMCOutput {
         return sb.toString();
     }
 
-
     private String cutArrayString(String s, int size) {
         int pos = s.indexOf(",");
         while (--size > 0 && pos != -1) {
@@ -110,6 +114,5 @@ public class JBMCOutput {
         }
         return s.substring(0, pos - 1) + "}";
     }
-
 
 }

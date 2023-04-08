@@ -25,4 +25,18 @@ public class Testing {
         }
         return sum;
     }
+
+    /*@ normal_behavior
+      @ requires array != null;
+      @ requires array.length > 3;
+      @ requires b != null;
+      @ requires b.length > 3;
+      @ ensures array[3] == 0;
+      @ ensures b[1] == 0;
+      @ assignable array[1..2];
+      @*/
+    public void test(int[] array, int[] b) {
+        array[3] = 0;
+        b[1] = 0;
+    }
 }
