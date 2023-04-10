@@ -27,7 +27,7 @@ BOUNDS = list(range(3, 10))
 HOME_FOLDER = os.getcwd()
 BASE_FOLDER = HOME_FOLDER + "/bqs/results"
 
-MAX_WORKERS = 4
+MAX_WORKERS = 1
 
 def process_JJBMC_example(folder, bound, function, inline_arg):
 
@@ -72,11 +72,13 @@ def worker(bound, function):
 
 
 def run(tasks):
-    with ProcessPoolExecutor(max_workers=MAX_WORKERS) as executor:
-        futures = [executor.submit(worker, *task) for task in tasks]
-
-        for future in futures:
-            future.result()
+    for (bound, function) in tasks:
+        worker(bound, function)
+    # with ProcessPoolExecutor(max_workers=MAX_WORKERS) as executor:
+    #     futures = [executor.submit(worker, *task) for task in tasks]
+    # 
+    #     for future in futures:
+    #         future.result()
             
             
 if __name__ == "__main__":
