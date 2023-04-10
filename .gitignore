@@ -20,3 +20,4 @@ JJBMC.jar
 
 bin/*
 bqs/results/*
+**/out.csv
