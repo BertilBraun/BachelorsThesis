@@ -8,7 +8,9 @@ import testannotations.Verifyable;
  * Created by jklamroth on 9/18/18.
  */
 public class TestSuite {
-    class UnusedClassForTestingPurpose {}
+    class UnusedClassForTestingPurpose {
+    }
+
     private int privInt = 0;
     private final int finalVar;
     public int pubInt;
@@ -38,7 +40,6 @@ public class TestSuite {
         assert privInt == 1;
     }
 
-
     //@ ensures this.t2.pubInt == 10;
     @Verifyable
     private void constructorTest() {
@@ -50,6 +51,7 @@ public class TestSuite {
     private void normalizeTest7(boolean b1, boolean b2, boolean b3, boolean b4) {
 
     }
+
     //@ ensures !(false == true);
     @Verifyable
     private void normalizeTest6() {
@@ -86,7 +88,7 @@ public class TestSuite {
     @Verifyable
     private int unspecifiedWhileLoop() {
         int sum = 0;
-        while(sum < 10) {
+        while (sum < 10) {
             sum += 3;
         }
         return sum;
@@ -101,7 +103,6 @@ public class TestSuite {
         //this is basically a lemma
     }
 
-
     //@ assignable privInt;
     @Verifyable
     private void returnTest() {
@@ -111,7 +112,6 @@ public class TestSuite {
             privInt = 0;
         }
     }
-
 
     @Unwind(number = 11)
     @Verifyable
@@ -152,7 +152,7 @@ public class TestSuite {
         //@ loop_invariant (\forall int j; j >= 0 && j < i; arr[j] == j);
         //@ loop_modifies arr[*];
         //@ decreases 11 - i;
-       for (int i = 0; i < 10; ++i) {
+        for (int i = 0; i < 10; ++i) {
             arr[i] = i;
         }
     }
@@ -165,7 +165,7 @@ public class TestSuite {
         //@ loop_invariant (\forall int j; j >= 0 && j < i; arr[j] == j);
         //@ loop_modifies arr[*];
         //@ decreases 11 + i;
-       for (int i = 0; i < 10; ++i) {
+        for (int i = 0; i < 10; ++i) {
             arr[i] = i;
         }
     }
@@ -178,7 +178,7 @@ public class TestSuite {
         //@ loop_invariant (\forall int j; j >= 0 && j < i; arr[j] == j);
         //@ loop_modifies arr[*];
         //@ decreases 11 + i;
-       for (int i = 0; i < 10; ++i) {
+        for (int i = 0; i < 10; ++i) {
             arr[i] = i;
         }
     }
@@ -191,7 +191,7 @@ public class TestSuite {
         //@ loop_invariant (\forall int j; j >= 0 && j < i; arr[j] == j);
         //@ loop_modifies arr[*];
         //@ decreases 9 - i;
-       for (int i = 0; i < 10; ++i) {
+        for (int i = 0; i < 10; ++i) {
             arr[i] = i;
         }
     }
@@ -204,7 +204,7 @@ public class TestSuite {
         //@ loop_invariant (\forall int j; j >= 0 && j < i; arr[j] == j);
         //@ loop_modifies arr[*];
         //@ decreases 10 - i;
-       for (int i = 0; i < 10; ++i) {
+        for (int i = 0; i < 10; ++i) {
             arr[i] = i;
         }
     }
@@ -217,7 +217,7 @@ public class TestSuite {
         //@ loop_invariant (\forall int j; j >= 0 && j < i; arr[j] == j);
         //@ loop_modifies arr[*];
         //@ decreases 5 - i;
-       for (int i = 0; i < 10; ++i) {
+        for (int i = 0; i < 10; ++i) {
             arr[i] = i;
         }
     }
@@ -232,38 +232,38 @@ public class TestSuite {
         assert (CProver.uninterpreted_fresh(o));
     }*/
 
-//    @Verifyable
-//    private void blockContractTest() {
-//        int i = 0;
-//        //@ requires i == 0;
-//        //@ ensures i == 6;
-//        {
-//            i = 5;
-//            i++;
-//        }
-//    }
-//
-//    @Fails
-//    private void blockContractTest1() {
-//        int i = 0;
-//        //@ requires i == 0;
-//        //@ ensures i == 7;
-//        {
-//            i = 5;
-//            i++;
-//        }
-//    }
-//
-//    @Fails
-//    private void blockContractTest2() {
-//        int i = 0;
-//        //@ requires i == 1;
-//        //@ ensures i == 6;
-//        {
-//            i = 5;
-//            i++;
-//        }
-//    }
+    //    @Verifyable
+    //    private void blockContractTest() {
+    //        int i = 0;
+    //        //@ requires i == 0;
+    //        //@ ensures i == 6;
+    //        {
+    //            i = 5;
+    //            i++;
+    //        }
+    //    }
+    //
+    //    @Fails
+    //    private void blockContractTest1() {
+    //        int i = 0;
+    //        //@ requires i == 0;
+    //        //@ ensures i == 7;
+    //        {
+    //            i = 5;
+    //            i++;
+    //        }
+    //    }
+    //
+    //    @Fails
+    //    private void blockContractTest2() {
+    //        int i = 0;
+    //        //@ requires i == 1;
+    //        //@ ensures i == 6;
+    //        {
+    //            i = 5;
+    //            i++;
+    //        }
+    //    }
 
     //@ ensures \result == 5;
     @Verifyable
@@ -348,7 +348,7 @@ public class TestSuite {
     @Unwind(number = 6)
     @Verifyable
     public void havocTest5(int[] arr) {
-       for (int i = 0; i < arr.length; ++i) {
+        for (int i = 0; i < arr.length; ++i) {
             arr[i]++;
         }
     }
@@ -370,10 +370,10 @@ public class TestSuite {
         return 56;
     }
 
-//    //@ ensures (\exists int i; 0 <= i && i < 1; 1/0 == 0);
-//    @Fails
-//    private void quantifierTest() {
-//    }
+    //    //@ ensures (\exists int i; 0 <= i && i < 1; 1/0 == 0);
+    //    @Fails
+    //    private void quantifierTest() {
+    //    }
 
     //@ assignable t2;
     private void calledMethod() {
@@ -385,12 +385,11 @@ public class TestSuite {
     @Unwind(number = 6)
     private int testNoInvariantLoop() {
         int res = 0;
-       for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 5; i++) {
             res += i;
         }
         return res;
     }
-
 
     //@ ensures i > 0 ==> i > 1;
     @Fails
@@ -416,8 +415,6 @@ public class TestSuite {
     @Fails
     private void impliesTest3(int i) {
     }
-
-
 
     @Fails
     private void assertTest() {
@@ -483,75 +480,93 @@ public class TestSuite {
 
     //@ ensures (\exists int i; i >= 0 && i < 3; (\forall int j; j >= 0 && j < 3; j > i));
     @Fails
-    private void nestedQuantifierTest() {}
+    private void nestedQuantifierTest() {
+    }
 
     //@ ensures (\forall int i; i >= 0 && i < 3; (\exists int j; j >= 0 && j < 3; j > i));
     @Fails
-    private void nestedQuantifierTest1() {}
+    private void nestedQuantifierTest1() {
+    }
 
     //@ ensures (\forall int i; i >= 0 && i < 3; (\exists int j; j >= -1 && j < 3; i > j));
     @Verifyable
-    private void nestedQuantifierTest3() {}
+    private void nestedQuantifierTest3() {
+    }
 
     //@ ensures !(\forall int i; i >= 0 && i < 3; (\exists int j; j >= 0 && j < 3; j > i));
     @Verifyable
-    private void negatedQuantifierTest() {}
+    private void negatedQuantifierTest() {
+    }
 
     //@ ensures !(\forall int i; i >= 0 && i < 3; (\exists int j; j >= 0 && j < 3; j > i));
     @Verifyable
-    private void negatedQuantifierTest1() {}
+    private void negatedQuantifierTest1() {
+    }
 
     //@ ensures !(\forall int i; i >= 0 && i < 3; (\exists int j; j >= -1 && j < 3; i > j));
     @Fails
-    private void negatedQuantifierTest3() {}
+    private void negatedQuantifierTest3() {
+    }
 
     //@ ensures (\exists int i; i >= 0 && i < 3; !(\forall int j; j >= 0 && j < 2; i > j));
     @Verifyable
-    private void negatedQuantifierTest4() {}
+    private void negatedQuantifierTest4() {
+    }
 
     //@ ensures (\exists int i; i >= 3 && i < 5; !(\forall int j; j >= 0 && j < 2; i > j));
     @Fails
-    private void negatedQuantifierTest5() {}
+    private void negatedQuantifierTest5() {
+    }
 
     //@ ensures !(\exists int i; i >= 0 && i < 3; (\forall int j; j >= 0 && j < 2; i > j));
     @Fails
-    private void negatedQuantifierTest2() {}
+    private void negatedQuantifierTest2() {
+    }
 
     //@ ensures (\exists int i; i >= 0 && i < 3; (\forall int j; j >= 0 && j < 2; i > j));
     @Verifyable
-    private void nestedQuantifierTest2() {}
+    private void nestedQuantifierTest2() {
+    }
 
     //@ ensures (\forall int i; i >= 3 && i < 5; (\forall int j; j >= 0 && j < 2; i > j));
     @Verifyable
-    private void nestedQuantifierTest4() {}
+    private void nestedQuantifierTest4() {
+    }
 
     //@ ensures (\forall int i; i >= 2 && i < 6; (\forall int j; j >= 0 && j < 3; i > j));
     @Fails
-    private void nestedQuantifierTest5() {}
+    private void nestedQuantifierTest5() {
+    }
 
     //@ ensures (\exists int i; i >= 0 && i < 3; (\exists int j; j >= 0 && j < 2; i > j));
     @Verifyable
-    private void nestedQuantifierTest6() {}
+    private void nestedQuantifierTest6() {
+    }
 
     //@ ensures (\exists int i; i >= -4 && i < 0; (\exists int j; j >= 0 && j < 2; i > j));
     @Fails
-    private void nestedQuantifierTest7() {}
+    private void nestedQuantifierTest7() {
+    }
 
     //@ ensures (\forall int i; i >= 5 && i < 10; (\forall int j; j >= 0 && j < 2; (\exists int k; k >= 2 && k < 5; i > k && k > j)));
     @Verifyable
-    private void nestedQuantifierTest8() {}
+    private void nestedQuantifierTest8() {
+    }
 
     //@ ensures (\forall int i; i >= 5 && i < 10; (\forall int j; j >= 0 && j < 2; (\exists int k; k >= 6 && k < 10; i > k && k > j)));
     @Fails
-    private void nestedQuantifierTest9() {}
+    private void nestedQuantifierTest9() {
+    }
 
     //@ ensures (\exists int i; i >= 0 && i < 10; (\exists int j; j >= 0 && j < 10; (\forall int k; k >= 2 && k < 5; i > k && k > j)));
     @Verifyable
-    private void nestedQuantifierTest10() {}
+    private void nestedQuantifierTest10() {
+    }
 
     //@ ensures (\exists int i; i >= 5 && i < 10; (\exists int j; j >= 0 && j < 2; (\forall int k; k >= 6 && k < 10; i > k && k > j)));
     @Fails
-    private void nestedQuantifierTest11() {}
+    private void nestedQuantifierTest11() {
+    }
 
     //@ requires (\exists int i; i >= 0 && i < 10; i > 5);
     //@ ensures false;
@@ -655,31 +670,38 @@ public class TestSuite {
 
     //@ ensures !true || !false;
     @Verifyable
-    private void normalizeTest() {}
+    private void normalizeTest() {
+    }
 
     //@ ensures !(!true && !false);
     @Verifyable
-    private void normalizeTest1() {}
+    private void normalizeTest1() {
+    }
 
     //@ ensures true <== true;
     @Verifyable
-    private void normalizeTest22() {}
+    private void normalizeTest22() {
+    }
 
     //@ ensures (!!true) == true;
     @Verifyable
-    private void normalizeTest24() {}
+    private void normalizeTest24() {
+    }
 
     //@ ensures true && true;
     @Verifyable
-    private void normalizeTest23() {}
+    private void normalizeTest23() {
+    }
 
     //@ ensures true <=!=> false;
     @Verifyable
-    private void normalizeTest21() {}
+    private void normalizeTest21() {
+    }
 
     //@ ensures true != false;
     @Verifyable
-    private void normalizeTest20() {}
+    private void normalizeTest20() {
+    }
 
     //@ ensures \result == 1;
     private int calledMethod1() {
@@ -693,7 +715,8 @@ public class TestSuite {
     }
 
     @Verifyable
-    private void typeTranslationTest(short s, byte b, double d, float f, long[] l, char[][] c) {}
+    private void typeTranslationTest(short s, byte b, double d, float f, long[] l, char[][] c) {
+    }
 
     //@ ensures pubInt + 5 == \old(pubInt + 5) + c;
     @Verifyable
@@ -745,7 +768,6 @@ public class TestSuite {
     private void oldTest8() {
     }
 
-
     //@ requires arr != null;
     //@ requires arr.length >= 1;
     //@ requires arr.length < 4;
@@ -756,7 +778,6 @@ public class TestSuite {
     private void oldTest9() {
         arr[0] += 1;
     }
-
 
     //@ requires arr != null;
     //@ requires arr.length >= 1;
@@ -910,7 +931,7 @@ public class TestSuite {
     @Verifyable
     @Unwind(number = 7)
     private void oldArrayTest() {
-       for (int i = 0; i < arr.length; ++i) {
+        for (int i = 0; i < arr.length; ++i) {
             arr[i]++;
         }
     }
@@ -926,20 +947,18 @@ public class TestSuite {
           @ loop_modifies i, b[1..arr.length - 1];
           @ decreases arr.length - i;
          */
-       for (int i = 1; i < arr.length; ++i) {
+        for (int i = 1; i < arr.length; ++i) {
             b[i] = arr[i] + 1;
         }
         arr = b;
     }
-
-
 
     //@ ensures \result == 3;
     //@ assignable \nothing;
     @Verifyable
     private int test1() {
         int res = 0;
-       for (int i = 0; i++ < 3; res = inc(res)) {
+        for (int i = 0; i++ < 3; res = inc(res)) {
         }
         return res;
     }
@@ -957,7 +976,8 @@ public class TestSuite {
         for (int i = 1; i < 3; ++i) {
             try {
                 inc2(i);
-            } catch (Exception e) {}
+            } catch (Exception e) {
+            }
         }
     }
 
@@ -967,18 +987,16 @@ public class TestSuite {
         for (int i = 0; i < 3; ++i) {
             try {
                 inc2(i);
-            } catch (Exception e) {}
+            } catch (Exception e) {
+            }
         }
     }
-
 
     //@ ensures \result == i + 1;
     //@ assignable \nothing;
     private int inc(int i) {
-        return i+1;
+        return i + 1;
     }
-
-
 
     private boolean boolFunct(int i) {
         return true;
@@ -992,13 +1010,11 @@ public class TestSuite {
         return false;
     }
 
-
     //@ ensures (\forall int i; i > 0 && i < 4; (\exists int j; j > i + 1 && j < 4; j > i));
     @Fails
     @Unwind(number = 6)
     private void nestedQunts() {
     }
-
 
     //@ requires array != null && array.length >= 4;
     //@ ensures (\forall int i; 0 < i < 3; (\forall int j; i < j < 4; \old(array[j]) == array[i]));
@@ -1006,7 +1022,6 @@ public class TestSuite {
     private int oldNestedQuantTest(int[] array) {
         return array[0];
     }
-
 
     //@ requires array != null && array.length >= 4;
     //@ ensures \old(array) == array;
@@ -1029,7 +1044,7 @@ public class TestSuite {
     private int loopInvModTest2() {
         int i = 0;
         //@ loop_invariant 0 <= i <= 3;
-        while(i < 3) {
+        while (i < 3) {
             i++;
         }
         return i;
@@ -1041,7 +1056,7 @@ public class TestSuite {
     @Fails
     private void loopInvModTest31() {
         //@ loop_invariant 0 <= privInt <= 3;
-        while(privInt < 3) {
+        while (privInt < 3) {
             incPrivInt();
         }
     }
@@ -1053,7 +1068,7 @@ public class TestSuite {
     private void loopInvModTest3() {
         //@ loop_invariant 0 <= privInt <= 3;
         //@ loop_modifies privInt;
-        while(privInt < 3) {
+        while (privInt < 3) {
             incPrivInt();
         }
     }
@@ -1065,13 +1080,12 @@ public class TestSuite {
         privInt++;
     }
 
-
     //@ ensures false;
     @Fails
     private int loopInvModTest() {
         int i = 0;
         //@ loop_invariant 0 <= i <= 3;
-        while(i < 3) {
+        while (i < 3) {
             i++;
         }
         return i;
@@ -1083,7 +1097,7 @@ public class TestSuite {
         int j = 0;
         //@ loop_invariant (\forall int i; 0 < i < 3; i > 0);
         //@ assignable \nothing;
-        while(j < 1) {
+        while (j < 1) {
             privInt++;
         }
     }
@@ -1094,7 +1108,7 @@ public class TestSuite {
         int j = 0;
         //@ loop_invariant (\forall int i; 0 < i < 3; i > 0);
         //@ assignable \nothing;
-        while(j < 0) {
+        while (j < 0) {
             j = inc(j);
             privInt++;
         }
@@ -1106,21 +1120,19 @@ public class TestSuite {
         int j = 0;
         //@ loop_invariant (\forall int i; 0 < i < 3; i > 0);
         //@ assignable \nothing;
-        while(j < 1) {
+        while (j < 1) {
             j = inc(j);
         }
     }
-
 
     @Fails
     private void assForLoopTest() {
         int j = 0;
         //@ loop_invariant j <= 1;
-       for (int i = 0; i < 3; ++i) {
+        for (int i = 0; i < 3; ++i) {
             j += 1;
         }
     }
-
 
     @Fails
     private /*@ pure */ void pureMethod() {
@@ -1135,11 +1147,10 @@ public class TestSuite {
         pureMethod();
     }
 
-
     //@ requires arr != null && arr.length > 0;
     //@ assignable t3;
     private void EnhancedForTest() {
-       for (int i : arr) {
+        for (int i : arr) {
             randomMeth();
         }
     }
@@ -1147,7 +1158,6 @@ public class TestSuite {
     //@ assignable t2;
     private void randomMeth() {
     }
-
 
     //@ requires a != null && 0 <= i < a.length;
     //@ ensures a[i] == \old(a[i]) + 1;
@@ -1163,7 +1173,7 @@ public class TestSuite {
     @Verifyable
     @Unwind(number = 5)
     public void testCallInLoop(int a[]) {
-       for (int i = 0; i < a.length; ++i) {
+        for (int i = 0; i < a.length; ++i) {
             m1(a, i);
             //@ assume true;
         }
@@ -1176,12 +1186,11 @@ public class TestSuite {
           @*/
     }
 
-
     //@ ensures \result > 0;
     //@ signals_only RuntimeException;
     @Fails
     public int testSignalsOnly1(int i) {
-        if(i < 0) {
+        if (i < 0) {
             throw new RuntimeException();
         }
         return i;
@@ -1191,7 +1200,7 @@ public class TestSuite {
     //@ signals_only RuntimeException;
     @Verifyable
     public int testSignalsOnly2(int i) {
-        if(i <= 0) {
+        if (i <= 0) {
             throw new RuntimeException();
         }
         return i;
@@ -1202,8 +1211,6 @@ public class TestSuite {
     public void testSignalsOnly() {
         throw new RuntimeException();
     }
-
-
 
     //@ ensures \result == 0;
     @Fails
@@ -1232,4 +1239,29 @@ public class TestSuite {
     public int inlineOptionTestCallee2(int i) {
         return i - 1;
     }
+
+    //@ requires array != null;
+    //@ ensures \result == (\num_of int i; 0 <= i && i < array.length; array[i] > 0);
+    @Verifyable
+    public int testNumOf(int[] array) {
+        int count = 0;
+        for (int i = 0; i < array.length; i++) {
+            if (array[i] > 0) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    //@ requires array != null;
+    //@ ensures \result == (\sum int i; 0 <= i && i < array.length; array[i]);
+    @Verifyable
+    public int testSum(int[] array) {
+        int sum = 0;
+        for (int i = 0; i < array.length; i++) {
+            sum += array[i];
+        }
+        return sum;
+    }
+
 }
