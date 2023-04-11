@@ -17,21 +17,19 @@ TASKS = [
     (EASY_WORKERS, [
         "swap",
         "sortPair",
-    ]),
+    ], list(range(3, 10))),
     (MEDIUM_WORKERS, [
         "permutation",
         "medianOf3",
         "insertionSort",
-    ]),
+    ], list(range(3, 8))),
     (HARD_WORKERS, [
         "partition",
         "quickSortRec",
         "quickSortRecImpl",
         "hoareBlockPartition",
-    ]),
+    ], list(range(3, 7))),
 ]
-
-BOUNDS = list(range(3, 10))
 
 HOME_FOLDER = os.getcwd()
 BASE_FOLDER = HOME_FOLDER + "/bqs/results"
@@ -70,8 +68,8 @@ def process_JJBMC_example(folder, bound, function, inline_arg):
     os.chdir(HOME_FOLDER)
 
 
-def worker(bound, function):
-    folder = f"{BASE_FOLDER}/{bound}/{function}"
+def worker(iteration, bound, function):
+    folder = f"{BASE_FOLDER}/{bound}/{function}/{iteration}"
     os.makedirs(folder, exist_ok=True)
 
     process_JJBMC_example(folder, bound, function, '')
@@ -88,10 +86,11 @@ def run(workers, tasks):
 
 
 if __name__ == "__main__":
-    for (workers, functions) in TASKS:
-        tasks = []
-        for bound in BOUNDS:
-            for function in functions:
-                tasks.append((bound, function))
+    for i in range(10):
+        for (workers, functions, bounds) in TASKS:
+            tasks = []
+            for bound in bounds:
+                for function in functions:
+                    tasks.append((bound, function))
 
-        run(workers, tasks)
+            run(i, workers, tasks)

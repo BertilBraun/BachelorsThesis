@@ -44,8 +44,8 @@ def process_JJBMC_example(folder, bound, function, inline_arg):
         out_file.write(f"{bound},{function},{inline_arg},ERROR,-1\n")
 
 
-def worker(bound, function):
-    folder = f"{BASE_FOLDER}/{bound}/{function}"
+def worker(iteration, bound, function):
+    folder = f"{BASE_FOLDER}/{bound}/{function}/{iteration}"
     if not os.path.exists(folder):
         return
 
@@ -56,6 +56,7 @@ def worker(bound, function):
 
 if __name__ == "__main__":
 
-    for bound in BOUNDS:
-        for function in FUNCTIONS:
-            worker(bound, function)
+    for i in range(10):
+        for bound in BOUNDS:
+            for function in FUNCTIONS:
+                worker(i, bound, function)
