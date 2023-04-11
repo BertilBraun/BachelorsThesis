@@ -36,9 +36,10 @@ def process_JJBMC_example(folder, bound, function, inline_arg):
         out_file.write(f"{bound},{function},{inline_arg},FAILURE,-1\n")
     elif "SUCCESS" in content:
         runtime = re.search(r"JBMC took (\d+)ms.", open(file).read()).group(1)
-        out_file.write(f"{bound},{function},{inline_arg},SUCCESS,{runtime}\n")
+        runtime_in_minutes = round(int(runtime) / 1000 / 60, 4)
+        out_file.write(f"{bound},{function},{inline_arg},SUCCESS,{runtime_in_minutes}\n")
     elif "JBMC did not terminate as expected" in content:
-        out_file.write(f"{bound},{function},{inline_arg},TIMEOUT,-1\n")
+        out_file.write(f"{bound},{function},{inline_arg},TIMEOUT / MEMORY_LIMIT,-1\n")
     else:
         out_file.write(f"{bound},{function},{inline_arg},ERROR,-1\n")
 
