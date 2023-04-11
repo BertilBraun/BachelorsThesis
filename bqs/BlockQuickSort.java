@@ -797,8 +797,6 @@ public class BlockQuickSort {
       @ ensures (\forall int i; begin <= i && i < end - 1; array[i] <= array[i+1]);
       @
       @ // Values inside the range [begin, end) are a valid permutation.
-      @ ensures (\forall int i; begin <= i && i < end; (
-      @          (\num_of int j; begin <= j && j < end; array[i] == array[j]) ==
       @ ensures permutation(array, \old(array), begin, end);
       @
       @ assignable array[begin .. end-1];
