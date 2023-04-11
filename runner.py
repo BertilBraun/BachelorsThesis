@@ -17,18 +17,18 @@ TASKS = [
     (EASY_WORKERS, [
         "swap",
         "sortPair",
-    ], list(range(3, 10))),
+    ], list(range(3, 10)), 3),
     (MEDIUM_WORKERS, [
+        "partition",
         "permutation",
         "medianOf3",
         "insertionSort",
-    ], list(range(3, 8))),
+    ], list(range(3, 8)), 2),
     (HARD_WORKERS, [
-        "partition",
         "quickSortRec",
         "quickSortRecImpl",
         "hoareBlockPartition",
-    ], list(range(3, 7))),
+    ], list(range(3, 7)), 1),
 ]
 
 HOME_FOLDER = os.getcwd()
@@ -86,11 +86,12 @@ def run(workers, tasks):
 
 
 if __name__ == "__main__":
-    for i in range(10):
-        for (workers, functions, bounds) in TASKS:
+    for i in range(5):
+        for (workers, functions, bounds, times_per_iteration) in TASKS:
             tasks = []
             for bound in bounds:
                 for function in functions:
                     tasks.append((bound, function))
 
-            run(i, workers, tasks)
+            for j in range(times_per_iteration):
+                run(i * times_per_iteration + j, workers, tasks)
