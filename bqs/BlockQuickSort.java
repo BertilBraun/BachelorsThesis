@@ -265,12 +265,6 @@ public class BlockQuickSort {
         //@ // All values indexed by indexR[startRight + j .. startRight + numRight] are less than or equal to pivot.
         //@ // loop_invariant (\forall int i; startRight + j <= i && i < startRight + numRight; array[last - indexR[i]] <= pivot);
         //@
-        //@ // All elements in the range (begin + indexL[startLeft + j], last - indexR[startRight + j]) are equal to the corresponding elements in the original array.
-        //@ loop_invariant j < num ==> (\forall int i; begin + indexL[startLeft + j] < i && i < last - indexR[startRight + j]; array[i] == \old(array[i]));
-        //@ loop_invariant j == num && num != 0 ==> (\forall int i; begin + indexL[startLeft + j - 1] < i && i < last - indexR[startRight + j - 1]; array[i] == \old(array[i]));
-        //@ loop_invariant num == 0 ==> (\forall int i; begin + indexL[startLeft] < i && i < last - indexR[startRight]; array[i] == \old(array[i]));
-        //@ 
-        //@
         //@ // Values inside the range [originalBegin, originalEnd) are a valid permutation.
         //@ loop_invariant permutation(array, \old(array), originalBegin, originalEnd);
         //@
