@@ -22,10 +22,7 @@ public class BlockQuickSort {
       @ ensures (\forall int i; \result <= i && i < originalEnd; array[\result] <= array[i]);
       @
       @ // Values inside the range [originalBegin, originalEnd) are a valid permutation.
-      @ ensures (\forall int i; originalBegin <= i && i < originalEnd; (
-      @          (\num_of int j; originalBegin <= j && j < originalEnd; array[i] == array[j]) ==
-      @          (\num_of int j; originalBegin <= j && j < originalEnd; array[i] == \old(array[j]))
-      @         ));
+      @ ensures permutation(array, \old(array), originalBegin, originalEnd);
       @
       @ assignable array[originalBegin .. originalEnd-1];
       @*/
@@ -80,10 +77,7 @@ public class BlockQuickSort {
         //   @ loop_invariant (\forall int i; last - indexR[startRight] < i && i < originalEnd; pivot <= array[i]);
         //   @
         //   @ // Values inside the range [originalBegin, originalEnd) are a valid permutation.
-        //   @ loop_invariant (\forall int i; originalBegin <= i && i < originalEnd; (
-        //   @                 (\num_of int j; originalBegin <= j && j < originalEnd; array[i] == array[j]) ==
-        //   @                 (\num_of int j; originalBegin <= j && j < originalEnd; array[i] == \old(array[j]))
-        //   @                ));
+        //   @ loop_invariant permutation(array, \old(array), originalBegin, originalEnd);
         //   @
         //   @ loop_modifies array[begin .. last], last, begin, numLeft, numRight, startLeft, startRight, indexL[0 .. BLOCKSIZE - 1], indexR[0 .. BLOCKSIZE // - 1], num;
         //   @ loop_decreases last - begin;
@@ -129,10 +123,7 @@ public class BlockQuickSort {
               @ loop_invariant (\forall int i; 0 <= i && i < indexR[startRight + j]; pivot <= array[last - i]);
               @
               @ // Values inside the range [begin, last) are a valid permutation.
-              @ loop_invariant (\forall int i; begin <= i && i < last; (
-              @          (\num_of int k; begin <= k && k < last; array[i] == array[k]) ==
-              @          (\num_of int k; begin <= k && k < last; array[i] == \old(array[k]))
-              @         ));
+              @ loop_invariant permutation(array, \old(array), begin, last);
               @
               @ loop_modifies array[begin + indexL[startLeft] .. last - indexR[startRight]], j;
               @ loop_decreases num - j;
@@ -225,10 +216,7 @@ public class BlockQuickSort {
           @ loop_invariant (\forall int i; 0 <= i && i < indexR[startRight + j]; pivot <= array[last - i]);
           @
               @ // Values inside the range [begin, last) are a valid permutation.
-              @ loop_invariant (\forall int i; begin <= i && i < last; (
-              @          (\num_of int k; begin <= k && k < last; array[i] == array[k]) ==
-              @          (\num_of int k; begin <= k && k < last; array[i] == \old(array[k]))
-              @         ));
+              @ loop_invariant permutation(array, \old(array), begin, last);
           @
           @ loop_modifies array[begin + indexL[startLeft] .. last - indexR[startRight]], j;
           @ loop_decreases num - j;
@@ -268,10 +256,7 @@ public class BlockQuickSort {
               @ loop_invariant (\forall int i; begin + indexL[lowerI] < i && i < last; array[i] >= pivot);
               @
               @ // Values inside the range [begin, last) are a valid permutation.
-              @ loop_invariant (\forall int i; begin <= i && i < last; (
-              @          (\num_of int j; begin <= j && j < last; array[i] == array[j]) ==
-              @          (\num_of int j; begin <= j && j < last; array[i] == \old(array[j]))
-              @         ));
+              @ loop_invariant permutation(array, \old(array), begin, last);
               @
               @ loop_modifies upper, lowerI, array[begin .. last];
               @ loop_decreases lowerI;
@@ -308,10 +293,7 @@ public class BlockQuickSort {
               @ loop_invariant (\forall int i; begin <= i && i < last - indexR[lowerI]; array[i] >= pivot);
               @
               @ // Values inside the range [begin, last) are a valid permutation.
-              @ loop_invariant (\forall int i; begin <= i && i < last; (
-              @          (\num_of int j; begin <= j && j < last; array[i] == array[j]) ==
-              @          (\num_of int j; begin <= j && j < last; array[i] == \old(array[j]))
-              @         ));
+              @ loop_invariant permutation(array, \old(array), begin, last);
               @
               @ loop_modifies upper, lowerI, array[begin .. last];
               @ loop_decreases lowerI;
@@ -348,10 +330,7 @@ public class BlockQuickSort {
       @ ensures (\forall int i; \result <= i && i < originalEnd; array[\result] <= array[i]);
       @
       @ // Values inside the range [originalBegin, originalEnd) are a valid permutation.
-      @ ensures (\forall int i; originalBegin <= i && i < originalEnd; (
-      @          (\num_of int j; originalBegin <= j && j < originalEnd; array[i] == array[j]) ==
-      @          (\num_of int j; originalBegin <= j && j < originalEnd; array[i] == \old(array[j]))
-      @         ));
+      @ ensures permutation(array, \old(array), originalBegin, originalEnd);
       @
       @ assignable array[originalBegin .. originalEnd-1];
       @*/
@@ -411,10 +390,7 @@ public class BlockQuickSort {
         //   @ loop_invariant (\forall int i; last - indexR[startRight] < i && i < originalEnd; pivot <= array[i]);
         //   @
         //   @ // Values inside the range [originalBegin, originalEnd) are a valid permutation.
-        //   @ loop_invariant (\forall int i; originalBegin <= i && i < originalEnd; (
-        //   @                 (\num_of int j; originalBegin <= j && j < originalEnd; array[i] == array[j]) ==
-        //   @                 (\num_of int j; originalBegin <= j && j < originalEnd; array[i] == \old(array[j]))
-        //   @                ));
+        //   @ loop_invariant permutation(array, \old(array), originalBegin, originalEnd);
         //   @
         //   @ loop_modifies array[begin .. last], last, begin, numLeft, numRight, startLeft, startRight, indexL[0 .. BLOCKSIZE - 1], indexR[0 .. BLOCKSIZE // - 1], num;
         //   @ loop_decreases last - begin;
@@ -477,10 +453,7 @@ public class BlockQuickSort {
             //   @ // loop_invariant (\num_of int i; last - indexR[startRight + numRight] <= i && i < last; array[i] <= pivot) == numRight - j;
             //   @
             //   @ // Values inside the range [originalBegin, originalEnd) are a valid permutation.
-            //   @ loop_invariant (\forall int i; originalBegin <= i && i < originalEnd; (
-            //   @                 (\num_of int k; originalBegin <= k && k < originalEnd; array[i] == array[k]) ==
-            //   @                 (\num_of int k; originalBegin <= k && k < originalEnd; array[i] == \old(array[k]))
-            //   @                ));
+            //   @ loop_invariant permutation(array, \old(array), originalBegin, originalEnd);
             //   @
             //   @ loop_modifies array[begin + indexL[startLeft] .. last - indexR[startRight]], j;
             //   @ loop_decreases num - j;
@@ -596,10 +569,7 @@ public class BlockQuickSort {
           @ loop_invariant (\forall int i; startRight + j <= i && i < startRight + numRight; array[last - indexR[i]] <= pivot);
           @
           @ // Values inside the range [originalBegin, originalEnd) are a valid permutation.
-          @ loop_invariant (\forall int i; originalBegin <= i && i < originalEnd; (
-          @                 (\num_of int k; originalBegin <= k && k < originalEnd; array[i] == array[k]) ==
-          @                 (\num_of int k; originalBegin <= k && k < originalEnd; array[i] == \old(array[k]))
-          @                ));
+          @ loop_invariant permutation(array, \old(array), originalBegin, originalEnd);
           @
           @ loop_modifies array[begin + indexL[startLeft] .. last - indexR[startRight]], j;
           @ loop_decreases num - j;
@@ -656,10 +626,7 @@ public class BlockQuickSort {
             //   @ loop_invariant (\forall int i; begin + indexL[lowerI + 1] < i && i < last; array[i] >= pivot);
             //   @
             //   @ // Values inside the range [originalBegin, originalEnd) are a valid permutation.
-            //   @ loop_invariant (\forall int i; originalBegin <= i && i < originalEnd; (
-            //   @          (\num_of int j; originalBegin <= j && j < originalEnd; array[i] == array[j]) ==
-            //   @          (\num_of int j; originalBegin <= j && j < originalEnd; array[i] == \old(array[j]))
-            //   @         ));
+            //   @ loop_invariant permutation(array, \old(array), originalBegin, originalEnd);
             //   @
             //   @ loop_modifies upper, lowerI, array[begin .. last];
             //   @ loop_decreases lowerI + 1;
@@ -702,10 +669,7 @@ public class BlockQuickSort {
             //   @ loop_invariant (\forall int i; begin <= i && i < last - indexR[lowerI + 1]; array[i] >= pivot);
             //   @
             //   @ // Values inside the range [originalBegin, originalEnd) are a valid permutation.
-            //   @ loop_invariant (\forall int i; originalBegin <= i && i < originalEnd; (
-            //   @          (\num_of int j; originalBegin <= j && j < originalEnd; array[i] == array[j]) ==
-            //   @          (\num_of int j; originalBegin <= j && j < originalEnd; array[i] == \old(array[j]))
-            //   @         ));
+            //   @ loop_invariant permutation(array, \old(array), originalBegin, originalEnd);
             //   @
             //   @ loop_modifies upper, lowerI, array[begin .. last];
             //   @ loop_decreases lowerI + 1;
@@ -734,10 +698,7 @@ public class BlockQuickSort {
       @ ensures (\forall int i; begin <= i && i < end - 1; array[i] <= array[i+1]);
       @
       @ // Values inside the range [begin, end) are a valid permutation.
-      @ ensures (\forall int i; begin <= i && i < end; (
-      @          (\num_of int j; begin <= j && j < end; array[i] == array[j]) ==
-      @          (\num_of int j; begin <= j && j < end; array[i] == \old(array[j]))
-      @         ));
+      @ ensures permutation(array, \old(array), begin, end);
       @
       @ assignable array[begin .. end-1];
       @*/
@@ -838,8 +799,7 @@ public class BlockQuickSort {
       @ // Values inside the range [begin, end) are a valid permutation.
       @ ensures (\forall int i; begin <= i && i < end; (
       @          (\num_of int j; begin <= j && j < end; array[i] == array[j]) ==
-      @          (\num_of int j; begin <= j && j < end; array[i] == \old(array[j]))
-      @         ));
+      @ ensures permutation(array, \old(array), begin, end);
       @
       @ assignable array[begin .. end-1];
       @*/
@@ -860,10 +820,7 @@ public class BlockQuickSort {
       @ ensures (\forall int i; begin <= i && i < end - 1; array[i] <= array[i+1]);
       @
       @ // Values inside the range [begin, end) are a valid permutation.
-      @ ensures (\forall int i; begin <= i && i < end; (
-      @          (\num_of int j; begin <= j && j < end; array[i] == array[j]) ==
-      @          (\num_of int j; begin <= j && j < end; array[i] == \old(array[j]))
-      @         ));
+      @ ensures permutation(array, \old(array), begin, end);
       @
       @ assignable array[begin .. end-1];
       @*/
@@ -889,10 +846,7 @@ public class BlockQuickSort {
       @ ensures (\forall int i; begin <= i && i < end - 1; array[i] <= array[i+1]);
       @
       @ // Values inside the range [begin, end) are a valid permutation.
-      @ ensures (\forall int i; begin <= i && i < end; (
-      @          (\num_of int j; begin <= j && j < end; array[i] == array[j]) ==
-      @          (\num_of int j; begin <= j && j < end; array[i] == \old(array[j]))
-      @         ));
+      @ ensures permutation(array, \old(array), begin, end);
       @
       @ assignable array[begin .. end-1];
       @*/
@@ -964,10 +918,7 @@ public class BlockQuickSort {
       @ ensures array[begin] <= array[\result] && array[\result] <= array[end - 1];
       @
       @ // The values at 'begin', 'end - 1', and 'begin + ((end - begin) / 2)' are a permutations of the values before.
-      @ ensures (\forall int i; begin <= i && i < end; (
-      @          (\num_of int j; begin <= j && j < end; array[i] == array[j]) ==
-      @          (\num_of int j; begin <= j && j < end; array[i] == \old(array[j]))
-      @         ));
+      @ ensures permutation(array, \old(array), begin, end);
       @
       @ assignable array[begin], array[begin + ((end - begin) / 2)], array[end - 1];
       @*/
@@ -995,10 +946,7 @@ public class BlockQuickSort {
       @ ensures (\forall int i; \result <= i && i < end; array[\result] <= array[i]);
       @
       @ // Values inside the range [begin, end) are a valid permutation.
-      @ ensures (\forall int i; begin <= i && i < end; (
-      @          (\num_of int j; begin <= j && j < end; array[i] == array[j]) ==
-      @          (\num_of int j; begin <= j && j < end; array[i] == \old(array[j]))
-      @         ));
+      @ ensures permutation(array, \old(array), begin, end);
       @
       @ assignable array[begin .. end-1];
       @*/
@@ -1034,6 +982,7 @@ public class BlockQuickSort {
 
         return result;
     }
+
     /*@ 
       @ public normal_behavior
       @ requires array1 != null;
