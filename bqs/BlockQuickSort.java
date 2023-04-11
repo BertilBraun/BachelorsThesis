@@ -745,7 +745,7 @@ public class BlockQuickSort {
         int[] stack = new int[STACK_SIZE];
         int top = 0;
         int depth = 0;
-        int depthLimit = (int) (2 * Math.log(end - begin) / Math.log(2)) + 3;
+        int depthLimit = (int) (2 * log(end - begin) / log(2)) + 3;
 
         stack[top++] = begin;
         stack[top++] = end;
@@ -845,7 +845,7 @@ public class BlockQuickSort {
       @*/
     public static void quickSortRec(int[] array, int begin, int end) {
         int depth = 0;
-        int depthLimit = 16; //(int) (2 * Math.log(end - begin) / Math.log(2)) + 3;
+        int depthLimit = (int) (2 * log(end - begin) / log(2)) + 3;
         quickSortRecImpl(array, begin, end, depth, depthLimit);
     }
 
@@ -1007,6 +1007,33 @@ public class BlockQuickSort {
         return hoareBlockPartition(array, begin + 1, end - 1, mid);
     }
 
+    public static double log(double a) {
+        // The error is less than 10^-3 for all values of 0 < a < 1000.
+        if (a <= 0) {
+            throw new IllegalArgumentException("Argument must be positive.");
+        }
+
+        int iterations = 1000;
+        double result = 0.0;
+        double x = (a - 1) / (a + 1);
+
+        for (int i = 0; i < iterations; i++) {
+            int exponent = 2 * i + 1;
+            result += power(x, exponent) / exponent;
+        }
+
+        return 2 * result;
+    }
+
+    private static double power(double base, int exponent) {
+        double result = 1.0;
+
+        for (int i = 0; i < exponent; i++) {
+            result *= base;
+        }
+
+        return result;
+    }
     /*@ 
       @ public normal_behavior
       @ requires array1 != null;
