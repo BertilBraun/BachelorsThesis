@@ -6,7 +6,7 @@
         {
             "label": "RunPredefinedPartitionTest",
             "type": "shell",
-            "command": "wsl ./gradlew fatJar && java -jar JJBMC.jar -mas 4 -u 7 -tr -c -kt -timeout=18000000 bqs/BlockQuickSort.java hoareBlockPartition -rv upper -rv lowerI -rv indexL -rv indexR -rv array -rv startLeft -rv startRight -rv numLeft -rv numRight -rv num -rv originalBegin -rv originalEnd -rv swapI -rv swapJ -rv i -rv j -rv begin -rv end -rv originalArray -rv pivot -rv stateAfterSwap -rv stateBeforeSwap -rv lastNumLeft -rv lastNumRight -rv shiftL -rv shiftR -rv last",
+            "command": "wsl ./gradlew fatJar && java -jar JJBMC.jar -mas 3 -u 7 -tr -c -kt -timeout=18000000 bqs/BlockQuickSort.java hoareBlockPartition -rv upper -rv lowerI -rv indexL -rv indexR -rv array -rv startLeft -rv startRight -rv numLeft -rv numRight -rv num -rv originalBegin -rv originalEnd -rv swapI -rv swapJ -rv i -rv j -rv begin -rv end -rv originalArray -rv pivot -rv stateAfterSwap -rv stateBeforeSwap -rv lastNumLeft -rv lastNumRight -rv shiftL -rv shiftR -rv last && java -jar JJBMC.jar -mas 4 -u 7 -tr -c -kt -timeout=18000000 bqs/BlockQuickSort.java hoareBlockPartition -rv upper -rv lowerI -rv indexL -rv indexR -rv array -rv startLeft -rv startRight -rv numLeft -rv numRight -rv num -rv originalBegin -rv originalEnd -rv swapI -rv swapJ -rv i -rv j -rv begin -rv end -rv originalArray -rv pivot -rv stateAfterSwap -rv stateBeforeSwap -rv lastNumLeft -rv lastNumRight -rv shiftL -rv shiftR -rv last",
             "problemMatcher": [],
             "runOptions": {
                 "reevaluateOnRerun": false
