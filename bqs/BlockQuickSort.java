@@ -34,12 +34,6 @@ public class BlockQuickSort {
         int[] indexL = new int[BLOCKSIZE];
         int[] indexR = new int[BLOCKSIZE];
 
-        int[] originalArray = new int[array.length];
-        for (int i = 0; i < array.length; i++) {
-            originalArray[i] = array[i];
-        }
-        originalArray[array.length - 1] = array[array.length - 1];
-
         int begin = originalBegin;
         int end = originalEnd;
 
@@ -90,7 +84,6 @@ public class BlockQuickSort {
         while (last - begin + 1 > 2 * BLOCKSIZE) {
             if (numLeft == 0) {
                 startLeft = 0;
-                /*
                 //@ loop_invariant 0 <= j && j <= BLOCKSIZE;
                 //@ // Maintain numLeft count
                 //@ loop_invariant numLeft == (\num_of int k; 0 <= k && k < j; pivot <= array[begin + k]);
@@ -101,7 +94,6 @@ public class BlockQuickSort {
                 //@
                 //@ loop_modifies numLeft, indexL[0 .. BLOCKSIZE - 1], j;
                 //@ loop_decreases BLOCKSIZE - j;
-                */
                 for (int j = 0; j < BLOCKSIZE; j++) {
                     indexL[numLeft] = j;
                     numLeft += array[begin + j] >= pivot ? 1 : 0;
@@ -109,7 +101,6 @@ public class BlockQuickSort {
             }
             if (numRight == 0) {
                 startRight = 0;
-                /*
                 //@ loop_invariant 0 <= j && j <= BLOCKSIZE;
                 //@ // Maintain numRight count
                 //@ loop_invariant numRight == (\num_of int k; 0 <= k && k < j; array[last - k] <= pivot);
@@ -120,7 +111,6 @@ public class BlockQuickSort {
                 //@
                 //@ loop_modifies numRight, indexR[0 .. BLOCKSIZE - 1], j;
                 //@ loop_decreases BLOCKSIZE - j;
-                */
                 for (int j = 0; j < BLOCKSIZE; j++) {
                     indexR[numRight] = j;
                     numRight += pivot >= array[last - j] ? 1 : 0;
@@ -169,7 +159,6 @@ public class BlockQuickSort {
             shiftR = (last - begin) + 1 - shiftL;
             startLeft = 0;
             startRight = 0;
-            /*
             //@ loop_invariant 0 <= j && j <= shiftL;
             //@ loop_invariant 0 <= numLeft && numLeft <= j;
             //@ loop_invariant 0 <= numRight && numRight <= j;
@@ -191,7 +180,6 @@ public class BlockQuickSort {
             //@
             //@ loop_decreases shiftL - j;
             //@ loop_modifies indexL[0 .. shiftL], numLeft, indexR[0 .. shiftL], numRight, j;
-            */
             for (int j = 0; j < shiftL; j++) {
                 indexL[numLeft] = j;
                 numLeft += array[begin + j] >= pivot ? 1 : 0;
@@ -206,7 +194,6 @@ public class BlockQuickSort {
             shiftL = (last - begin) - BLOCKSIZE + 1;
             shiftR = BLOCKSIZE;
             startLeft = 0;
-            /*
             //@ loop_invariant 0 <= j && j <= shiftL;
             //@ // Maintain numLeft count
             //@ loop_invariant numLeft == (\num_of int k; 0 <= k && k < j; pivot <= array[begin + k]);
@@ -217,7 +204,6 @@ public class BlockQuickSort {
             //@
             //@ loop_modifies numLeft, indexL[0 .. shiftL], j;
             //@ loop_decreases shiftL - j;
-            */
             for (int j = 0; j < shiftL; j++) {
                 indexL[numLeft] = j;
                 numLeft += array[begin + j] >= pivot ? 1 : 0;
@@ -226,7 +212,6 @@ public class BlockQuickSort {
             shiftL = BLOCKSIZE;
             shiftR = (last - begin) - BLOCKSIZE + 1;
             startRight = 0;
-            /*
             //@ loop_invariant 0 <= j && j <= shiftR;
             //@ // Maintain numRight count
             //@ loop_invariant numRight == (\num_of int k; 0 <= k && k < j; array[last - k] <= pivot);
@@ -237,22 +222,14 @@ public class BlockQuickSort {
             //@
             //@ loop_modifies numRight, indexR[0 .. shiftR], j;
             //@ loop_decreases shiftR - j;
-            */
             for (int j = 0; j < shiftR; j++) {
                 indexR[numRight] = j;
                 numRight += pivot >= array[last - j] ? 1 : 0;
             }
         }
 
-        int[] stateBeforeSwap = new int[array.length];
-        for (int i = 0; i < array.length; i++) {
-            stateBeforeSwap[i] = array[i];
-        }
-        stateBeforeSwap[array.length - 1] = array[array.length - 1];
-
         num = (numLeft < numRight) ? numLeft : numRight;
         if (num > 0) {
-            /*
             //@ loop_invariant 0 <= j && j <= num;
             //@ 
             //@ // Values inside the range [originalBegin, begin + indexL[startLeft + j]) are less than or equal to pivot.
@@ -274,19 +251,10 @@ public class BlockQuickSort {
             //@
             //@ loop_modifies array[begin + indexL[startLeft] .. begin + indexL[startLeft + num - 1]], array[last - indexR[startRight + num - 1] .. last - indexR[startRight]], j;
             //@ loop_decreases num - j;
-            */
             for (int j = 0; j < num; j++) {
                 swap(array, begin + indexL[startLeft + j], last - indexR[startRight + j]);
             }
         }
-
-        int[] stateAfterSwap = new int[array.length];
-        for (int i = 0; i < array.length; i++) {
-            stateAfterSwap[i] = array[i];
-        }
-        stateAfterSwap[array.length - 1] = array[array.length - 1];
-        int lastNumLeft = numLeft;
-        int lastNumRight = numRight;
 
         numLeft -= num;
         numRight -= num;
@@ -295,14 +263,10 @@ public class BlockQuickSort {
         begin += (numLeft == 0) ? shiftL : 0;
         last -= (numRight == 0) ? shiftR : 0;
 
-        // right here at most one element may be left to be sorted
-        // in addition, the pivot element is still at originalEnd - 1 and must be swapped back
-
         if (numLeft != 0) {
             int lowerI = startLeft + numLeft - 1;
             int upper = last - begin;
 
-            /*
             //@ loop_invariant 0 <= startLeft && -1 <= lowerI && lowerI < startLeft + numLeft && startLeft + numLeft < BLOCKSIZE;
             //@ loop_invariant upper == last - begin - (startLeft + numLeft - 1 - lowerI);
             //@
@@ -310,13 +274,11 @@ public class BlockQuickSort {
             //@
             //@ loop_decreases lowerI + 1;
             //@ loop_modifies lowerI, upper;
-            */
             while (lowerI >= startLeft && indexL[lowerI] == upper) {
                 upper--;
                 lowerI--;
             }
 
-            /*
             //@ loop_invariant 0 <= startLeft && -1 <= lowerI && lowerI < startLeft + numLeft && startLeft + numLeft < BLOCKSIZE;
             //@ loop_invariant upper == last - begin - (startLeft + numLeft - 1 - lowerI);
             //@ loop_invariant lowerI >= startLeft ==> (begin + upper) >= originalBegin && (begin + upper) < originalEnd;
@@ -334,7 +296,6 @@ public class BlockQuickSort {
             //@
             //@ loop_modifies upper, lowerI, array[begin .. last];
             //@ loop_decreases lowerI + 1;
-            */
             while (lowerI >= startLeft) {
                 swap(array, begin + upper, begin + indexL[lowerI]);
                 upper--;
@@ -347,7 +308,6 @@ public class BlockQuickSort {
             int lowerI = startRight + numRight - 1;
             int upper = last - begin;
 
-            /*
             //@ loop_invariant 0 <= startRight && -1 <= lowerI && lowerI < startRight + numRight && startRight + numRight < BLOCKSIZE;
             //@ loop_invariant upper == last - begin - (startRight + numRight - 1 - lowerI);
             //@
@@ -355,13 +315,11 @@ public class BlockQuickSort {
             //@
             //@ loop_decreases lowerI + 1;
             //@ loop_modifies lowerI, upper;
-            */
             while (lowerI >= startRight && indexR[lowerI] == upper) {
                 upper--;
                 lowerI--;
             }
 
-            /*
             //@ loop_invariant 0 <= startRight && -1 <= lowerI && lowerI < startRight + numRight && startRight + numRight < BLOCKSIZE;
             //@ loop_invariant upper == last - begin - (startRight + numRight - 1 - lowerI);
             //@ loop_invariant lowerI >= startRight ==> (last - upper) >= originalBegin && (last - upper) < originalEnd;
@@ -371,7 +329,7 @@ public class BlockQuickSort {
             //@ loop_invariant (lowerI >= startRight) ==> array[last - indexR[lowerI]] < pivot;
             //@ loop_invariant !(lowerI >= startRight) ==> !(\exists int i; startRight <= i && i < startRight + numRight - 1; array[last - indexR[i]] < pivot);
             //@
-            //@ // All elemements in the range [begin, last - indexR[lowerI]) are greater or equal than the pivot
+            //@ // All elements in the range [begin, last - indexR[lowerI]) are greater or equal than the pivot
             //@ loop_invariant (\forall int i; begin <= i && i < last - indexR[lowerI + 1]; array[i] >= pivot);
             //@
             //@ // Values inside the range [originalBegin, originalEnd) are a valid permutation.
@@ -379,7 +337,6 @@ public class BlockQuickSort {
             //@
             //@ loop_modifies upper, lowerI, array[begin .. last];
             //@ loop_decreases lowerI + 1;
-            */
             while (lowerI >= startRight) {
                 swap(array, last - upper, last - indexR[lowerI]);
                 upper--;
@@ -417,60 +374,60 @@ public class BlockQuickSort {
         stack[top++] = begin;
         stack[top++] = end;
 
-        /* TODO */
-        /*@ loop_invariant
-          @   // Stack-related invariants:
-          @   stack != null && stack.length == STACK_SIZE &&
-          @   top % 2 == 0 && 0 <= top && top <= STACK_SIZE &&
-          @   (\forall int i; 0 <= i && i < top; 0 <= stack[i] && stack[i] < array.length) &&
-          @   (\forall int i; 0 <= i && i < top - 1; i % 2 == 0 ==> stack[i] < stack[i+1]) &&
-          @
-          @   // Subarray-related invariants:
-          @   (\forall int i; 0 <= i && i < top; i % 2 == 0 ==> permutation(array, \old(array), stack[i], stack[i+1])) &&
-          @
-          @   // Depth-related invariants:
-          @   0 <= depth && depth <= depthLimit &&
-          @   depthLimit >= 0 &&
-          @   depthLimit == (int) (2 * Math.log(end - begin) / Math.log(2)) + 3 &&
-          @
-          @   // Begin and end invariants:
-          @   0 <= begin && begin < end && end <= array.length &&
-          @
-          @   // The subarray [begin, end) at the top of the stack is always sorted.
-          @   (\forall int i; begin <= i && i < end - 1; array[i] <= array[i + 1]);
-          @
-          @ // Termination measure:
-          @ loop_decreases (depthLimit - depth) * array.length + (\sum int i; 0 <= i && i < top; i % 2 == 0 ? stack[i+1] - stack[i] : 0);
-          @
-          @ loop_modifies array, stack, top, depth, begin, end;
-          @*/
+        /* TODO
+        //@ loop_invariant
+        //@   // Stack-related invariants:
+        //@   stack != null && stack.length == STACK_SIZE &&
+        //@   top % 2 == 0 && 0 <= top && top <= STACK_SIZE &&
+        //@   (\forall int i; 0 <= i && i < top; 0 <= stack[i] && stack[i] < array.length) &&
+        //@   (\forall int i; 0 <= i && i < top - 1; i % 2 == 0 ==> stack[i] < stack[i+1]) &&
+        //@
+        //@   // Subarray-related invariants:
+        //@   (\forall int i; 0 <= i && i < top; i % 2 == 0 ==> permutation(array, \old(array), stack[i], stack[i+1])) &&
+        //@
+        //@   // Depth-related invariants:
+        //@   0 <= depth && depth <= depthLimit &&
+        //@   depthLimit >= 0 &&
+        //@   depthLimit == (int) (2 * Math.log(end - begin) / Math.log(2)) + 3 &&
+        //@
+        //@   // Begin and end invariants:
+        //@   0 <= begin && begin < end && end <= array.length &&
+        //@
+        //@   // The subarray [begin, end) at the top of the stack is always sorted.
+        //@   (\forall int i; begin <= i && i < end - 1; array[i] <= array[i + 1]);
+        //@
+        //@ // Termination measure:
+        //@ loop_decreases (depthLimit - depth) * array.length + (\sum int i; 0 <= i && i < top; i % 2 == 0 ? stack[i+1] - stack[i] : 0);
+        //@
+        //@ loop_modifies array, stack, top, depth, begin, end;
+        */
         while (top > 0) {
             end = stack[--top];
             begin = stack[--top];
 
-            /* TODO */
-            /*@ loop_invariant stack != null && 0 <= top && top <= STACK_SIZE;
-              @ loop_invariant top % 2 == 0; // The top index is always even
-              @ loop_invariant 0 <= depth && depth <= depthLimit;
-              @ loop_invariant 0 <= begin && begin < end && end <= array.length;
-              @ // Stack holds valid indices
-              @ loop_invariant (\forall int i; 0 <= i && i < top; stack[i] >= 0 && stack[i] < array.length);
-              @ // Each segment in stack is sorted
-              @ loop_invariant (\forall int i; 0 <= i && i < top / 2;
-              @                  (\forall int j; stack[2 * i] <= j && j < stack[2 * i + 1] - 1;
-              @                   array[j] <= array[j + 1]));
-              @ // Each segment is a valid permutation
-              @ loop_invariant (\forall int i; 0 <= i && i < top / 2;
-              @                  (\forall int j; stack[2 * i] <= j && j < stack[2 * i + 1];
-              @                   (\forall int k; stack[2 * i] <= k && k < stack[2 * i + 1]; array[k] == array[j] &&
-              @                    (\num_of int l; stack[2 * i] <= l && l < stack[2 * i + 1]; array[l] == array[j]) ==
-              @                    (\num_of int l; stack[2 * i] <= l && l < stack[2 * i + 1]; \old(array[l]) == array[j]))));
-              @ // Adjacent segments are ordered
-              @ loop_invariant (\forall int i; 0 <= i && i < top / 2 - 1;
-              @                  array[stack[2 * i + 1] - 1] <= array[stack[2 * (i + 1)]]);
-              @ loop_decreases end - begin;
-              @ loop_modifies array, stack, top, depth, begin, end;
-              @*/
+            /* TODO
+            //@ loop_invariant stack != null && 0 <= top && top <= STACK_SIZE;
+            //@ loop_invariant top % 2 == 0; // The top index is always even
+            //@ loop_invariant 0 <= depth && depth <= depthLimit;
+            //@ loop_invariant 0 <= begin && begin < end && end <= array.length;
+            //@ // Stack holds valid indices
+            //@ loop_invariant (\forall int i; 0 <= i && i < top; stack[i] >= 0 && stack[i] < array.length);
+            //@ // Each segment in stack is sorted
+            //@ loop_invariant (\forall int i; 0 <= i && i < top / 2;
+            //@                  (\forall int j; stack[2 * i] <= j && j < stack[2 * i + 1] - 1;
+            //@                   array[j] <= array[j + 1]));
+            //@ // Each segment is a valid permutation
+            //@ loop_invariant (\forall int i; 0 <= i && i < top / 2;
+            //@                  (\forall int j; stack[2 * i] <= j && j < stack[2 * i + 1];
+            //@                   (\forall int k; stack[2 * i] <= k && k < stack[2 * i + 1]; array[k] == array[j] &&
+            //@                    (\num_of int l; stack[2 * i] <= l && l < stack[2 * i + 1]; array[l] == array[j]) ==
+            //@                    (\num_of int l; stack[2 * i] <= l && l < stack[2 * i + 1]; \old(array[l]) == array[j]))));
+            //@ // Adjacent segments are ordered
+            //@ loop_invariant (\forall int i; 0 <= i && i < top / 2 - 1;
+            //@                  array[stack[2 * i + 1] - 1] <= array[stack[2 * (i + 1)]]);
+            //@ loop_decreases end - begin;
+            //@ loop_modifies array, stack, top, depth, begin, end;
+            */
             while (end - begin > IS_THRESH && depth < depthLimit) {
                 int pivot = partition(array, begin, end);
                 if (pivot - begin > end - pivot) {
@@ -696,25 +653,23 @@ public class BlockQuickSort {
       @ pure
       @*/
     public static boolean permutation(int[] array1, int[] array2, int begin, int end) {
-        /*@
-          @ loop_invariant begin <= i && i <= end;
-          @ loop_invariant (\forall int j; begin <= j && j < i; (
-          @                 (\num_of int k; begin <= k && k < end; array1[j] == array1[k]) ==
-          @                 (\num_of int k; begin <= k && k < end; array1[j] == array2[k])
-          @                ));
-          @ loop_modifies i;
-          @ loop_decreases end - i;
-         */
+
+        //@ loop_invariant begin <= i && i <= end;
+        //@ loop_invariant (\forall int j; begin <= j && j < i; (
+        //@                 (\num_of int k; begin <= k && k < end; array1[j] == array1[k]) ==
+        //@                 (\num_of int k; begin <= k && k < end; array1[j] == array2[k])
+        //@                ));
+        //@ loop_modifies i;
+        //@ loop_decreases end - i;
         for (int i = begin; i < end; i++) {
             int count1 = 0;
             int count2 = 0;
-            /*@
-              @ loop_invariant begin <= j && j <= end;
-              @ loop_invariant count1 == (\num_of int k; begin <= k && k < j; array1[i] == array1[k]);
-              @ loop_invariant count2 == (\num_of int k; begin <= k && k < j; array1[i] == array2[k]);
-              @ loop_modifies j, count1, count2;
-              @ loop_decreases end - j;
-             */
+
+            //@ loop_invariant begin <= j && j <= end;
+            //@ loop_invariant count1 == (\num_of int k; begin <= k && k < j; array1[i] == array1[k]);
+            //@ loop_invariant count2 == (\num_of int k; begin <= k && k < j; array1[i] == array2[k]);
+            //@ loop_modifies j, count1, count2;
+            //@ loop_decreases end - j;
             for (int j = begin; j < end; j++) {
                 if (array1[i] == array1[j]) {
                     count1++;
