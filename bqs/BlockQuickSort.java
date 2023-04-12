@@ -655,10 +655,7 @@ public class BlockQuickSort {
     public static boolean permutation(int[] array1, int[] array2, int begin, int end) {
 
         //@ loop_invariant begin <= i && i <= end;
-        //@ loop_invariant (\forall int j; begin <= j && j < i; (
-        //@                 (\num_of int k; begin <= k && k < end; array1[j] == array1[k]) ==
-        //@                 (\num_of int k; begin <= k && k < end; array1[j] == array2[k])
-        //@                ));
+        //@ loop_invariant (\forall int j; begin <= j && j < i; (\num_of int k; begin <= k && k < end; array1[j] == array1[k]) == (\num_of int k; begin <= k && k < end; array1[j] == array2[k]));
         //@ loop_modifies i;
         //@ loop_decreases end - i;
         for (int i = begin; i < end; i++) {
