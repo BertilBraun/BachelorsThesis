@@ -253,21 +253,24 @@ public class BlockQuickSort {
 
         num = (numLeft < numRight) ? numLeft : numRight;
         if (num > 0) {
-            // TODO does not result in a correctly partitioned array (some elements that should be on the left are on the right and vice versa)
             //@ loop_invariant 0 <= j && j <= num;
             //@ 
             //@ // Values inside the range [originalBegin, begin + indexL[startLeft + j]) are less than or equal to pivot.
-            //@ loop_invariant (\forall int i; originalBegin <= i && i < begin + indexL[startLeft + j]; array[i] <= pivot);
-            //@ // Values inside the range (last - IndexR[startRight - j], originalEnd) are greater than or equal to pivot.
-            //@ loop_invariant (\forall int i; last - indexR[startRight + j] < i && i < originalEnd; pivot <= array[i]);
+            //@ loop_invariant (\forall int i; originalBegin <= i && i < begin + indexL[startLeft]; array[i] <= pivot);
+            //@ loop_invariant j > 0 ==> (\forall int i; originalBegin <= i && i <= begin + indexL[startLeft + j - 1]; array[i] <= pivot);
+            //@
+            //@ // Values inside the range (last - indexR[startRight - j], originalEnd) are greater than or equal to pivot.
+            //@ loop_invariant (\forall int i; last - indexR[startRight] < i && i < originalEnd; pivot <= array[i]);
+            //@ loop_invariant j > 0 ==> (\forall int i; last - indexR[startRight + j - 1] <= i && i < originalEnd; pivot <= array[i]);
             //@
             //@ // All values indexed by indexL[startLeft + j .. startLeft + numLeft] are greater than or equal to pivot.
             //@ loop_invariant (\forall int i; startLeft + j <= i && i < startLeft + numLeft; pivot <= array[begin + indexL[i]]);
+            //@
             //@ // All values indexed by indexR[startRight + j .. startRight + numRight] are less than or equal to pivot.
             //@ loop_invariant (\forall int i; startRight + j <= i && i < startRight + numRight; array[last - indexR[i]] <= pivot);
             //@
-            //@ // Values inside the range [originalBegin, originalEnd) are a valid permutation.
-            //@ loop_invariant permutation(array, \old(array), originalBegin, originalEnd);
+            //@ // Values inside the range [begin, last) are a valid permutation.
+            //@ loop_invariant permutation(array, \old(array), begin, last);
             //@
             //@ loop_modifies array[begin + indexL[startLeft] .. begin + indexL[startLeft + num - 1]], array[last - indexR[startRight + num - 1] .. last - indexR[startRight]], j;
             //@ loop_decreases num - j;
