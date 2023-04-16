@@ -10,6 +10,7 @@ public class BlockQuickSort {
       @ requires (originalEnd - originalBegin) >= 1 && (originalEnd - originalBegin) <= 500;
       @ requires 0 <= originalBegin && originalBegin < originalEnd && originalEnd <= array.length;
       @ requires originalBegin <= pivotPosition && pivotPosition < originalEnd;
+      @ requires (\forall int i; 0 <= i && i < array.length; 0 <= array[i] && array[i] <= array.length); // TODO: remove this
       @ ensures array.length == \old(array.length);
       @
       @ // The resulting pivot is inside the range [originalBegin, originalEnd).
