@@ -13,7 +13,7 @@ def process_csv(input_csv: str) -> dict:
 
     for row in data:
         bound, function, inline_arg, result, runtime = row
-        grouped_data[(bound, function)][inline_arg] = (result, float(runtime))
+        grouped_data[(bound, function)][inline_arg] = (result, runtime)
 
     return grouped_data
 
