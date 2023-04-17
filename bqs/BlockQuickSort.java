@@ -10,7 +10,7 @@ public class BlockQuickSort {
       @ requires (originalEnd - originalBegin) >= 1 && (originalEnd - originalBegin) <= 500;
       @ requires 0 <= originalBegin && originalBegin < originalEnd && originalEnd <= array.length;
       @ requires originalBegin <= pivotPosition && pivotPosition < originalEnd;
-      @ requires (\forall int i; 0 <= i && i < array.length; 0 <= array[i] && array[i] <= array.length); // TODO: remove this
+      @ requires (\forall int i; 0 <= i && i < array.length; 0 <= array[i] && array[i] <= array.length); // TODO: remove this - only for testing - fixes currently broken partitioning
       @ ensures array.length == \old(array.length);
       @
       @ // The resulting pivot is inside the range [originalBegin, originalEnd).
@@ -336,17 +336,15 @@ public class BlockQuickSort {
             int lowerI = startRight + numRight - 1;
             int upper = last - begin;
 
-            /*
             //@ loop_invariant 0 <= startRight && startRight - 1 <= lowerI && lowerI < startRight + numRight && startRight + numRight <= BLOCKSIZE;
             //@ loop_invariant upper == last - begin - (startRight + numRight - 1 - lowerI);
             //@ loop_invariant (\forall int i; lowerI < i && i < startRight + numRight - 1; indexR[i] == upper + (i - lowerI));
             //@
-            //@ loop_invariant (\forall int i; last - indexR[startRight] < i && i <= last; array[i] >= pivot);
-            //@ loop_invariant (\forall int i; begin <= i && i < last - upper; array[i] >= pivot);
+            //@ loop_invariant (\forall int i; last - indexR[startRight] < i && i <= last; pivot <= array[i]);
+            //@ loop_invariant (\forall int i; begin <= i && i < last - upper; array[i] <= pivot);
             //@
             //@ loop_modifies lowerI, upper;
             //@ loop_decreases lowerI + 1;
-            */
             while (lowerI >= startRight && indexR[lowerI] == upper) {
                 upper--;
                 lowerI--;
@@ -358,19 +356,19 @@ public class BlockQuickSort {
             //@
             //@ // IF THE LOOP IS NOT OVER (LOOP END MUST FOLLOW FROM THESE CONSTRAINTS)
             //@
-            //@ loop_invariant lowerI >= startRight ==> (\forall int i; last - upper <= i && i < last - indexR[startRight]; array[i] >= pivot);
-            //@ loop_invariant lowerI >= startRight ==> indexR[lowerI] == upper || array[last - upper] >= pivot;
-            //@ loop_invariant lowerI >= startRight ==> (\forall int i; begin <= i && i < last - upper; array[i] >= pivot);
+            //@ loop_invariant lowerI >= startRight ==> (\forall int i; begin <= i && i < last - upper; array[i] <= pivot);
+            //@ loop_invariant lowerI >= startRight ==> indexR[lowerI] == upper || pivot <= array[last - upper];
+            //@ loop_invariant lowerI >= startRight ==> (\forall int i; last - upper < i && i <= last - indexR[startRight]; array[i] <= pivot);
             //@
             //@ // IF THE LOOP IS OVER
             //@
-            //@ loop_invariant lowerI < startRight ==> (\forall int i; last - upper <= i && i <= last; array[i] >= pivot);
-            //@ loop_invariant lowerI < startRight ==> (\forall int i; begin <= i && i < last - upper; array[i] >= pivot);
+            //@ loop_invariant lowerI < startRight ==> (\forall int i; last - upper <= i && i <= last; pivot <= array[i]);
+            //@ loop_invariant lowerI < startRight ==> (\forall int i; begin <= i && i < last - upper; array[i] <= pivot);
             //@
             //@ // Values inside the range [begin, last) are a valid permutation. // TODO should be done with permutation()
             //@ loop_invariant (\forall int i; 0 <= i && i < array.length; (\num_of int j; 0 <= j && j < array.length; array[i] == array[j]) == (\num_of int j; 0 <= j && j < array.length; array[i] == \old(array[j])));
             //@
-            //@ loop_modifies upper, lowerI, array[last - indexR[startRight] .. last - upper];
+            //@ loop_modifies upper, lowerI, array[begin .. last - indexR[startRight]];
             //@ loop_decreases lowerI + 1;
             while (lowerI >= startRight) {
                 swap(array, last - upper, last - indexR[lowerI]);
