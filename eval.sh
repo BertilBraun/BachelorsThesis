@@ -8,6 +8,6 @@ python3 process.py
 
 python3 eval.py
 
-# open processed.csv
+# open processed.csv via csvtool (sudo apt-get install csvtool)
 
-open processed.csv
+csvtool readable processed.csv | view -
