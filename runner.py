@@ -7,7 +7,7 @@ from concurrent.futures import ProcessPoolExecutor
 
 MS_OF_24_HOURS = 24 * 60 * 60 * 1000
 
-JJBMC_CMD = "java -jar ../../../../JJBMC.jar -mas {mas} -u {u}{inline} -tr -c -kt -timeout={timeout} BlockQuickSort.java {function}"
+JJBMC_CMD = "java -jar ../../../../JJBMC.jar -mas {mas} -u {u}{inline} -tr -c -kt -timeout={timeout} BlockQuickSort.java {function} -j=\"--stop-on-fail\""
 
 EASY_WORKERS = 4
 MEDIUM_WORKERS = 2
@@ -17,18 +17,18 @@ TASKS = [
     (EASY_WORKERS, [
         "swap",
         "sortPair",
-    ], list(range(3, 10)), 3),
+    ], list(range(1, 10)), 3),
     (MEDIUM_WORKERS, [
         "partition",
         "permutation",
         "medianOf3",
         "insertionSort",
-    ], list(range(3, 8)), 2),
+    ], list(range(1, 8)), 2),
     (HARD_WORKERS, [
         "quickSortRec",
         "quickSortRecImpl",
         "hoareBlockPartition",
-    ], list(range(3, 7)), 1),
+    ], list(range(1, 7)), 1),
 ]
 
 HOME_FOLDER = os.getcwd()
@@ -73,8 +73,9 @@ def worker(iteration, bound, function):
     os.makedirs(folder, exist_ok=True)
 
     process_JJBMC_example(folder, bound, function, '')
-    process_JJBMC_example(folder, bound, function, ' -fil')
-    process_JJBMC_example(folder, bound, function, ' -fi')
+    if function not in ['quickSortRec', 'quickSortRecImpl'] or bound < 4:
+        process_JJBMC_example(folder, bound, function, ' -fil')
+        process_JJBMC_example(folder, bound, function, ' -fi')
 
 
 def run(workers, tasks):
