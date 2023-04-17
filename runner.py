@@ -14,26 +14,26 @@ MS_OF_24_HOURS = 24 * 60 * 60 * 1000
 
 JJBMC_CMD = "java -jar ../../../../../JJBMC.jar -mas {mas} -u {u}{inline} -tr -c -kt -timeout={timeout} BlockQuickSort.java {function} -j=\"--stop-on-fail\""
 
-EASY_WORKERS = 4
-MEDIUM_WORKERS = 2
-HARD_WORKERS = 1
+EASY_WORKERS = 24
+MEDIUM_WORKERS = 12
+HARD_WORKERS = 4
 
 TASKS = [
     (EASY_WORKERS, [
         "swap",
         "sortPair",
-    ], list(range(1, 10)), 3),
+    ], list(range(1, 15)), 3),
     (MEDIUM_WORKERS, [
         "partition",
-        "permutation",
         "medianOf3",
         "insertionSort",
-    ], list(range(1, 8)), 2),
+    ], list(range(1, 13)), 3),
     (HARD_WORKERS, [
+        "permutation",
         "quickSortRec",
         "quickSortRecImpl",
         "hoareBlockPartition",
-    ], list(range(1, 7)), 1),
+    ], list(range(1, 10)), 2),
 ]
 
 HOME_FOLDER = os.getcwd()
@@ -83,8 +83,8 @@ def worker(iteration, bound, function):
     os.makedirs(folder, exist_ok=True)
 
     process_JJBMC_example(folder, bound, function, '')
+    process_JJBMC_example(folder, bound, function, ' -fil')
     if function not in ['quickSortRec', 'quickSortRecImpl'] or bound < 4:
-        process_JJBMC_example(folder, bound, function, ' -fil')
         process_JJBMC_example(folder, bound, function, ' -fi')
 
 
