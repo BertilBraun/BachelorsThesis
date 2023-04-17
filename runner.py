@@ -1,4 +1,9 @@
+# pip install ushlex
 import os
+
+if os.name != 'nt':
+    import shlex
+
 import shutil
 import subprocess
 from concurrent.futures import ProcessPoolExecutor
@@ -52,7 +57,12 @@ def process_JJBMC_example(folder, bound, function, inline_arg):
 
     # Run the command using subprocess and write output to file and wait for it to finish
     os.chdir(folder)
-    p = subprocess.Popen(cmd.split(' '), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    # if is windows
+    if os.name == 'nt':
+        subprocess_command = cmd.split(' ')
+    else:
+        subprocess_command = shlex.split(cmd)
+    p = subprocess.Popen(subprocess_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     with open("JJBMC output{0}.txt".format(inline_arg), "w") as f:
         # Write stdout and stderr to file
