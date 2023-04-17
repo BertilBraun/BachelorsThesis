@@ -307,16 +307,11 @@ public class BlockQuickSort {
             //@ loop_invariant upper == last - begin - (startLeft + numLeft - 1 - lowerI);
             //@ loop_invariant (\forall int i; startLeft <= i && i < lowerI; indexL[i] == indexL[i + 1] - 1);
             //@
-            //@ // IF THE LOOP IS NOT OVER (LOOP END MUST FOLLOW FROM THESE CONSTRAINTS)
+            //@ loop_invariant (\forall int i; begin + indexL[startLeft] <= i && i < begin + upper; pivot <= array[i]);
+            //@ loop_invariant (\forall int i; begin + upper < i && i <= last; pivot <= array[i]);
             //@
-            //@ loop_invariant lowerI >= startLeft ==> (\forall int i; begin + indexL[startLeft] <= i && i < begin + upper; pivot <= array[i]);
             //@ loop_invariant lowerI >= startLeft ==> indexL[lowerI] == upper || array[begin + upper] <= pivot; 
-            //@ loop_invariant lowerI >= startLeft ==> (\forall int i; begin + upper < i && i <= last; pivot <= array[i]);
-            //@
-            //@ // IF THE LOOP IS OVER
-            //@
-            //@ loop_invariant lowerI < startLeft ==> (\forall int i; begin <= i && i <= begin + upper; array[i] <= pivot);
-            //@ loop_invariant lowerI < startLeft ==> (\forall int i; begin + upper < i && i <= last; pivot <= array[i]);
+            //@ loop_invariant lowerI < startLeft ==> array[begin + upper] <= pivot;
             //@
             //@ // Values inside the range [begin, last) are a valid permutation. // TODO should be done with permutation()
             //@ loop_invariant (\forall int i; 0 <= i && i < array.length; (\num_of int j; 0 <= j && j < array.length; array[i] == array[j]) == (\num_of int j; 0 <= j && j < array.length; array[i] == \old(array[j])));
@@ -354,16 +349,11 @@ public class BlockQuickSort {
             //@ loop_invariant upper == last - begin - (startRight + numRight - 1 - lowerI);
             //@ loop_invariant (\forall int i; startRight <= i && i < lowerI; indexR[i] == indexR[i + 1] - 1);
             //@
-            //@ // IF THE LOOP IS NOT OVER (LOOP END MUST FOLLOW FROM THESE CONSTRAINTS)
+            //@ loop_invariant (\forall int i; begin <= i && i < last - upper; array[i] <= pivot);
+            //@ loop_invariant (\forall int i; last - upper < i && i <= last - indexR[startRight]; array[i] <= pivot);
             //@
-            //@ loop_invariant lowerI >= startRight ==> (\forall int i; begin <= i && i < last - upper; array[i] <= pivot);
             //@ loop_invariant lowerI >= startRight ==> indexR[lowerI] == upper || pivot <= array[last - upper];
-            //@ loop_invariant lowerI >= startRight ==> (\forall int i; last - upper < i && i <= last - indexR[startRight]; array[i] <= pivot);
-            //@
-            //@ // IF THE LOOP IS OVER
-            //@
-            //@ loop_invariant lowerI < startRight ==> (\forall int i; last - upper <= i && i <= last; pivot <= array[i]);
-            //@ loop_invariant lowerI < startRight ==> (\forall int i; begin <= i && i < last - upper; array[i] <= pivot);
+            //@ loop_invariant lowerI < startRight ==> pivot <= array[last - upper];
             //@
             //@ // Values inside the range [begin, last) are a valid permutation. // TODO should be done with permutation()
             //@ loop_invariant (\forall int i; 0 <= i && i < array.length; (\num_of int j; 0 <= j && j < array.length; array[i] == array[j]) == (\num_of int j; 0 <= j && j < array.length; array[i] == \old(array[j])));
