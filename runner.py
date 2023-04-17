@@ -7,7 +7,7 @@ from concurrent.futures import ProcessPoolExecutor
 
 MS_OF_24_HOURS = 24 * 60 * 60 * 1000
 
-JJBMC_CMD = "java -jar ../../../../JJBMC.jar -mas {mas} -u {u}{inline} -tr -c -kt -timeout={timeout} BlockQuickSort.java {function} -j=\"--stop-on-fail\""
+JJBMC_CMD = "java -jar ../../../../../JJBMC.jar -mas {mas} -u {u}{inline} -tr -c -kt -timeout={timeout} BlockQuickSort.java {function} -j=\"--stop-on-fail\""
 
 EASY_WORKERS = 4
 MEDIUM_WORKERS = 2
@@ -90,9 +90,9 @@ if __name__ == "__main__":
     for i in range(5):
         for (workers, functions, bounds, times_per_iteration) in TASKS:
             tasks = []
-            for bound in bounds:
-                for function in functions:
-                    tasks.append((bound, function))
-
             for j in range(times_per_iteration):
-                run(i * times_per_iteration + j, workers, tasks)
+                for bound in bounds:
+                    for function in functions:
+                        tasks.append((i * times_per_iteration + j, bound, function))
+
+            run(workers, tasks)
