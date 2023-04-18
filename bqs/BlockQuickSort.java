@@ -294,7 +294,7 @@ public class BlockQuickSort {
             //@ loop_invariant (\forall int i; begin + upper < i && i <= last; pivot <= array[i]);
             //@
             //@ loop_invariant lowerI >= startLeft ==> indexL[lowerI] == upper || array[begin + upper] <= pivot; 
-            //@ loop_invariant lowerI < startLeft ==> array[begin + upper] <= pivot;
+            //@ loop_invariant lowerI < startLeft && upper >= 0 ==> array[begin + upper] <= pivot;
             //@
             //@ // Values inside the range [begin, last) are a valid permutation. // TODO should be done with permutation()
             //@ loop_invariant (\forall int i; 0 <= i && i < array.length; (\num_of int j; 0 <= j && j < array.length; array[i] == array[j]) == (\num_of int j; 0 <= j && j < array.length; array[i] == \old(array[j])));
@@ -335,7 +335,7 @@ public class BlockQuickSort {
             //@ loop_invariant (\forall int i; last - upper < i && i <= last - indexR[startRight]; array[i] <= pivot);
             //@
             //@ loop_invariant lowerI >= startRight ==> indexR[lowerI] == upper || pivot <= array[last - upper];
-            //@ loop_invariant lowerI < startRight ==> pivot <= array[last - upper];
+            //@ loop_invariant lowerI < startRight && upper >= 0 ==> pivot <= array[last - upper];
             //@
             //@ // Values inside the range [begin, last) are a valid permutation. // TODO should be done with permutation()
             //@ loop_invariant (\forall int i; 0 <= i && i < array.length; (\num_of int j; 0 <= j && j < array.length; array[i] == array[j]) == (\num_of int j; 0 <= j && j < array.length; array[i] == \old(array[j])));
