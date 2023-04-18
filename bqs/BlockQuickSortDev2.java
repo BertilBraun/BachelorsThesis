@@ -1,4 +1,4 @@
-public class BlockQuickSort {
+public class BlockQuickSortDev2 {
 
     private static final int BLOCKSIZE = 2; // \paper(128)
     private static final int IS_THRESH = 3; // \paper(16) must be a minimum of 3, since we use 3 elements for pivot selection
@@ -53,7 +53,8 @@ public class BlockQuickSort {
         int startRight = 0;
         int num = 0;
 
-        //@ // TODO (even possible?!)
+        /*
+        // TODO (even possible?!)
         //@ loop_invariant originalBegin <= begin && begin <= last && last < originalEnd - 1;
         //@ loop_invariant 0 <= numLeft && numLeft <= BLOCKSIZE;
         //@ loop_invariant 0 <= numRight && numRight <= BLOCKSIZE;
@@ -82,12 +83,12 @@ public class BlockQuickSort {
         //@ // Values inside the range [originalBegin, originalEnd) are a valid permutation. // TODO should be done with permutation()
         //@ loop_invariant (\forall int i; 0 <= i && i < array.length; (\num_of int j; 0 <= j && j < array.length; array[i] == array[j]) == (\num_of int j; 0 <= j && j < array.length; array[i] == \old(array[j])));
         //@
-        //@ loop_modifies array[begin .. last], last, begin, numLeft, numRight, startLeft, startRight, indexL[0 .. BLOCKSIZE - 1], indexR[0 .. BLOCKSIZE - 1], num;
+        //@ loop_modifies array[begin .. last], last, begin, numLeft, numRight, startLeft, startRight, indexL[0 .. BLOCKSIZE - 1], indexR[0 .. BLOCKSIZE // - 1], num;
         //@ loop_decreases last - begin;
+         */
         while (last - begin + 1 > 2 * BLOCKSIZE) {
             if (numLeft == 0) {
                 startLeft = 0;
-                /*
                 //@ loop_invariant 0 <= j && j <= BLOCKSIZE;
                 //@ // Maintain numLeft count
                 //@ loop_invariant numLeft == (\num_of int k; 0 <= k && k < j; pivot <= array[begin + k]);
@@ -98,7 +99,6 @@ public class BlockQuickSort {
                 //@
                 //@ loop_modifies numLeft, indexL[0 .. BLOCKSIZE - 1], j;
                 //@ loop_decreases BLOCKSIZE - j;
-                 */
                 for (int j = 0; j < BLOCKSIZE; j++) {
                     indexL[numLeft] = j;
                     numLeft += array[begin + j] >= pivot ? 1 : 0;
@@ -106,7 +106,6 @@ public class BlockQuickSort {
             }
             if (numRight == 0) {
                 startRight = 0;
-                /*
                 //@ loop_invariant 0 <= j && j <= BLOCKSIZE;
                 //@ // Maintain numRight count
                 //@ loop_invariant numRight == (\num_of int k; 0 <= k && k < j; array[last - k] <= pivot);
@@ -117,7 +116,6 @@ public class BlockQuickSort {
                 //@
                 //@ loop_modifies numRight, indexR[0 .. BLOCKSIZE - 1], j;
                 //@ loop_decreases BLOCKSIZE - j;
-                */
                 for (int j = 0; j < BLOCKSIZE; j++) {
                     indexR[numRight] = j;
                     numRight += pivot >= array[last - j] ? 1 : 0;
@@ -126,7 +124,6 @@ public class BlockQuickSort {
 
             num = (numLeft < numRight) ? numLeft : numRight;
             if (num > 0) {
-                /*
                 //@ loop_invariant 0 <= j && j <= num;
                 //@ 
                 //@ // Values inside the range [originalBegin, begin + indexL[startLeft + j]) are less than or equal to pivot.
@@ -148,7 +145,6 @@ public class BlockQuickSort {
                 //@
                 //@ loop_modifies array[begin + indexL[startLeft] .. begin + indexL[startLeft + num - 1]], array[last - indexR[startRight + num - 1] .. last - indexR[startRight]], j;
                 //@ loop_decreases num - j;
-                */
                 for (int j = 0; j < num; j++) {
                     swap(array, begin + indexL[startLeft + j], last - indexR[startRight + j]);
                 }
