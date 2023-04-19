@@ -10,7 +10,7 @@ from concurrent.futures import ProcessPoolExecutor
 
 # this file should run a command for multiple inputs sequentially
 
-MS_OF_24_HOURS = 24 * 60 * 60 * 1000
+MS_OF_10_HOURS = 10 * 60 * 60 * 1000
 
 JJBMC_CMD = "java -jar ../../../../../JJBMC.jar -mas {mas} -u {u}{inline} -tr -c -kt -timeout={timeout} BlockQuickSort.java {function} -j=--stop-on-fail"
 
@@ -27,7 +27,7 @@ TASKS = [
         "partition",
         "medianOf3",
         "insertionSort",
-    ], list(range(1, 13)), 3),
+    ], list(range(1, 12)), 3),
     (HARD_WORKERS, [
         "permutation",
         "hoareBlockPartition",
@@ -55,7 +55,7 @@ def process_JJBMC_example(folder, bound, function, inline_arg):
     cmd = JJBMC_CMD.format(
         mas=bound,
         u=bound + 2,
-        timeout=MS_OF_24_HOURS,
+        timeout=MS_OF_10_HOURS,
         function=function,
         inline=inline_arg
     )
@@ -80,7 +80,7 @@ def process_JJBMC_example(folder, bound, function, inline_arg):
         f.write(stdout)
         f.write(stderr)
 
-    p.wait(timeout=MS_OF_24_HOURS / 1000)
+    p.wait(timeout=MS_OF_10_HOURS / 1000)
     shutil.copyfile(f"tmp/xmlout.xml", f"xmlout{inline_arg}.xml")
 
     if not "SUCCESS" in stdout and not "SUCCESS" in stderr:
