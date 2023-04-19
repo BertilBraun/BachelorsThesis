@@ -4,45 +4,9 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "RunPredefinedPartitionTest",
-            "type": "shell",
-            "command": "wsl ./gradlew fatJar && java -jar JJBMC.jar -mas 3 -u 7 -tr -c -kt -timeout=18000000 bqs/BlockQuickSort.java hoareBlockPartition -rv upper -rv lowerI -rv indexL -rv indexR -rv array -rv startLeft -rv startRight -rv numLeft -rv numRight -rv num -rv originalBegin -rv originalEnd -rv swapI -rv swapJ -rv i -rv j -rv begin -rv end -rv originalArray -rv pivot -rv stateAfterSwap -rv stateBeforeSwap -rv lastNumLeft -rv lastNumRight -rv shiftL -rv shiftR -rv last && java -jar JJBMC.jar -mas 4 -u 7 -tr -c -kt -timeout=18000000 bqs/BlockQuickSort.java hoareBlockPartition -rv upper -rv lowerI -rv indexL -rv indexR -rv array -rv startLeft -rv startRight -rv numLeft -rv numRight -rv num -rv originalBegin -rv originalEnd -rv swapI -rv swapJ -rv i -rv j -rv begin -rv end -rv originalArray -rv pivot -rv stateAfterSwap -rv stateBeforeSwap -rv lastNumLeft -rv lastNumRight -rv shiftL -rv shiftR -rv last",
-            "problemMatcher": [],
-            "runOptions": {
-                "reevaluateOnRerun": false
-            }
-        },
-        {
-            "label": "RunQuickSortTest",
-            "type": "shell",
-            "command": "wsl ./gradlew fatJar && java -jar JJBMC.jar -mas 5 -u 7 -rv begin1 -rv end1 -rv array -rv isInsert -rv afterPivot -rv afterFirst -rv afterSecond -rv range -rv IS_THRESH -rv pivot -rv arrayLength -rv original -rv containsZero -tr -c -timeout=36000000 \"bqs/BlockQuickSort.java\" quickSortRecImpl",
-            "problemMatcher": [],
-            "runOptions": {
-                "reevaluateOnRerun": false
-            }
-        },
-        {
             "label": "Run",
             "type": "shell",
-            "command": "java -jar JJBMC.jar -mas ${input:mas} -d -tr -c -timeout=18000000 \"${input:file}.java\" ${input:function}",
-            "problemMatcher": [],
-            "runOptions": {
-                "reevaluateOnRerun": false
-            }
-        },
-        {
-            "label": "Run without Loops",
-            "type": "shell",
-            "command": "java -jar JJBMC.jar -mas ${input:mas} -d -fil -tr -c -timeout=18000000 \"${input:file}.java\" ${input:function}",
-            "problemMatcher": [],
-            "runOptions": {
-                "reevaluateOnRerun": false
-            }
-        },
-        {
-            "label": "RunDocker",
-            "type": "shell",
-            "command": "run.bat ${input:file} ${input:function}",
+            "command": "wsl ./gradlew fatJar && java -jar JJBMC.jar -mas ${input:mas} ${input:fi} -kt -tr -c -timeout=18000000 \"${input:file}.java\" ${input:function}",
             "problemMatcher": [],
             "runOptions": {
                 "reevaluateOnRerun": false
@@ -58,18 +22,9 @@
             }
         },
         {
-            "label": "Recompile and Run",
-            "type": "shell",
-            "command": "wsl ./gradlew fatJar && java -jar JJBMC.jar -mas ${input:mas} -d -tr -c -timeout=18000000 \"${input:file}.java\" ${input:function}",
-            "problemMatcher": [],
-            "runOptions": {
-                "reevaluateOnRerun": false
-            }
-        },
-        {
             "label": "Run Testing",
             "type": "shell",
-            "command": "wsl ./gradlew fatJar && cd bqs && javac BlockQuickSortTesting.java && java BlockQuickSortTesting",
+            "command": "wsl ./gradlew fatJar && cd bqs && javac BlockQuickSortTesting.java && java BlockQuickSortTesting && cd ..",
             "problemMatcher": [],
             "runOptions": {
                 "reevaluateOnRerun": false
@@ -82,6 +37,17 @@
             "description": "Max Array Size: ",
             "default": "5",
             "type": "promptString"
+        },
+        {
+            "id": "fi",
+            "description": "Force Inlining: ",
+            "default": "",
+            "type": "pickString",
+            "options": [
+                "-fi",
+                "-fil",
+                ""
+            ]
         },
         {
             "id": "file",

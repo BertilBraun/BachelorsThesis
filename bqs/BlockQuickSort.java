@@ -38,6 +38,12 @@ public class BlockQuickSort {
         int[] indexL = new int[BLOCKSIZE];
         int[] indexR = new int[BLOCKSIZE];
 
+        int[] originalArray = new int[array.length];
+        for (int i = 0; i < array.length; i++) {
+            originalArray[i] = array[i];
+        }
+        originalArray[array.length - 1] = originalArray[array.length - 1];
+
         int begin = originalBegin;
         int end = originalEnd;
 
@@ -85,6 +91,30 @@ public class BlockQuickSort {
         //@ loop_modifies array[begin .. last], last, begin, numLeft, numRight, startLeft, startRight, indexL[0 .. BLOCKSIZE - 1], indexR[0 .. BLOCKSIZE - 1], num;
         //@ loop_decreases last - begin;
         while (last - begin + 1 > 2 * BLOCKSIZE) {
+            boolean did_run_loop = true;
+            int lastNumLeft = numLeft;
+            int lastNumRight = numRight;
+            int[] lastArray = new int[array.length];
+            for (int i = 0; i < array.length; i++) {
+                lastArray[i] = array[i];
+            }
+            lastArray[array.length - 1] = lastArray[array.length - 1];
+            int lastBegin = begin;
+            int lastLast = last;
+            int[] lastIndexL = new int[BLOCKSIZE];
+            for (int i = 0; i < BLOCKSIZE; i++) {
+                lastIndexL[i] = indexL[i];
+            }
+            lastIndexL[BLOCKSIZE - 1] = lastIndexL[BLOCKSIZE - 1];
+            int[] lastIndexR = new int[BLOCKSIZE];
+            for (int i = 0; i < BLOCKSIZE; i++) {
+                lastIndexR[i] = indexR[i];
+            }
+            lastIndexR[BLOCKSIZE - 1] = lastIndexR[BLOCKSIZE - 1];
+            int lastStartLeft = startLeft;
+            int lastStartRight = startRight;
+            int lastNum = num;
+
             if (numLeft == 0) {
                 startLeft = 0;
                 /*
