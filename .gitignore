@@ -20,5 +20,6 @@ JJBMC.jar
 
 bin/*
 bqs/results/*
+bqs/run/*
 **/out.csv
 **/processed.csv

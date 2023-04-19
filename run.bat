@@ -21,4 +21,4 @@ copy bqs\BlockQuickSort.java bqs\run\%current_time%
 
 wsl ./gradlew fatJar
 
-java -jar JJBMC.jar -mas 6 -u 8 -tr -c -kt -timeout=36000000 bqs\run\%current_time%\BlockQuickSort.java hoareBlockPartition -rv indexL -rv indexR -rv array -rv startLeft -rv startRight -rv numLeft -rv numRight -rv num -rv originalBegin -rv originalEnd -rv begin -rv end -rv originalArray -rv i -rv j -rv last -rv did_run_loop -rv lastNumLeft -rv lastNumRight -rv lastArray -rv lastBegin -rv lastLast -rv lastIndexL -rv lastIndexR -rv lastStartLeft -rv lastNum -rv pivot -rv pivotPosition
+java -jar JJBMC.jar -mas 6 -u 8 -tr -c -kt -timeout=36000000 bqs\run\%current_time%\BlockQuickSort.java hoareBlockPartition -rv indexL -rv indexR -rv array -rv startLeft -rv startRight -rv numLeft -rv numRight -rv num -rv originalBegin -rv originalEnd -rv begin -rv end -rv originalArray -rv i -rv j -rv last -rv did_run_loop -rv lastNumLeft -rv lastNumRight -rv lastArray -rv lastBegin -rv lastLast -rv lastIndexL -rv lastIndexR -rv lastStartLeft -rv lastNum -rv pivot -rv pivotPosition -j=--stop-on-fail

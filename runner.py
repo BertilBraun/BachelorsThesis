@@ -31,14 +31,14 @@ TASKS = [
         ("medianOf3", list(range(1, 14)), 3),
     ]),
     (MEDIUM_WORKERS, [
-        ("partition", list(range(1, 13)), 3),  # rewrite to add bounds per function, not per block
+        ("partition", list(range(1, 13)), 3),
         ("insertionSort", list(range(1, 9)), 3),
+        ("quickSortRec", list(range(1, 12)), 2),  # TODO no idea whether this is slow
     ]),
     (HARD_WORKERS, [
         ("permutation", list(range(1, 7)), 2),
         ("hoareBlockPartition", list(range(1, 7)), 2),  # TODO no idea how slow this is
-        ("quickSortRec", list(range(1, 8)), 2),
-        ("quickSortRecImpl", list(range(1, 6)), 2),
+        ("quickSortRecImpl", list(range(1, 5)), 2),  # TODO 6 should be possible, even though it takes about 15h
     ])
 ]
 
