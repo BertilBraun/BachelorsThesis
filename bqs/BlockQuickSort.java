@@ -60,7 +60,7 @@ public class BlockQuickSort {
         int num = 0;
 
         //@ // TODO (even possible?!)
-        //@ loop_invariant originalBegin <= begin && begin <= last + 1 && last < originalEnd - 1;
+        //@ loop_invariant originalBegin <= begin && begin <= last + 1 && last < originalEnd - 1; // TODO last + 1 is weird
         //@ loop_invariant 0 <= numLeft && numLeft <= BLOCKSIZE;
         //@ loop_invariant 0 <= numRight && numRight <= BLOCKSIZE;
         //@ loop_invariant 0 <= startLeft && startLeft <= BLOCKSIZE;
@@ -68,12 +68,12 @@ public class BlockQuickSort {
         //@ loop_invariant num == ((numLeft >= numRight) ? numRight : numLeft);
         //@
         //@ // All elements of indexL are in the range [0, last - begin) and are in ascending order.
-        //@ loop_invariant (\forall int i; 0 <= i && i < numLeft; 0 <= indexL[i] && indexL[i] <= BLOCKSIZE && indexL[i] < last - begin);
+        //@ loop_invariant (\forall int i; 0 <= i && i < numLeft; 0 <= indexL[i] && indexL[i] <= BLOCKSIZE && indexL[i] <= last - begin); // TODO indexL[i] <= last - begin is weird
         //@ loop_invariant (\forall int i; 0 <= i && i < numLeft - 1; indexL[i] < indexL[i + 1]);
         //@ loop_invariant (\forall int i; num <= i && i < numLeft; pivot <= array[begin + indexL[i]]);
         //@
         //@ // All elements of indexR are in the range [0, last - begin) and are in descending order.
-        //@ loop_invariant (\forall int i; 0 <= i && i < numRight; 0 <= indexR[i] && indexR[i] <= BLOCKSIZE && indexR[i] <= last - begin);
+        //@ loop_invariant (\forall int i; 0 <= i && i < numRight; 0 <= indexR[i] && indexR[i] <= BLOCKSIZE && indexR[i] <= last - begin); // TODO indexR[i] <= last - begin is weird
         //@ loop_invariant (\forall int i; 0 <= i && i < numRight - 1; indexR[i] < indexR[i + 1]);
         //@ loop_invariant (\forall int i; num <= i && i < numRight; array[last - indexR[i]] <= pivot);
         //@
