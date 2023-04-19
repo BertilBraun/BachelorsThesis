@@ -41,6 +41,7 @@ TASKS = [
 HOME_FOLDER = os.getcwd()
 BASE_FOLDER = HOME_FOLDER + "/bqs/results"
 MAX_BOUND = 100
+ITERATIONS = 5
 
 failed_examples = {}
 
@@ -113,7 +114,7 @@ def run(workers, tasks):
 
 
 if __name__ == "__main__":
-    for i in range(5):
+    for i in range(ITERATIONS):
         for (workers, functions, bounds, times_per_iteration) in TASKS:
             tasks = []
             for j in range(times_per_iteration):
