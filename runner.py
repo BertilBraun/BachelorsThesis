@@ -15,8 +15,8 @@ MS_OF_24_HOURS = 24 * 60 * 60 * 1000
 JJBMC_CMD = "java -jar ../../../../../JJBMC.jar -mas {mas} -u {u}{inline} -tr -c -kt -timeout={timeout} BlockQuickSort.java {function} -j=--stop-on-fail"
 
 EASY_WORKERS = 24
-MEDIUM_WORKERS = 12
-HARD_WORKERS = 4
+MEDIUM_WORKERS = 24
+HARD_WORKERS = 12
 
 TASKS = [
     (EASY_WORKERS, [
