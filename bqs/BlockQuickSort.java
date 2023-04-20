@@ -74,12 +74,12 @@ public class BlockQuickSort {
             //@ loop_invariant 0 <= num && num <= BLOCKSIZE;
             //@ loop_invariant numRight == 0 || numLeft == 0;
             //@
-            //@ loop_invariant (\forall int i; 0 <= i < numLeft; indexL[startLeft + i] <= last - begin);
+            //@ loop_invariant (\forall int i; 0 <= i < numLeft; indexL[startLeft + i] < last - begin);
             //@ loop_invariant (\forall int i; 0 <= i < BLOCKSIZE; 0 <= indexL[i] && indexL[i] < BLOCKSIZE);
             //@ loop_invariant (\forall int i; 0 <= i < numLeft - 1; indexL[i] < indexL[i + 1]);
             //@ loop_invariant (\forall int i; 0 <= i < numLeft; pivot <= array[begin + indexL[startLeft + i]]);
             //@
-            //@ loop_invariant (\forall int i; 0 <= i < numRight; indexR[startRight + i] <= last - begin);
+            //@ loop_invariant (\forall int i; 0 <= i < numRight; indexR[startRight + i] < last - begin);
             //@ loop_invariant (\forall int i; 0 <= i < BLOCKSIZE; 0 <= indexR[i] && indexR[i] < BLOCKSIZE);
             //@ loop_invariant (\forall int i; 0 <= i < numRight - 1; indexR[i] < indexR[i + 1]);
             //@ loop_invariant (\forall int i; 0 <= i < numRight; array[last - indexR[startRight + i]] <= pivot);
