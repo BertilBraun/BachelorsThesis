@@ -66,7 +66,6 @@ public class BlockQuickSort {
             int indexL1 = indexL[1];
             int indexR1 = indexR[1];
 
-            //@ // TODO (even possible?!)
             //@ loop_invariant originalBegin <= begin && begin <= last && last < originalEnd - 1;
             //@ loop_invariant 0 <= numLeft && numLeft <= BLOCKSIZE;
             //@ loop_invariant 0 <= numRight && numRight <= BLOCKSIZE;
@@ -75,19 +74,15 @@ public class BlockQuickSort {
             //@ loop_invariant 0 <= num && num <= BLOCKSIZE;
             //@ loop_invariant numRight == 0 || numLeft == 0;
             //@
-            //@ // All elements of indexL are in the range [0, last - begin) and are in ascending order.
-            //@ loop_invariant (\forall int i; 0 <= i < numLeft; indexL[i] <= last - begin); // TODO indexL[i] <= last - begin is weird
+            //@ loop_invariant (\forall int i; 0 <= i < numLeft; indexL[startLeft + i] <= last - begin);
             //@ loop_invariant (\forall int i; 0 <= i < BLOCKSIZE; 0 <= indexL[i] && indexL[i] < BLOCKSIZE);
             //@ loop_invariant (\forall int i; 0 <= i < numLeft - 1; indexL[i] < indexL[i + 1]);
             //@ loop_invariant (\forall int i; 0 <= i < numLeft; pivot <= array[begin + indexL[startLeft + i]]);
             //@
-            //@ // All elements of indexR are in the range [0, last - begin) and are in descending order.
-            //@ loop_invariant (\forall int i; 0 <= i < numRight; indexR[i] <= last - begin); // TODO indexR[i] <= last - begin is weird
+            //@ loop_invariant (\forall int i; 0 <= i < numRight; indexR[startRight + i] <= last - begin);
             //@ loop_invariant (\forall int i; 0 <= i < BLOCKSIZE; 0 <= indexR[i] && indexR[i] < BLOCKSIZE);
             //@ loop_invariant (\forall int i; 0 <= i < numRight - 1; indexR[i] < indexR[i + 1]);
             //@ loop_invariant (\forall int i; 0 <= i < numRight; array[last - indexR[startRight + i]] <= pivot);
-            //@
-            //@ // TODO: restrict numLeft, numRight, startLeft, startRight, last, begin.
             //@
             //@ // The elements in the range [originalBegin, begin + indexL[startLeft]) are less than or equal pivot
             //@ loop_invariant startLeft < BLOCKSIZE ==> (\forall int i; originalBegin <= i < begin + indexL[startLeft]; array[i] <= pivot);
@@ -95,7 +90,7 @@ public class BlockQuickSort {
             //@
             //@ // The elements in the range (last - indexR[startRight], originalEnd) are greater than or equal pivot 
             //@ loop_invariant startRight < BLOCKSIZE ==> (\forall int i; last - indexR[startRight] < i < originalEnd; pivot <= array[i]);
-            //@ loop_invariant startRight == BLOCKSIZE ==> (\forall int i; last < i < originalEnd; pivot <= array[i]);
+            //@ loop_invariant startRight == BLOCKSIZE ==> (\forall int i; last < i < originalEnd - 1; pivot <= array[i]);
             //@
             //@ // Values inside the range [originalBegin, originalEnd) are a valid permutation. // TODO should be done with permutation()
             //@ loop_invariant (\forall int i; originalBegin <= i < originalEnd; (\num_of int j; originalBegin <= j < originalEnd; array[i] == array[j]) == (\num_of int j; originalBegin <= j < originalEnd; array[i] == \old(array[j])));
@@ -209,6 +204,27 @@ public class BlockQuickSort {
                 last -= (numRight == 0) ? BLOCKSIZE : 0;
             }
         }
+
+        int[] afterLoopArray = new int[array.length];
+        for (int i = 0; i < array.length; i++) {
+            afterLoopArray[i] = array[i];
+        }
+        afterLoopArray[array.length - 1] = array[array.length - 1];
+        int afterLoopBegin = begin;
+        int afterLoopLast = last;
+        int[] afterLoopIndexL = new int[BLOCKSIZE];
+        for (int i = 0; i < BLOCKSIZE; i++) {
+            afterLoopIndexL[i] = indexL[i];
+        }
+        afterLoopIndexL[BLOCKSIZE - 1] = afterLoopIndexL[BLOCKSIZE - 1];
+        int[] afterLoopIndexR = new int[BLOCKSIZE];
+        for (int i = 0; i < BLOCKSIZE; i++) {
+            afterLoopIndexR[i] = indexR[i];
+        }
+        afterLoopIndexR[BLOCKSIZE - 1] = afterLoopIndexR[BLOCKSIZE - 1];
+        int afterLoopStartLeft = startLeft;
+        int afterLoopStartRight = startRight;
+        int afterLoopNum = num;
 
         int shiftR = 0, shiftL = 0;
         if (numRight == 0 && numLeft == 0) {
@@ -700,8 +716,12 @@ public class BlockQuickSort {
         return hoareBlockPartition(array, begin + 1, end - 1, mid);
     }
 
+    /*@ requires a > 0;
+      @ ensures 1 <= \result && \result < 100;
+      @ pure
+      @*/
     public static double log(double a) {
-        // The error is less than 10^-3 for all values of 0 < a < 1000.
+        // The error is less than 10^-3 for all values of 0 < a < 1000 compared to Math.log().
         if (a <= 0) {
             throw new IllegalArgumentException("Argument must be positive.");
         }
