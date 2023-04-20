@@ -46,8 +46,10 @@ def process_JJBMC_example(folder, bound, iter, function, inline_arg):
         out_file.write(f"{bound},{iter},{function},{inline_arg},NOT_DONE,N/A\n")
     elif "FAILURE" in content:
         out_file.write(f"{bound},{iter},{function},{inline_arg},FAILURE,N/A\n")
+    elif "timed out" in content or "cli.CLI.translateAndRunJBMC" in content:
+        out_file.write(f"{bound},{iter},{function},{inline_arg},TIMEOUT,N/A\n")
     elif "JBMC did not terminate as expected" in content:
-        out_file.write(f"{bound},{iter},{function},{inline_arg},TIMEOUT / MEMORY_LIMIT,N/A\n")
+        out_file.write(f"{bound},{iter},{function},{inline_arg},MEMORY_LIMIT,N/A\n")
     else:
         out_file.write(f"{bound},{iter},{function},{inline_arg},ERROR,N/A\n")
 

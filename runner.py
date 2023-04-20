@@ -26,6 +26,7 @@ JJBMC_CMD = "java -jar ../../../../../JJBMC.jar -mas {mas} -u {u}{inline} -tr -c
 EASY_WORKERS = 24
 MEDIUM_WORKERS = 24
 HARD_WORKERS = 12
+VERY_HARD_WORKERS = 4
 
 TASKS = [
     (EASY_WORKERS, [
@@ -41,6 +42,8 @@ TASKS = [
     (HARD_WORKERS, [
         ("permutation", list(range(1, 7)), 2),
         ("hoareBlockPartition", list(range(1, 7)), 2),  # TODO no idea how slow this is
+    ]),
+    (VERY_HARD_WORKERS, [
         ("quickSortRecImpl", list(range(1, 5)), 2),  # TODO 6 should be possible, even though it takes about 15h
     ])
 ]
@@ -66,7 +69,8 @@ def process_JJBMC_example(folder, bound, function, inline_arg):
             f"Skipping function {function} with bound {bound} and inline arg {inline_arg} because previous bound took too long")
         return
 
-    shutil.copyfile(f"{HOME_FOLDER}/bqs/BlockQuickSort.java", f"{folder}/BlockQuickSort.java")
+    if not os.path.exists(f"{folder}/BlockQuickSort.java"):
+        shutil.copyfile(f"{HOME_FOLDER}/bqs/BlockQuickSort.java", f"{folder}/BlockQuickSort.java")
 
     cmd = JJBMC_CMD.format(
         mas=bound,
@@ -85,18 +89,19 @@ def process_JJBMC_example(folder, bound, function, inline_arg):
     # Run the command using subprocess and write output to file and wait for it to finish
     os.chdir(folder)
     p = subprocess.Popen(subprocess_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    p.wait(timeout=MS_OF_10_HOURS / 1000)
+
+    stdout = p.stdout.read().decode("utf-8")
+    stderr = p.stderr.read().decode("utf-8")
+    print(f"Finished running function {function} with bound {bound} and inline arg {inline_arg}")
+    print(stdout)
+    print(stderr)
 
     with open(output_file_name, "w") as f:
         # Write stdout and stderr to file
-        stdout = p.stdout.read().decode("utf-8")
-        stderr = p.stderr.read().decode("utf-8")
-        print(stdout)
-        print(stderr)
-        print(f"Finished running function {function} with bound {bound} and inline arg {inline_arg}")
         f.write(stdout)
         f.write(stderr)
 
-    p.wait(timeout=MS_OF_10_HOURS / 1000)
     try:
         shutil.copyfile(f"tmp/xmlout.xml", f"xmlout{inline_arg}.xml")
     except:
