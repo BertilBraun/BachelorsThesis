@@ -1,5 +1,6 @@
 # pip install ushlex
 import os
+import re
 
 if os.name != 'nt':
     import shlex
@@ -16,7 +17,9 @@ BASE_FOLDER = HOME_FOLDER + "/bqs/results"
 MAX_BOUND = 100
 ITERATIONS = 5
 
-MS_OF_10_HOURS = 10 * 60 * 60 * 1000
+MS_OF_1_HOUR = 60 * 60 * 1000
+MS_OF_2_HOURS = 2 * MS_OF_1_HOUR
+MS_OF_10_HOURS = 10 * MS_OF_1_HOUR
 
 JJBMC_CMD = "java -jar ../../../../../JJBMC.jar -mas {mas} -u {u}{inline} -tr -c -kt -timeout={timeout} BlockQuickSort.java {function} -j=--stop-on-fail"
 
@@ -31,7 +34,7 @@ TASKS = [
         ("medianOf3", list(range(1, 14)), 3),
     ]),
     (MEDIUM_WORKERS, [
-        ("partition", list(range(1, 13)), 3),
+        ("partition", list(range(1, 12)), 3),
         ("insertionSort", list(range(1, 9)), 3),
         ("quickSortRec", list(range(1, 12)), 2),  # TODO no idea whether this is slow
     ]),
@@ -43,13 +46,26 @@ TASKS = [
 ]
 
 failed_examples = {}
+runtimes = {}
 
 
 def process_JJBMC_example(folder, bound, function, inline_arg):
+    output_file_name = "JJBMC output{0}.txt".format(inline_arg)
 
     # Copy the java file in the folder
 
     os.makedirs(folder, exist_ok=True)
+
+    if os.path.exists(f"{folder}/{output_file_name}"):
+        print(f"Skipping function {function} with bound {bound} and inline arg {inline_arg} because it already exists")
+        return
+
+    # if runtime of previous bound is > MS_OF_2_HOURS, skip
+    if runtimes.get((function, bound - 1, inline_arg), 0) > MS_OF_2_HOURS:
+        print(
+            f"Skipping function {function} with bound {bound} and inline arg {inline_arg} because previous bound took too long")
+        return
+
     shutil.copyfile(f"{HOME_FOLDER}/bqs/BlockQuickSort.java", f"{folder}/BlockQuickSort.java")
 
     cmd = JJBMC_CMD.format(
@@ -70,7 +86,7 @@ def process_JJBMC_example(folder, bound, function, inline_arg):
     os.chdir(folder)
     p = subprocess.Popen(subprocess_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
-    with open("JJBMC output{0}.txt".format(inline_arg), "w") as f:
+    with open(output_file_name, "w") as f:
         # Write stdout and stderr to file
         stdout = p.stdout.read().decode("utf-8")
         stderr = p.stderr.read().decode("utf-8")
@@ -81,7 +97,18 @@ def process_JJBMC_example(folder, bound, function, inline_arg):
         f.write(stderr)
 
     p.wait(timeout=MS_OF_10_HOURS / 1000)
-    shutil.copyfile(f"tmp/xmlout.xml", f"xmlout{inline_arg}.xml")
+    try:
+        shutil.copyfile(f"tmp/xmlout.xml", f"xmlout{inline_arg}.xml")
+    except:
+        pass
+
+    try:
+        # parse runtime from output "JBMC took XXXms." parse XXX using regex
+        runtime = re.search(r"JBMC took (\d+)ms.", stdout).group(1)
+        # set runtime in ms for this function and bound and inline arg
+        runtimes[(function, bound, inline_arg)] = int(runtime)
+    except:
+        pass
 
     if not "SUCCESS" in stdout and not "SUCCESS" in stderr:
         failed_examples[(function, inline_arg)] = min(failed_examples.get((function, inline_arg), MAX_BOUND), bound)
