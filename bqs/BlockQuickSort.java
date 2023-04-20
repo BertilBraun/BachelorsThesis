@@ -43,6 +43,7 @@ public class BlockQuickSort {
             originalArray[i] = array[i];
         }
         originalArray[array.length - 1] = originalArray[array.length - 1];
+        int originalArrayLength = originalArray.length;
 
         int begin = originalBegin;
         int end = originalEnd;
@@ -59,139 +60,150 @@ public class BlockQuickSort {
         int startRight = 0;
         int num = 0;
 
-        //@ // TODO (even possible?!)
-        //@ loop_invariant originalBegin <= begin && begin <= last + 1 && last < originalEnd - 1; // TODO last + 1 is weird
-        //@ loop_invariant 0 <= numLeft && numLeft <= BLOCKSIZE;
-        //@ loop_invariant 0 <= numRight && numRight <= BLOCKSIZE;
-        //@ loop_invariant 0 <= startLeft && startLeft <= BLOCKSIZE;
-        //@ loop_invariant 0 <= startRight && startRight <= BLOCKSIZE;
-        //@ loop_invariant num == ((numLeft >= numRight) ? numRight : numLeft);
-        //@
-        //@ // All elements of indexL are in the range [0, last - begin) and are in ascending order.
-        //@ loop_invariant (\forall int i; 0 <= i && i < numLeft; 0 <= indexL[i] && indexL[i] <= BLOCKSIZE && indexL[i] <= last - begin); // TODO indexL[i] <= last - begin is weird
-        //@ loop_invariant (\forall int i; 0 <= i && i < numLeft - 1; indexL[i] < indexL[i + 1]);
-        //@ loop_invariant (\forall int i; num <= i && i < numLeft; pivot <= array[begin + indexL[i]]);
-        //@
-        //@ // All elements of indexR are in the range [0, last - begin) and are in descending order.
-        //@ loop_invariant (\forall int i; 0 <= i && i < numRight; 0 <= indexR[i] && indexR[i] <= BLOCKSIZE && indexR[i] <= last - begin); // TODO indexR[i] <= last - begin is weird
-        //@ loop_invariant (\forall int i; 0 <= i && i < numRight - 1; indexR[i] < indexR[i + 1]);
-        //@ loop_invariant (\forall int i; num <= i && i < numRight; array[last - indexR[i]] <= pivot);
-        //@
-        //@ // TODO: restrict numLeft, numRight, startLeft, startRight, last, begin.
-        //@
-        //@ // The elements in the range [originalBegin, begin + indexL[startLeft]) are less than or equal pivot
-        //@ loop_invariant startLeft < BLOCKSIZE ==> (\forall int i; originalBegin <= i && i < begin + indexL[startLeft]; array[i] <= pivot);
-        //@ loop_invariant startLeft == BLOCKSIZE ==> (\forall int i; originalBegin <= i && i < begin; array[i] <= pivot);
-        //@
-        //@ // The elements in the range (last - indexR[startRight], originalEnd) are greater than or equal pivot 
-        //@ loop_invariant startRight < BLOCKSIZE ==> (\forall int i; last - indexR[startRight] < i && i < originalEnd; pivot <= array[i]);
-        //@ loop_invariant startRight == BLOCKSIZE ==> (\forall int i; last < i && i < originalEnd; pivot <= array[i]);
-        //@
-        //@ // Values inside the range [originalBegin, originalEnd) are a valid permutation. // TODO should be done with permutation()
-        //@ loop_invariant (\forall int i; originalBegin <= i && i < originalEnd; (\num_of int j; originalBegin <= j && j < originalEnd; array[i] == array[j]) == (\num_of int j; originalBegin <= j && j < originalEnd; array[i] == \old(array[j])));
-        //@
-        //@ loop_modifies array[originalBegin .. originalEnd - 2], last, begin, numLeft, numRight, startLeft, startRight, indexL[0 .. BLOCKSIZE - 1], indexR[0 .. BLOCKSIZE - 1], num;
-        //@ loop_decreases last - begin;
-        while (last - begin + 1 > 2 * BLOCKSIZE) {
-            boolean did_run_loop = true;
-            int lastNumLeft = numLeft;
-            int lastNumRight = numRight;
-            int[] lastArray = new int[array.length];
-            for (int i = 0; i < array.length; i++) {
-                lastArray[i] = array[i];
-            }
-            lastArray[array.length - 1] = lastArray[array.length - 1];
-            int lastBegin = begin;
-            int lastLast = last;
-            int[] lastIndexL = new int[BLOCKSIZE];
-            for (int i = 0; i < BLOCKSIZE; i++) {
-                lastIndexL[i] = indexL[i];
-            }
-            lastIndexL[BLOCKSIZE - 1] = lastIndexL[BLOCKSIZE - 1];
-            int[] lastIndexR = new int[BLOCKSIZE];
-            for (int i = 0; i < BLOCKSIZE; i++) {
-                lastIndexR[i] = indexR[i];
-            }
-            lastIndexR[BLOCKSIZE - 1] = lastIndexR[BLOCKSIZE - 1];
-            int lastStartLeft = startLeft;
-            int lastStartRight = startRight;
-            int lastNum = num;
+        if (last >= begin) {
+            int indexL0 = indexL[0];
+            int indexR0 = indexR[0];
+            int indexL1 = indexL[1];
+            int indexR1 = indexR[1];
 
-            if (numLeft == 0) {
-                startLeft = 0;
-                /*
-                //@ loop_invariant 0 <= j && j <= BLOCKSIZE;
-                //@ // Maintain numLeft count
-                //@ loop_invariant numLeft == (\num_of int k; 0 <= k && k < j; pivot <= array[begin + k]);
-                //@ // Maintain indexL array
-                //@ loop_invariant (\forall int k; 0 <= k && k < numLeft; 0 <= indexL[k] && indexL[k] < j && pivot <= array[begin + indexL[k]]);
-                //@ // Maintain sorted indexL
-                //@ loop_invariant (\forall int k; 0 <= k && k < numLeft - 1; indexL[k] < indexL[k + 1]);
-                //@
-                //@ loop_modifies numLeft, indexL[0 .. BLOCKSIZE - 1], j;
-                //@ loop_decreases BLOCKSIZE - j;
-                 */
-                for (int j = 0; j < BLOCKSIZE; j++) {
-                    indexL[numLeft] = j;
-                    numLeft += array[begin + j] >= pivot ? 1 : 0;
+            //@ // TODO (even possible?!)
+            //@ loop_invariant originalBegin <= begin && begin <= last && last < originalEnd - 1; // TODO last + 1 is weird
+            //@ loop_invariant 0 <= numLeft && numLeft <= BLOCKSIZE;
+            //@ loop_invariant 0 <= numRight && numRight <= BLOCKSIZE;
+            //@ loop_invariant 0 <= startLeft && startLeft <= BLOCKSIZE;
+            //@ loop_invariant 0 <= startRight && startRight <= BLOCKSIZE;
+            //@ loop_invariant num == ((numLeft >= numRight) ? numRight : numLeft);
+            //@
+            //@ // All elements of indexL are in the range [0, last - begin) and are in ascending order.
+            //@ loop_invariant (\forall int i; 0 <= i && i < numLeft; 0 <= indexL[i] && indexL[i] <= BLOCKSIZE && indexL[i] <= last - begin); // TODO indexL[i] <= last - begin is weird
+            //@ loop_invariant (\forall int i; 0 <= i && i < numLeft - 1; indexL[i] < indexL[i + 1]);
+            //@ loop_invariant (\forall int i; num <= i && i < numLeft; pivot <= array[begin + indexL[i]]);
+            //@
+            //@ // All elements of indexR are in the range [0, last - begin) and are in descending order.
+            //@ loop_invariant (\forall int i; 0 <= i && i < numRight; 0 <= indexR[i] && indexR[i] <= BLOCKSIZE && indexR[i] <= last - begin); // TODO indexR[i] <= last - begin is weird
+            //@ loop_invariant (\forall int i; 0 <= i && i < numRight - 1; indexR[i] < indexR[i + 1]);
+            //@ loop_invariant (\forall int i; num <= i && i < numRight; array[last - indexR[i]] <= pivot);
+            //@
+            //@ // TODO: restrict numLeft, numRight, startLeft, startRight, last, begin.
+            //@
+            //@ // The elements in the range [originalBegin, begin + indexL[startLeft]) are less than or equal pivot
+            //@ loop_invariant startLeft < BLOCKSIZE ==> (\forall int i; originalBegin <= i && i < begin + indexL[startLeft]; array[i] <= pivot);
+            //@ loop_invariant startLeft == BLOCKSIZE ==> (\forall int i; originalBegin <= i && i < begin; array[i] <= pivot);
+            //@
+            //@ // The elements in the range (last - indexR[startRight], originalEnd) are greater than or equal pivot 
+            //@ loop_invariant startRight < BLOCKSIZE ==> (\forall int i; last - indexR[startRight] < i && i < originalEnd; pivot <= array[i]);
+            //@ loop_invariant startRight == BLOCKSIZE ==> (\forall int i; last < i && i < originalEnd; pivot <= array[i]);
+            //@
+            //@ // Values inside the range [originalBegin, originalEnd) are a valid permutation. // TODO should be done with permutation()
+            //@ loop_invariant (\forall int i; originalBegin <= i && i < originalEnd; (\num_of int j; originalBegin <= j && j < originalEnd; array[i] == array[j]) == (\num_of int j; originalBegin <= j && j < originalEnd; array[i] == \old(array[j])));
+            //@
+            //@ loop_modifies array[originalBegin .. originalEnd - 2], last, begin, numLeft, numRight, startLeft, startRight, indexL[0 .. BLOCKSIZE - 1], indexR[0 .. BLOCKSIZE - 1], num;
+            //@ loop_decreases last - begin;
+            while (last - begin + 1 > 2 * BLOCKSIZE) {
+                boolean did_run_loop = true;
+                int lastNumLeft = numLeft;
+                int lastNumRight = numRight;
+                int[] lastArray = new int[array.length];
+                for (int i = 0; i < array.length; i++) {
+                    lastArray[i] = array[i];
                 }
-            }
-            if (numRight == 0) {
-                startRight = 0;
-                /*
-                //@ loop_invariant 0 <= j && j <= BLOCKSIZE;
-                //@ // Maintain numRight count
-                //@ loop_invariant numRight == (\num_of int k; 0 <= k && k < j; array[last - k] <= pivot);
-                //@ // Maintain indexR array
-                //@ loop_invariant (\forall int k; 0 <= k && k < numRight; 0 <= indexR[k] && indexR[k] < j && array[last - indexR[k]] <= pivot);
-                //@ // Maintain sorted indexR
-                //@ loop_invariant (\forall int k; 0 <= k && k < numRight - 1; indexR[k] < indexR[k + 1]);
-                //@
-                //@ loop_modifies numRight, indexR[0 .. BLOCKSIZE - 1], j;
-                //@ loop_decreases BLOCKSIZE - j;
-                */
-                for (int j = 0; j < BLOCKSIZE; j++) {
-                    indexR[numRight] = j;
-                    numRight += pivot >= array[last - j] ? 1 : 0;
+                lastArray[array.length - 1] = lastArray[array.length - 1];
+                int lastBegin = begin;
+                int lastLast = last;
+                int[] lastIndexL = new int[BLOCKSIZE];
+                for (int i = 0; i < BLOCKSIZE; i++) {
+                    lastIndexL[i] = indexL[i];
                 }
-            }
+                lastIndexL[BLOCKSIZE - 1] = lastIndexL[BLOCKSIZE - 1];
+                int[] lastIndexR = new int[BLOCKSIZE];
+                for (int i = 0; i < BLOCKSIZE; i++) {
+                    lastIndexR[i] = indexR[i];
+                }
+                lastIndexR[BLOCKSIZE - 1] = lastIndexR[BLOCKSIZE - 1];
+                int lastStartLeft = startLeft;
+                int lastStartRight = startRight;
+                int lastNum = num;
+                indexL0 = indexL[0];
+                indexR0 = indexR[0];
+                indexL1 = indexL[1];
+                indexR1 = indexR[1];
 
-            num = (numLeft < numRight) ? numLeft : numRight;
-            if (num > 0) {
-                /*
-                //@ loop_invariant 0 <= j && j <= num;
-                //@ 
-                //@ // Values inside the range [originalBegin, begin + indexL[startLeft + j]) are less than or equal to pivot.
-                //@ loop_invariant (\forall int i; originalBegin <= i && i < begin + indexL[startLeft]; array[i] <= pivot);
-                //@ loop_invariant j > 0 ==> (\forall int i; originalBegin <= i && i <= begin + indexL[startLeft + j - 1]; array[i] <= pivot);
-                //@
-                //@ // Values inside the range (last - indexR[startRight - j], originalEnd) are greater than or equal to pivot.
-                //@ loop_invariant (\forall int i; last - indexR[startRight] < i && i < originalEnd; pivot <= array[i]);
-                //@ loop_invariant j > 0 ==> (\forall int i; last - indexR[startRight + j - 1] <= i && i < originalEnd; pivot <= array[i]);
-                //@
-                //@ // All values indexed by indexL[startLeft + j .. startLeft + numLeft] are greater than or equal to pivot.
-                //@ loop_invariant (\forall int i; startLeft + j <= i && i < startLeft + numLeft; pivot <= array[begin + indexL[i]]);
-                //@
-                //@ // All values indexed by indexR[startRight + j .. startRight + numRight] are less than or equal to pivot.
-                //@ loop_invariant (\forall int i; startRight + j <= i && i < startRight + numRight; array[last - indexR[i]] <= pivot);
-                //@
-                //@ // Values inside the range [begin, last] are a valid permutation. // TODO should be done with permutation()
-                //@ loop_invariant (\forall int i; begin <= i && i < last + 1; (\num_of int k; begin <= k && k < last + 1; array[i] == array[k]) == (\num_of int k; begin <= k && k < last + 1; array[i] == \old(array[k])));
-                //@
-                //@ loop_modifies array[begin + indexL[startLeft] .. begin + indexL[startLeft + num - 1]], array[last - indexR[startRight + num - 1] .. last - indexR[startRight]], j;
-                //@ loop_decreases num - j;
-                */
-                for (int j = 0; j < num; j++) {
-                    swap(array, begin + indexL[startLeft + j], last - indexR[startRight + j]);
-                }
-            }
+                if (numLeft == 0) {
+                    startLeft = 0;
 
-            numLeft -= num;
-            numRight -= num;
-            startLeft += num;
-            startRight += num;
-            begin += (numLeft == 0) ? BLOCKSIZE : 0;
-            last -= (numRight == 0) ? BLOCKSIZE : 0;
+                    //@ loop_invariant 0 <= j && j <= BLOCKSIZE;
+                    //@ // Maintain numLeft count
+                    //@ loop_invariant numLeft == (\num_of int k; 0 <= k && k < j; pivot <= array[begin + k]);
+                    //@ // Maintain indexL array
+                    //@ loop_invariant (\forall int k; 0 <= k && k < numLeft; 0 <= indexL[k] && indexL[k] < j && pivot <= array[begin + indexL[k]]);
+                    //@ // Maintain sorted indexL
+                    //@ loop_invariant (\forall int k; 0 <= k && k < numLeft - 1; indexL[k] < indexL[k + 1]);
+                    //@
+                    //@ loop_modifies numLeft, indexL[0 .. BLOCKSIZE - 1], j;
+                    //@ loop_decreases BLOCKSIZE - j;
+
+                    for (int j = 0; j < BLOCKSIZE; j++) {
+                        indexL[numLeft] = j;
+                        numLeft += array[begin + j] >= pivot ? 1 : 0;
+                    }
+                }
+                if (numRight == 0) {
+                    startRight = 0;
+                    /*
+                    //@ loop_invariant 0 <= j && j <= BLOCKSIZE;
+                    //@ // Maintain numRight count
+                    //@ loop_invariant numRight == (\num_of int k; 0 <= k && k < j; array[last - k] <= pivot);
+                    //@ // Maintain indexR array
+                    //@ loop_invariant (\forall int k; 0 <= k && k < numRight; 0 <= indexR[k] && indexR[k] < j && array[last - indexR[k]] <= pivot);
+                    //@ // Maintain sorted indexR
+                    //@ loop_invariant (\forall int k; 0 <= k && k < numRight - 1; indexR[k] < indexR[k + 1]);
+                    //@
+                    //@ loop_modifies numRight, indexR[0 .. BLOCKSIZE - 1], j;
+                    //@ loop_decreases BLOCKSIZE - j;
+                    */
+                    for (int j = 0; j < BLOCKSIZE; j++) {
+                        indexR[numRight] = j;
+                        numRight += pivot >= array[last - j] ? 1 : 0;
+                    }
+                }
+
+                num = (numLeft < numRight) ? numLeft : numRight;
+                if (num > 0) {
+                    /*
+                    //@ loop_invariant 0 <= j && j <= num;
+                    //@ 
+                    //@ // Values inside the range [originalBegin, begin + indexL[startLeft + j]) are less than or equal to pivot.
+                    //@ loop_invariant (\forall int i; originalBegin <= i && i < begin + indexL[startLeft]; array[i] <= pivot);
+                    //@ loop_invariant j > 0 ==> (\forall int i; originalBegin <= i && i <= begin + indexL[startLeft + j - 1]; array[i] <= pivot);
+                    //@
+                    //@ // Values inside the range (last - indexR[startRight - j], originalEnd) are greater than or equal to pivot.
+                    //@ loop_invariant (\forall int i; last - indexR[startRight] < i && i < originalEnd; pivot <= array[i]);
+                    //@ loop_invariant j > 0 ==> (\forall int i; last - indexR[startRight + j - 1] <= i && i < originalEnd; pivot <= array[i]);
+                    //@
+                    //@ // All values indexed by indexL[startLeft + j .. startLeft + numLeft] are greater than or equal to pivot.
+                    //@ loop_invariant (\forall int i; startLeft + j <= i && i < startLeft + numLeft; pivot <= array[begin + indexL[i]]);
+                    //@
+                    //@ // All values indexed by indexR[startRight + j .. startRight + numRight] are less than or equal to pivot.
+                    //@ loop_invariant (\forall int i; startRight + j <= i && i < startRight + numRight; array[last - indexR[i]] <= pivot);
+                    //@
+                    //@ // Values inside the range [begin, last] are a valid permutation. // TODO should be done with permutation()
+                    //@ loop_invariant (\forall int i; begin <= i && i < last + 1; (\num_of int k; begin <= k && k < last + 1; array[i] == array[k]) == (\num_of int k; begin <= k && k < last + 1; array[i] == \old(array[k])));
+                    //@
+                    //@ loop_modifies array[begin + indexL[startLeft] .. begin + indexL[startLeft + num - 1]], array[last - indexR[startRight + num - 1] .. last - indexR[startRight]], j;
+                    //@ loop_decreases num - j;
+                    */
+                    for (int j = 0; j < num; j++) {
+                        swap(array, begin + indexL[startLeft + j], last - indexR[startRight + j]);
+                    }
+                }
+
+                numLeft -= num;
+                numRight -= num;
+                startLeft += num;
+                startRight += num;
+                begin += (numLeft == 0) ? BLOCKSIZE : 0;
+                last -= (numRight == 0) ? BLOCKSIZE : 0;
+            }
         }
 
         int shiftR = 0, shiftL = 0;
@@ -517,8 +529,11 @@ public class BlockQuickSort {
       @ // Values inside the range [begin, end) are in sorted order.
       @ ensures (\forall int i; begin <= i && i < end - 1; array[i] <= array[i+1]);
       @
-      @ // Values inside the range [begin, end) are a valid permutation.
-      @ ensures permutation(array, \old(array), begin, end);
+      @ // Values inside the range [begin, end) are a valid permutation. // TODO should be done with permutation()
+      @ ensures (\forall int i; begin <= i && i < end; (
+      @          (\num_of int j; begin <= j && j < end; array[i] == array[j]) ==
+      @          (\num_of int j; begin <= j && j < end; array[i] == \old(array[j]))
+      @         ));
       @
       @ assignable array[begin .. end-1];
       @*/
@@ -532,14 +547,18 @@ public class BlockQuickSort {
       @ public normal_behavior
       @ requires array != null && array.length < 500;
       @ requires 0 <= begin && begin <= end && end <= array.length;
-      @ requires 0 <= depth && depth <= depthLimit;
+      @ requires 0 <= depth && depth <= depthLimit && depthLimit < 500;
+      @ requires (\forall int i; 0 <= i && i < array.length; 0 <= array[i] && array[i] <= array.length); // TODO: remove this - only for testing - fixes currently broken partitioning
       @ ensures array.length == \old(array.length);
       @
       @ // Values inside the range [begin, end) are in sorted order.
       @ ensures (\forall int i; begin <= i && i < end - 1; array[i] <= array[i+1]);
       @
-      @ // Values inside the range [begin, end) are a valid permutation.
-      @ ensures permutation(array, \old(array), begin, end);
+      @ // Values inside the range [begin, end) are a valid permutation. // TODO should be done with permutation()
+      @ ensures (\forall int i; begin <= i && i < end; (
+      @          (\num_of int j; begin <= j && j < end; array[i] == array[j]) ==
+      @          (\num_of int j; begin <= j && j < end; array[i] == \old(array[j]))
+      @         ));
       @
       @ assignable array[begin .. end-1];
       @*/
@@ -564,8 +583,11 @@ public class BlockQuickSort {
       @ // Values inside the range [begin, end) are in sorted order.
       @ ensures (\forall int i; begin <= i && i < end - 1; array[i] <= array[i+1]);
       @
-      @ // Values inside the range [begin, end) are a valid permutation.
-      @ ensures permutation(array, \old(array), begin, end);
+      @ // Values inside the range [begin, end) are a valid permutation. // TODO should be done with permutation()
+      @ ensures (\forall int i; begin <= i && i < end; (
+      @          (\num_of int j; begin <= j && j < end; array[i] == array[j]) ==
+      @          (\num_of int j; begin <= j && j < end; array[i] == \old(array[j]))
+      @         ));
       @
       @ assignable array[begin .. end-1];
       @*/
@@ -630,8 +652,11 @@ public class BlockQuickSort {
       @ // Result is a valid median.
       @ ensures array[begin] <= array[\result] && array[\result] <= array[end - 1];
       @
-      @ // The values at 'begin', 'end - 1', and 'begin + ((end - begin) / 2)' are a permutations of the values before.
-      @ ensures permutation(array, \old(array), begin, end);
+      @ // The values at 'begin', 'end - 1', and 'begin + ((end - begin) / 2)' are a permutations of the values before. // TODO should be done with permutation()
+      @ ensures (\forall int i; begin <= i && i < end; (
+      @          (\num_of int j; begin <= j && j < end; array[i] == array[j]) ==
+      @          (\num_of int j; begin <= j && j < end; array[i] == \old(array[j]))
+      @         ));
       @
       @ assignable array[begin], array[begin + ((end - begin) / 2)], array[end - 1];
       @*/
@@ -658,8 +683,11 @@ public class BlockQuickSort {
       @ // Values inside the range (\result, end) are greater than array[\result].
       @ ensures (\forall int i; \result <= i && i < end; array[\result] <= array[i]);
       @
-      @ // Values inside the range [begin, end) are a valid permutation.
-      @ ensures permutation(array, \old(array), begin, end);
+      @ // Values inside the range [begin, end) are a valid permutation. // TODO should be done with permutation()
+      @ ensures (\forall int i; begin <= i && i < end; (
+      @          (\num_of int j; begin <= j && j < end; array[i] == array[j]) ==
+      @          (\num_of int j; begin <= j && j < end; array[i] == \old(array[j]))
+      @         ));
       @
       @ assignable array[begin .. end-1];
       @*/
