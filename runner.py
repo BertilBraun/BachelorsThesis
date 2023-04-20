@@ -21,7 +21,9 @@ MS_OF_1_HOUR = 60 * 60 * 1000
 MS_OF_2_HOURS = 2 * MS_OF_1_HOUR
 MS_OF_10_HOURS = 10 * MS_OF_1_HOUR
 
-JJBMC_CMD = "java -jar ../../../../../JJBMC.jar -mas {mas} -u {u}{inline} -tr -c -kt -timeout={timeout} BlockQuickSort.java {function} -j=--stop-on-fail"
+JJBMC_CMD = "java -jar ../../../../../../JJBMC.jar -mas {mas} -u {u} {inline} -tr -c -kt -timeout={timeout} BlockQuickSort.java {function} -j=--stop-on-fail"
+
+OUTPUT_FILE_NAME = "output.txt"
 
 EASY_WORKERS = 24
 MEDIUM_WORKERS = 24
@@ -53,13 +55,13 @@ runtimes = {}
 
 
 def process_JJBMC_example(folder, bound, function, inline_arg):
-    output_file_name = "JJBMC output{0}.txt".format(inline_arg)
+    folder = f"{folder}/inline{inline_arg}"
 
     # Copy the java file in the folder
 
     os.makedirs(folder, exist_ok=True)
 
-    if os.path.exists(f"{folder}/{output_file_name}"):
+    if os.path.exists(f"{folder}/{OUTPUT_FILE_NAME}"):
         print(f"Skipping function {function} with bound {bound} and inline arg {inline_arg} because it already exists")
         return
 
@@ -97,13 +99,17 @@ def process_JJBMC_example(folder, bound, function, inline_arg):
     print(stdout)
     print(stderr)
 
-    with open(output_file_name, "w") as f:
+    with open(OUTPUT_FILE_NAME, "w") as f:
         # Write stdout and stderr to file
         f.write(stdout)
         f.write(stderr)
 
     try:
-        shutil.copyfile(f"tmp/xmlout.xml", f"xmlout{inline_arg}.xml")
+        shutil.copyfile("tmp/xmlout.xml", "xmlout.xml")
+        shutil.copyfile("tmp/BlockQuickSort.java", "BlockQuickSort_compiled.java")
+        shutil.copyfile("tmp/compilationErrors.txt", "compilationErrors.txt")
+        # remove tmp and everything in it
+        os.remove("tmp")
     except:
         pass
 
@@ -128,10 +134,10 @@ def generate_tasks(iteration, bound, function):
     # check if we have already failed for this function and bound
     if failed_examples.get((function, ''), MAX_BOUND) > bound:
         tasks.append((folder, bound, function, ''))
-    if failed_examples.get((function, ' -fil'), MAX_BOUND) > bound:
-        tasks.append((folder, bound, function, ' -fil'))
-    if failed_examples.get((function, ' -fi'), MAX_BOUND) > bound:
-        tasks.append((folder, bound, function, ' -fi'))
+    if failed_examples.get((function, '-fil'), MAX_BOUND) > bound:
+        tasks.append((folder, bound, function, '-fil'))
+    if failed_examples.get((function, '-fi'), MAX_BOUND) > bound:
+        tasks.append((folder, bound, function, '-fi'))
 
     return tasks
 

@@ -3,6 +3,8 @@
         "BLOCKSIZE",
         "forall",
         "hoare",
-        "runtimes"
+        "JBMC",
+        "runtimes",
+        "xmlout"
     ]
 }

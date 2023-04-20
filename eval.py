@@ -30,7 +30,7 @@ out_file.write("bound,iter,function,inline_arg,result,runtime\n")
 
 
 def process_JJBMC_example(folder, bound, iter, function, inline_arg):
-    file = f"{folder}/JJBMC output{inline_arg}.txt"
+    file = f"{folder}/inline{inline_arg}/output.txt"
 
     if not os.path.exists(file):
         return
@@ -60,8 +60,8 @@ def worker(iteration, bound, function):
         return
 
     process_JJBMC_example(folder, bound, iteration, function, '')
-    process_JJBMC_example(folder, bound, iteration, function, ' -fil')
-    process_JJBMC_example(folder, bound, iteration, function, ' -fi')
+    process_JJBMC_example(folder, bound, iteration, function, '-fil')
+    process_JJBMC_example(folder, bound, iteration, function, '-fi')
 
 
 if __name__ == "__main__":

@@ -39,7 +39,7 @@ def write_processed_csv(output_file_path: str, grouped_data: dict) -> None:
                     results = []
                     runtimes = []
 
-                    for inline_arg in ['', ' -fil', ' -fi']:
+                    for inline_arg in ['', '-fil', '-fi']:
                         result, runtime = inline_args[inline_arg]
                         results.append(result)
                         runtimes.append(runtime)
