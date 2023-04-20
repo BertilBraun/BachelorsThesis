@@ -109,7 +109,7 @@ def process_JJBMC_example(folder, bound, function, inline_arg):
         shutil.copyfile("tmp/BlockQuickSort.java", "BlockQuickSort_compiled.java")
         shutil.copyfile("tmp/compilationErrors.txt", "compilationErrors.txt")
         # remove tmp and everything in it
-        os.remove("tmp")
+        shutil.rmtree("tmp")
     except:
         pass
 
