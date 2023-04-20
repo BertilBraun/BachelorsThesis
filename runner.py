@@ -1,6 +1,7 @@
 # pip install ushlex
 import os
 import re
+import time
 
 if os.name != 'nt':
     import shlex
@@ -30,14 +31,18 @@ MEDIUM_WORKERS = 24
 HARD_WORKERS = 12
 VERY_HARD_WORKERS = 4
 
+INLINE_ARGS = ['', '-fil', '-fi']
+
+FOLDER_F_STRING = "{BASE_FOLDER}/bound_{bound}/{function}/iter_{iteration}"
+
 TASKS = [
     (EASY_WORKERS, [
-        ("swap", list(range(1, 15)), 3),
-        ("sortPair", list(range(1, 15)), 3),
+        ("swap", list(range(1, 15)), 3),  # unbounded
+        ("sortPair", list(range(1, 15)), 3),  # unbounded
     ]),
     (MEDIUM_WORKERS, [
-        ("partition", list(range(1, 12)), 3),
-        ("medianOf3", list(range(1, 11)), 3),
+        ("partition", list(range(1, 9)), 3),
+        ("medianOf3", list(range(1, 10)), 3),
         ("insertionSort", list(range(1, 9)), 3),
         ("quickSortRec", list(range(1, 12)), 2),  # TODO no idea whether this is slow
     ]),
@@ -63,6 +68,10 @@ def process_JJBMC_example(folder, bound, function, inline_arg):
 
     if os.path.exists(f"{folder}/{OUTPUT_FILE_NAME}"):
         print(f"Skipping function '{function}' with bound '{bound}' and inline arg '{inline_arg}' because it already exists")
+        return
+
+    if failed_examples.get((function, ''), MAX_BOUND) <= bound:
+        print(f"Skipping function '{function}' with bound '{bound}' and inline arg '{inline_arg}' because it already failed")
         return
 
     # if runtime of previous bound is > MS_OF_2_HOURS, skip
@@ -95,6 +104,9 @@ def process_JJBMC_example(folder, bound, function, inline_arg):
         p.wait()
     except:
         print(f"Timeout for function '{function}' with bound '{bound}' and inline arg '{inline_arg}'")
+
+    # sleep for 5 seconds to make sure that jbmc has finished
+    time.sleep(5)
 
     stdout = p.stdout.read().decode("utf-8")
     stderr = p.stderr.read().decode("utf-8")
@@ -131,18 +143,9 @@ def process_JJBMC_example(folder, bound, function, inline_arg):
 
 
 def generate_tasks(iteration, bound, function):
-    folder = f"{BASE_FOLDER}/bound_{bound}/{function}/iter_{iteration}"
+    folder = FOLDER_F_STRING.format(BASE_FOLDER=BASE_FOLDER, bound=bound, function=function, iteration=iteration)
 
-    tasks = []
-    # check if we have already failed for this function and bound
-    if failed_examples.get((function, ''), MAX_BOUND) > bound:
-        tasks.append((folder, bound, function, ''))
-    if failed_examples.get((function, '-fil'), MAX_BOUND) > bound:
-        tasks.append((folder, bound, function, '-fil'))
-    if failed_examples.get((function, '-fi'), MAX_BOUND) > bound:
-        tasks.append((folder, bound, function, '-fi'))
-
-    return tasks
+    return [(folder, bound, function, inline_arg) for inline_arg in INLINE_ARGS]
 
 
 def run(workers, tasks):
