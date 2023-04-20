@@ -34,10 +34,10 @@ TASKS = [
     (EASY_WORKERS, [
         ("swap", list(range(1, 15)), 3),
         ("sortPair", list(range(1, 15)), 3),
-        ("medianOf3", list(range(1, 14)), 3),
     ]),
     (MEDIUM_WORKERS, [
         ("partition", list(range(1, 12)), 3),
+        ("medianOf3", list(range(1, 11)), 3),
         ("insertionSort", list(range(1, 9)), 3),
         ("quickSortRec", list(range(1, 12)), 2),  # TODO no idea whether this is slow
     ]),
@@ -62,13 +62,13 @@ def process_JJBMC_example(folder, bound, function, inline_arg):
     os.makedirs(folder, exist_ok=True)
 
     if os.path.exists(f"{folder}/{OUTPUT_FILE_NAME}"):
-        print(f"Skipping function {function} with bound {bound} and inline arg {inline_arg} because it already exists")
+        print(f"Skipping function '{function}' with bound '{bound}' and inline arg '{inline_arg}' because it already exists")
         return
 
     # if runtime of previous bound is > MS_OF_2_HOURS, skip
     if runtimes.get((function, bound - 1, inline_arg), 0) > MS_OF_2_HOURS:
         print(
-            f"Skipping function {function} with bound {bound} and inline arg {inline_arg} because previous bound took too long")
+            f"Skipping function '{function}' with bound '{bound}' and inline arg '{inline_arg}' because previous bound took too long")
         return
 
     if not os.path.exists(f"{folder}/BlockQuickSort.java"):
@@ -94,11 +94,11 @@ def process_JJBMC_example(folder, bound, function, inline_arg):
     try:
         p.wait()
     except:
-        print(f"Timeout for function {function} with bound {bound} and inline arg {inline_arg}")
+        print(f"Timeout for function '{function}' with bound '{bound}' and inline arg '{inline_arg}'")
 
     stdout = p.stdout.read().decode("utf-8")
     stderr = p.stderr.read().decode("utf-8")
-    print(f"Finished running function {function} with bound {bound} and inline arg {inline_arg}")
+    print(f"Finished running function '{function}' with bound '{bound}' and inline arg '{inline_arg}'")
     print(stdout)
     print(stderr)
 
