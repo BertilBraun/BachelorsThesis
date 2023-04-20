@@ -91,7 +91,10 @@ def process_JJBMC_example(folder, bound, function, inline_arg):
     # Run the command using subprocess and write output to file and wait for it to finish
     os.chdir(folder)
     p = subprocess.Popen(subprocess_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    p.wait(timeout=MS_OF_10_HOURS / 1000)
+    try:
+        p.wait()
+    except:
+        print(f"Timeout for function {function} with bound {bound} and inline arg {inline_arg}")
 
     stdout = p.stdout.read().decode("utf-8")
     stderr = p.stderr.read().decode("utf-8")
@@ -111,7 +114,7 @@ def process_JJBMC_example(folder, bound, function, inline_arg):
         # remove tmp and everything in it
         shutil.rmtree("tmp")
     except:
-        pass
+        print("Error cleaning up tmp folder")
 
     try:
         # parse runtime from output "JBMC took XXXms." parse XXX using regex
@@ -119,7 +122,7 @@ def process_JJBMC_example(folder, bound, function, inline_arg):
         # set runtime in ms for this function and bound and inline arg
         runtimes[(function, bound, inline_arg)] = int(runtime)
     except:
-        pass
+        print("Error parsing runtime")
 
     if not "SUCCESS" in stdout and not "SUCCESS" in stderr:
         failed_examples[(function, inline_arg)] = min(failed_examples.get((function, inline_arg), MAX_BOUND), bound)
