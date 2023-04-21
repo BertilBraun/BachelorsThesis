@@ -111,6 +111,7 @@ public class JmlExpressionVisitor extends JmlTreeCopier {
     private static int paramVarCounter = 0;
     private static int numQuantvars = 0;
     private static int sumVarCounter = 0;
+    private static int minMaxVarCounter = 0;
     private static int oldVarCounter = 0;
     private static List<Symbol.VarSymbol> loopLocalVars = List.nil();
     private final Maker maker;
@@ -409,9 +410,68 @@ public class JmlExpressionVisitor extends JmlTreeCopier {
             // Modify the value expression for num_of
             value = maker.Conditional(value, maker.Literal(1), maker.Literal(0));
             return generateSum(that, value, range, re);
+        } else if (copy.op == JmlTokenKind.BSMIN) {
+            JCExpression value = super.copy(copy.value);
+            return generateMinMax(that, value, range, re, true);
+        } else if (copy.op == JmlTokenKind.BSMAX) {
+            JCExpression value = super.copy(copy.value);
+            return generateMinMax(that, value, range, re, false);
         } else {
             throw new UnsupportedException("Unkown token type in quantified Expression: " + copy.op);
         }
+    }
+
+    private JCExpression generateMinMax(
+            JmlQuantifiedExpr that,
+            JCExpression value,
+            JCExpression range,
+            RangeExtractor re,
+            boolean isMin) {
+        // Determine the initial value and comparison operator based on whether we are calculating the minimum or maximum
+        int initialValue = isMin ? Integer.MAX_VALUE : Integer.MIN_VALUE;
+        Tag comparisonTag = isMin ? Tag.LE : Tag.GE;
+
+        // Create a variable to store the result of the min or max operation
+        JCVariableDecl resultVar = treeutils.makeVarDef(
+                syms.intType,
+                names.fromString((isMin ? "min_" : "max_") + minMaxVarCounter++),
+                currentSymbol,
+                treeutils.makeLit(TranslationUtils.getCurrentPosition(), syms.intType, initialValue));
+        neededVariableDefs = neededVariableDefs.append(resultVar);
+
+        // Create a loop to iterate over the range and process the values
+        List<JCStatement> loopBody = newStatements;
+        newStatements = List.nil();
+        for (Map.Entry<String, String> e : variableReplacements.entrySet()) {
+            value = TranslationUtils.replaceVarName(e.getKey(), e.getValue(), value);
+            range = TranslationUtils.replaceVarName(e.getKey(), e.getValue(), range);
+        }
+
+        // Create a conditional assignment to update the resultVar based on the min or max operation
+        JCConditional conditionalAssign = maker.Conditional(
+                maker.Binary(comparisonTag, value, maker.Ident(resultVar)),
+                value, maker.Ident(resultVar));
+        JCStatement updateResultVar = maker.Exec(maker.Assign(maker.Ident(resultVar), conditionalAssign));
+        newStatements = newStatements.append(updateResultVar);
+
+        // Create the for-loop with the loop body
+        String loopVarName = that.decls.get(0).getName().toString();
+        if (variableReplacements.containsKey(that.decls.get(0).getName().toString())) {
+            loopVarName = variableReplacements.get(that.decls.get(0).getName().toString());
+        }
+        JCForLoop forLoop = TranslationUtils.makeStandardLoopFromRange(range, newStatements, loopVarName, currentSymbol,
+                re.getMin());
+        loopBody = loopBody.append(forLoop);
+
+        // Restore the previous state and remove the variable replacements and quantifier variables
+        newStatements = loopBody;
+        variableReplacements.remove(that.decls.get(0).getName().toString());
+        quantifierVars.remove(that.decls.get(0).sym);
+
+        // Return the result variable as the result of the expression
+        JCExpression translatedExpression = maker.Ident(resultVar);
+        CLI.expressionMap.put(translatedExpression.toString(), that.toString());
+        return translatedExpression;
     }
 
     private JCExpression generateSum(JmlQuantifiedExpr that, JCExpression value, JCExpression range,

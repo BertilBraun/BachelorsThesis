@@ -1264,4 +1264,43 @@ public class TestSuite {
         return sum;
     }
 
+    //@ requires array != null && array.length > 0;
+    //@ ensures \result == (\min int i; 0 <= i && i < array.length; array[i]);
+    @Verifyable
+    public int testMin(int[] array) {
+        int minValue = array[0];
+        for (int i = 1; i < array.length; i++) {
+            if (array[i] < minValue) {
+                minValue = array[i];
+            }
+        }
+        return minValue;
+    }
+
+    //@ requires array != null && array.length > 0;
+    //@ ensures \result == (\max int i; 0 <= i && i < array.length; array[i]);
+    @Verifyable
+    public int testMax(int[] array) {
+        int maxValue = array[0];
+        for (int i = 1; i < array.length; i++) {
+            if (array[i] > maxValue) {
+                maxValue = array[i];
+            }
+        }
+        return maxValue;
+    }
+
+    //@ requires array != null && array.length == 0;
+    //@ ensures \result == (\min int i; 0 <= i && i < array.length; array[i]);
+    @Verifyable
+    public int testMinEmptyArray(int[] array) {
+        return Integer.MAX_VALUE;
+    }
+
+    //@ requires array != null && array.length == 0;
+    //@ ensures \result == (\max int i; 0 <= i && i < array.length; array[i]);
+    @Verifyable
+    public int testMaxEmptyArray(int[] array) {
+        return Integer.MIN_VALUE;
+    }
 }
