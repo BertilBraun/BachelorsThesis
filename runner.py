@@ -52,6 +52,7 @@ TASKS = [
     ]),
     (VERY_HARD_WORKERS, [
         ("quickSortRecImpl", list(range(1, 5)), 2),  # TODO 6 should be possible, even though it takes about 15h
+        ("quickSort", list(range(1, 3)), 2),
     ])
 ]
 

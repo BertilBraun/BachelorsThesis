@@ -23,22 +23,35 @@ public class BlockQuickSortTesting {
           for (int j = 0; j < len; j++) {
             String s = Arrays.toString(array);
             if (hoareBlockPartition(array, 0, len, j) == -1000000) {
-              // System.out.println("Error: " + s);
-              // System.out.println(j);
+              System.out.println("Error: " + s);
+              System.out.println(j);
             }
           }
         }
       }
-
-    int[] array = { 4, 5, 2, 1, 4 };
-    int res = hoareBlockPartition(array, 0, 3, 1);
-    System.out.println("hoareBlockPartition: " + res);
-    System.out.println(Arrays.toString(array));
+    {
+      int[] array = { 3, 3, 4, 5, 4, 1 };
+      int res = hoareBlockPartition(array, 0, array.length, 3);
+      System.out.println("hoareBlockPartition: " + res);
+      System.out.println(Arrays.toString(array));
+    }
+    {
+      int[] array = { 3, 6, 1, 1, 6, 3 };
+      int res = hoareBlockPartition(array, 0, array.length, 3);
+      System.out.println("hoareBlockPartition: " + res);
+      System.out.println(Arrays.toString(array));
+    }
+    {
+      int[] array = { 3, 3, 4, 5, 4, 1 };
+      int res = hoareBlockPartition(array, 0, array.length, 3);
+      System.out.println("hoareBlockPartition: " + res);
+      System.out.println(Arrays.toString(array));
+    }
   }
 
   private static final int BLOCKSIZE = 2; // 128
   private static final int IS_THRESH = 3; // 16
-  private static final int STACK_SIZE = 80;
+  private static final int STACK_SIZE = 8;
   private static final int REQUIRED = 6;
   private static final boolean FIND = false;
 
@@ -79,6 +92,20 @@ public class BlockQuickSortTesting {
       }
 
       num = Math.min(numLeft, numRight);
+
+      // System.out.println("--------------------");
+      // System.out.println("Before swap: " + Arrays.toString(array));
+      // System.out.println("numLeft: " + numLeft);
+      // System.out.println("numRight: " + numRight);
+      // System.out.println("startLeft: " + startLeft);
+      // System.out.println("startRight: " + startRight);
+      // System.out.println("num: " + num);
+      // System.out.println("begin: " + begin);
+      // System.out.println("last: " + last);
+      // System.out.println("indexL: " + Arrays.toString(indexL));
+      // System.out.println("indexR: " + Arrays.toString(indexR));
+      // System.out.println("pivot: " + pivot);
+
       for (int j = 0; j < num; j++) {
         swap(array, begin + indexL[startLeft + j], last - indexR[startRight + j]);
       }
@@ -89,6 +116,14 @@ public class BlockQuickSortTesting {
       startRight += num;
       begin += (numLeft == 0) ? BLOCKSIZE : 0;
       last -= (numRight == 0) ? BLOCKSIZE : 0;
+
+      // System.out.println("After swap: " + Arrays.toString(array));
+      // System.out.println("numLeft: " + numLeft);
+      // System.out.println("numRight: " + numRight);
+      // System.out.println("startLeft: " + startLeft);
+      // System.out.println("startRight: " + startRight);
+      // System.out.println("begin: " + begin);
+      // System.out.println("last: " + last);
     }
 
     System.out.println("--------------------");
@@ -150,22 +185,22 @@ public class BlockQuickSortTesting {
     begin += (numLeft == 0) ? shiftL : 0;
     last -= (numRight == 0) ? shiftR : 0;
 
-    if (numLeft > 0 || numRight > 0 || true) {
-      System.out.println("--------------------");
-      System.out.println("numLeft: " + numLeft);
-      System.out.println("numRight: " + numRight);
-      System.out.println("startLeft: " + startLeft);
-      System.out.println("startRight: " + startRight);
-      System.out.println("begin: " + begin);
-      System.out.println("last: " + last);
-      System.out.println("shiftL: " + shiftL);
-      System.out.println("shiftR: " + shiftR);
-      System.out.println("pivot: " + pivot);
-      System.out.println("num: " + num);
-      System.out.println("indexL: " + Arrays.toString(indexL));
-      System.out.println("indexR: " + Arrays.toString(indexR));
-      System.out.println("array: " + Arrays.toString(array));
-    }
+    // if (numLeft > 0 || numRight > 0 || true) {
+    //   System.out.println("--------------------");
+    //   System.out.println("numLeft: " + numLeft);
+    //   System.out.println("numRight: " + numRight);
+    //   System.out.println("startLeft: " + startLeft);
+    //   System.out.println("startRight: " + startRight);
+    //   System.out.println("begin: " + begin);
+    //   System.out.println("last: " + last);
+    //   System.out.println("shiftL: " + shiftL);
+    //   System.out.println("shiftR: " + shiftR);
+    //   System.out.println("pivot: " + pivot);
+    //   System.out.println("num: " + num);
+    //   System.out.println("indexL: " + Arrays.toString(indexL));
+    //   System.out.println("indexR: " + Arrays.toString(indexR));
+    //   System.out.println("array: " + Arrays.toString(array));
+    // }
     if (numLeft != 0) {
       int lowerI = startLeft + numLeft - 1;
       int upper = last - begin;
@@ -192,8 +227,8 @@ public class BlockQuickSortTesting {
         sb.append("\n");
         sb.append(" indexL: ");
         sb.append(Arrays.toString(indexL));
-        // System.out.println(sb.toString());
-        // System.out.println("---------------------");
+        //System.out.println(sb.toString());
+        //System.out.println("---------------------");
         upper--;
         lowerI--;
         if (lowerI >= startLeft && indexL[lowerI] != upper && false) {
@@ -209,52 +244,10 @@ public class BlockQuickSortTesting {
         }
       }
 
-      int cnt = 0;
       while (lowerI >= startLeft) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("lowerI: ");
-        sb.append(lowerI);
-        sb.append("\n");
-        sb.append(" upper: ");
-        sb.append(upper);
-        sb.append("\n");
-        sb.append(" begin: ");
-        sb.append(begin);
-        sb.append("\n");
-        sb.append(" startLeft: ");
-        sb.append(startLeft);
-        sb.append("\n");
-        sb.append(" numLeft: ");
-        sb.append(numLeft);
-        sb.append("\n");
-        sb.append(" indexL[lowerI]: ");
-        sb.append(indexL[lowerI]);
-        sb.append("\n");
-        sb.append(" array[begin + upper]: ");
-        sb.append(array[begin + upper]);
-        sb.append("\n");
-        sb.append(" array[begin + indexL[lowerI]]: ");
-        sb.append(array[begin + indexL[lowerI]]);
-        sb.append("\n");
-        sb.append(" array: ");
-        sb.append(Arrays.toString(array));
-        sb.append("\n");
         // This loop iterates through the remaining elements in the indexL array starting from the current lowerI value.
         swap(array, begin + upper--, begin + indexL[lowerI--]);
-        // Swaps the element at the position begin + upper with the element at the position begin + indexL[lowerI]. After swapping, both upper and lowerI are decremented.
-        sb.append(" array: ");
-        sb.append(Arrays.toString(array));
-        sb.append("\n");
-        sb.append(" indexL: ");
-        sb.append(Arrays.toString(indexL));
-        if (!FIND) {
-          System.out.println(sb.toString());
-          System.out.println("--------------------------------------------------");
 
-        }
-        cnt++;
-        if (cnt > REQUIRED && FIND)
-          return -1000000;
       }
 
       swap(array, pivotPosition, begin + upper + 1);
@@ -268,8 +261,54 @@ public class BlockQuickSortTesting {
         lowerI--;
       }
 
+      int cnt = 0;
       while (lowerI >= startRight) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("lowerI: ");
+        sb.append(lowerI);
+        sb.append("\n");
+        sb.append(" upper: ");
+        sb.append(upper);
+        sb.append("\n");
+        sb.append(" begin: ");
+        sb.append(begin);
+        sb.append("\n");
+        sb.append(" last: ");
+        sb.append(last);
+        sb.append("\n");
+        sb.append(" startRight: ");
+        sb.append(startRight);
+        sb.append("\n");
+        sb.append(" numRight: ");
+        sb.append(numRight);
+        sb.append("\n");
+        sb.append(" indexR[lowerI]: ");
+        sb.append(indexR[lowerI]);
+        sb.append("\n");
+        sb.append(" array[last - upper]: ");
+        sb.append(array[last - upper]);
+        sb.append("\n");
+        sb.append(" array[last - indexR[lowerI]]: ");
+        sb.append(array[last - indexR[lowerI]]);
+        sb.append("\n");
+        sb.append(" array: ");
+        sb.append(Arrays.toString(array));
+        sb.append("\n");
         swap(array, last - upper--, last - indexR[lowerI--]);
+        // Swaps the element at the position begin + upper with the element at the position begin + indexL[lowerI]. After swapping, both upper and lowerI are decremented.
+        sb.append(" array: ");
+        sb.append(Arrays.toString(array));
+        sb.append("\n");
+        sb.append(" indexR: ");
+        sb.append(Arrays.toString(indexR));
+        if (!FIND) {
+          // System.out.println(sb.toString());
+          // System.out.println("--------------------------------------------------");
+
+        }
+        cnt++;
+        if (cnt > REQUIRED && FIND)
+          return -1000000;
       }
 
       swap(array, pivotPosition, last - upper);
@@ -293,6 +332,14 @@ public class BlockQuickSortTesting {
       end = stack[--top];
       begin = stack[--top];
 
+      System.out.println("-------BEFORE------------");
+      System.out.println("begin: " + begin);
+      System.out.println("end: " + end);
+      System.out.println("top: " + top);
+      System.out.println("depth: " + depth);
+      System.out.println("depthLimit: " + depthLimit);
+      System.out.println("stack: " + Arrays.toString(stack));
+      System.out.println("array: " + Arrays.toString(array));
       while (end - begin > IS_THRESH && depth < depthLimit) {
         int pivot = partition(array, begin, end);
         if (pivot - begin > end - pivot) {
@@ -305,6 +352,16 @@ public class BlockQuickSortTesting {
           end = pivot;
         }
         depth++;
+        // print inner loop relevant vars
+        System.out.println("-----------------------------");
+        System.out.println("begin: " + begin);
+        System.out.println("end: " + end);
+        System.out.println("pivot: " + pivot);
+        System.out.println("top: " + top);
+        System.out.println("depth: " + depth);
+        System.out.println("depthLimit: " + depthLimit);
+        System.out.println("stack: " + Arrays.toString(stack));
+        System.out.println("array: " + Arrays.toString(array));
       }
 
       if (end - begin <= IS_THRESH || depth >= depthLimit) {
