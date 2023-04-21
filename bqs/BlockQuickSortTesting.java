@@ -30,19 +30,7 @@ public class BlockQuickSortTesting {
         }
       }
     {
-      int[] array = { 3, 3, 4, 5, 4, 1 };
-      int res = hoareBlockPartition(array, 0, array.length, 3);
-      System.out.println("hoareBlockPartition: " + res);
-      System.out.println(Arrays.toString(array));
-    }
-    {
-      int[] array = { 3, 6, 1, 1, 6, 3 };
-      int res = hoareBlockPartition(array, 0, array.length, 3);
-      System.out.println("hoareBlockPartition: " + res);
-      System.out.println(Arrays.toString(array));
-    }
-    {
-      int[] array = { 3, 3, 4, 5, 4, 1 };
+      int[] array = { 4, 4, 5, 4, 6, 5 };
       int res = hoareBlockPartition(array, 0, array.length, 3);
       System.out.println("hoareBlockPartition: " + res);
       System.out.println(Arrays.toString(array));

@@ -118,11 +118,11 @@ public class BlockQuickSort {
               @
               @ // loop_invariant (startRight + numRight < BLOCKSIZE && numRight != 0) ==> 
               @ //                 (\forall int i; last - BLOCKSIZE < i < originalEnd; 
-              @ //                  (\exists int j; 0 <= j < numRight; indexR[startRight + j] == i - last) ? 
+              @ //                  (\exists int j; 0 <= j < numRight; indexR[startRight + j] == last - i) ? 
               @ //                   array[i] <= pivot : pivot <= array[i]
               @ //                 );
               @ loop_invariant (numRight != 0) ==> (\forall int i; last - BLOCKSIZE < i < originalEnd; 
-              @                 (\exists int j; 0 <= j < numRight; indexR[startRight + j] == i - last) ? 
+              @                 (\exists int j; 0 <= j < numRight; indexR[startRight + j] == last - i) ? 
               @                  array[i] <= pivot : pivot <= array[i]
               @                );
               @
@@ -139,7 +139,8 @@ public class BlockQuickSort {
               @ // Values inside the range [originalBegin, originalEnd) are a valid permutation. // TODO should be done with permutation()
               @ loop_invariant (\forall int i; originalBegin <= i < originalEnd; (\num_of int j; originalBegin <= j < originalEnd; array[i] == array[j]) == (\num_of int j; originalBegin <= j < originalEnd; array[i] == \old(array[j])));
               @
-              @ loop_modifies array[originalBegin .. originalEnd - 2], last, begin, numLeft, numRight, startLeft, startRight, indexL[0 .. BLOCKSIZE - 1], indexR[0 .. BLOCKSIZE - 1], num;
+              @ // loop_modifies array[originalBegin .. originalEnd - 2], last, begin, numLeft, numRight, startLeft, startRight, indexL[0 .. BLOCKSIZE - 1], indexR[0 .. BLOCKSIZE - 1], num;
+              @ loop_modifies array[max(begin, 0) .. min(begin + BLOCKSIZE - 1, array.length - 1)], array[max(last - BLOCKSIZE - 1, 0) .. min(last, array.length - 1)], last, begin, numLeft, numRight, startLeft, startRight, indexL[0 .. BLOCKSIZE - 1], indexR[0 .. BLOCKSIZE - 1], num;
               @ loop_decreases last - begin;
               @*/
             while (last - begin + 1 > 2 * BLOCKSIZE) {
@@ -217,7 +218,7 @@ public class BlockQuickSort {
                 indexL1 = indexL[1];
                 indexR1 = indexR[1];
 
-                num = (numLeft < numRight) ? numLeft : numRight;
+                num = min(numLeft, numRight);
                 if (num > 0) {
                     /*
                     //@ loop_invariant 0 <= j <= num;
@@ -364,7 +365,7 @@ public class BlockQuickSort {
             }
         }
 
-        num = (numLeft < numRight) ? numLeft : numRight;
+        num = min(numLeft, numRight);
         if (num > 0) {
             /*
             //@ loop_invariant 0 <= j <= num;
@@ -400,6 +401,29 @@ public class BlockQuickSort {
         startRight += num;
         begin += (numLeft == 0) ? shiftL : 0;
         last -= (numRight == 0) ? shiftR : 0;
+
+        int[] secLoopArray = new int[array.length];
+        for (int i = 0; i < array.length; i++) {
+            secLoopArray[i] = array[i];
+        }
+        secLoopArray[array.length - 1] = array[array.length - 1];
+        int secLoopBegin = begin;
+        int secLoopLast = last;
+        int[] secLoopIndexL = new int[BLOCKSIZE];
+        for (int i = 0; i < BLOCKSIZE; i++) {
+            secLoopIndexL[i] = indexL[i];
+        }
+        secLoopIndexL[BLOCKSIZE - 1] = secLoopIndexL[BLOCKSIZE - 1];
+        int[] secLoopIndexR = new int[BLOCKSIZE];
+        for (int i = 0; i < BLOCKSIZE; i++) {
+            secLoopIndexR[i] = indexR[i];
+        }
+        secLoopIndexR[BLOCKSIZE - 1] = secLoopIndexR[BLOCKSIZE - 1];
+        int secLoopStartLeft = startLeft;
+        int secLoopStartRight = startRight;
+        int secLoopNum = num;
+        int secLoopNumLeft = numLeft;
+        int secLoopNumRight = numRight;
 
         if (numLeft != 0) {
             int lowerI = startLeft + numLeft - 1;
@@ -802,6 +826,22 @@ public class BlockQuickSort {
         }
 
         return result;
+    }
+
+    /*@ public normal_behavior
+      @ ensures \result == (a < b ? a : b);
+      @ pure
+      @*/
+    public static int min(int a, int b) {
+        return a < b ? a : b;
+    }
+
+    /*@ public normal_behavior
+      @ ensures \result == (a > b ? a : b);
+      @ pure
+      @*/
+    public static int max(int a, int b) {
+        return a > b ? a : b;
     }
 
     /*@ 
