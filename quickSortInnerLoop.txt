@@ -1,0 +1,60 @@
+-------BEFORE------------
+begin: 0
+end: 10
+top: 0
+depth: 0
+depthLimit: 9
+stack: [0, 10, 0, 0, 0, 0, 0, 0]     
+array: [9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
+        -----------------------------        
+        begin: 0
+        end: 4
+        pivot: 4
+        top: 2
+        depth: 1
+        depthLimit: 9
+        stack: [5, 10, 0, 0, 0, 0, 0, 0]
+        array: [0, 2, 3, 1, 4, 6, 7, 8, 5, 9]
+        -----------------------------
+        begin: 0
+        end: 1
+        pivot: 1
+        top: 4
+        depth: 2
+        depthLimit: 9
+        stack: [5, 10, 2, 4, 0, 0, 0, 0]
+        array: [0, 1, 2, 3, 4, 6, 7, 8, 5, 9]
+-------BEFORE------------
+begin: 2
+end: 4
+top: 2
+depth: 1
+depthLimit: 9
+stack: [5, 10, 2, 4, 0, 0, 0, 0]
+array: [0, 1, 2, 3, 4, 6, 7, 8, 5, 9]
+-------BEFORE------------
+begin: 5
+end: 10
+top: 0
+depth: 0
+depthLimit: 9
+stack: [5, 10, 2, 4, 0, 0, 0, 0]
+array: [0, 1, 2, 3, 4, 6, 7, 8, 5, 9]
+        -----------------------------
+        begin: 9
+        end: 10
+        pivot: 8
+        top: 2
+        depth: 1
+        depthLimit: 9
+        stack: [5, 8, 2, 4, 0, 0, 0, 0]
+        array: [0, 1, 2, 3, 4, 6, 7, 5, 8, 9]
+-------BEFORE------------
+begin: 5
+end: 8
+top: 0
+depth: 0
+depthLimit: 9
+stack: [5, 8, 2, 4, 0, 0, 0, 0]
+array: [0, 1, 2, 3, 4, 6, 7, 5, 8, 9]
+[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
