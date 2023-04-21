@@ -30,8 +30,8 @@ public class BlockQuickSortTesting {
         }
       }
 
-    int[] array = { -1753503446, 393980209, -1753503455 };
-    int res = hoareBlockPartition(array, 0, array.length, 0);
+    int[] array = { 4, 5, 2, 1, 4 };
+    int res = hoareBlockPartition(array, 0, 3, 1);
     System.out.println("hoareBlockPartition: " + res);
     System.out.println(Arrays.toString(array));
   }
@@ -90,6 +90,19 @@ public class BlockQuickSortTesting {
       begin += (numLeft == 0) ? BLOCKSIZE : 0;
       last -= (numRight == 0) ? BLOCKSIZE : 0;
     }
+
+    System.out.println("--------------------");
+    System.out.println("numLeft: " + numLeft);
+    System.out.println("numRight: " + numRight);
+    System.out.println("startLeft: " + startLeft);
+    System.out.println("startRight: " + startRight);
+    System.out.println("begin: " + begin);
+    System.out.println("last: " + last);
+    System.out.println("pivotPosition: " + pivotPosition);
+    System.out.println("pivot: " + pivot);
+    System.out.println("array: " + Arrays.toString(array));
+    System.out.println("IndexL: " + Arrays.toString(indexL));
+    System.out.println("IndexR: " + Arrays.toString(indexR));
 
     int shiftR = 0, shiftL = 0;
     if (numRight == 0 && numLeft == 0) {

@@ -10,7 +10,8 @@ public class BlockQuickSort {
       @ requires (originalEnd - originalBegin) >= 1 && (originalEnd - originalBegin) <= 500;
       @ requires 0 <= originalBegin && originalBegin < originalEnd && originalEnd <= array.length;
       @ requires originalBegin <= pivotPosition && pivotPosition < originalEnd;
-      @ requires (\forall int i; 0 <= i < array.length; 0 <= array[i] && array[i] <= array.length); // TODO: remove this - only for testing - fixes currently broken partitioning
+      @ requires (\forall int i; 0 <= i < array.length; 0 <= array[i] && array[i] <= array.length); // TODO: remove this - only for testing
+      @ requires pivotPosition == (originalBegin + originalEnd) / 2; // TODO: remove this - only for testing
       @ ensures array.length == \old(array.length);
       @
       @ // The resulting pivot is inside the range [originalBegin, originalEnd).
@@ -44,6 +45,7 @@ public class BlockQuickSort {
         }
         originalArray[array.length - 1] = originalArray[array.length - 1];
         int originalArrayLength = originalArray.length;
+        int originalPivotPosition = pivotPosition;
 
         int begin = originalBegin;
         int end = originalEnd;
@@ -60,11 +62,12 @@ public class BlockQuickSort {
         int startRight = 0;
         int num = 0;
 
-        if (last >= begin) {
-            int indexL0 = indexL[0];
-            int indexR0 = indexR[0];
-            int indexL1 = indexL[1];
-            int indexR1 = indexR[1];
+        int indexL0 = indexL[0];
+        int indexR0 = indexR[0];
+        int indexL1 = indexL[1];
+        int indexR1 = indexR[1];
+
+        if (last - begin + 1 > 2 * BLOCKSIZE) {
 
             //@ loop_invariant originalBegin <= begin && begin <= last && last < originalEnd - 1;
             //@ loop_invariant 0 <= numLeft && numLeft <= BLOCKSIZE;
@@ -73,6 +76,7 @@ public class BlockQuickSort {
             //@ loop_invariant 0 <= startRight && startRight <= BLOCKSIZE && startRight + numRight <= BLOCKSIZE;
             //@ loop_invariant 0 <= num && num <= BLOCKSIZE;
             //@ loop_invariant numRight == 0 || numLeft == 0;
+            //@ loop_invariant array[originalEnd - 1] == \old(array[pivotPosition]);
             //@
             //@ loop_invariant (\forall int i; 0 <= i < numLeft; indexL[startLeft + i] < last - begin);
             //@ loop_invariant (\forall int i; 0 <= i < BLOCKSIZE; 0 <= indexL[i] && indexL[i] < BLOCKSIZE);
@@ -84,13 +88,24 @@ public class BlockQuickSort {
             //@ loop_invariant (\forall int i; 0 <= i < numRight - 1; indexR[i] < indexR[i + 1]);
             //@ loop_invariant (\forall int i; 0 <= i < numRight; array[last - indexR[startRight + i]] <= pivot);
             //@
+            //@ // num left == num of unsorted elements in range begin + indexL[startLeft], begin + indexL[startLeft + numLeft - 1]
+            //@ // TODO startLeft == BLOCKSIZE and actually to < indexL[startLeft+numLeft] if startLeft+numLeft < BLOCKSIZE
+            //@ loop_invariant (startLeft >= BLOCKSIZE) ==> (numLeft == 0);
+            //@ loop_invariant (startLeft < BLOCKSIZE && startLeft + numLeft < BLOCKSIZE) ==> (\forall int i; originalBegin <= i < begin + indexL[startLeft + numLeft]; (\exists int j; startLeft <= j < startLeft + numLeft; indexL[j] == i - begin) ? pivot <= array[i] : array[i] <= pivot);
+            //@ loop_invariant (startLeft < BLOCKSIZE && startLeft + numLeft >= BLOCKSIZE) ==> (\forall int i; originalBegin <= i < begin + indexL[BLOCKSIZE - 1]; (\exists int j; startLeft <= j < BLOCKSIZE; indexL[j] == i - begin) ? pivot <= array[i] : array[i] <= pivot);
+            //@
+            //@ // num right == num of unsorted elements in range last - indexR[startRight + numRight - 1], last - indexR[startRight]
+            //@ loop_invariant (startRight >= BLOCKSIZE) ==> (numRight == 0);
+            //@ loop_invariant (startRight < BLOCKSIZE && startRight + numRight < BLOCKSIZE) ==> (\forall int i; last - indexR[startRight + numRight] < i < originalEnd; (\exists int j; startRight <= j < startRight + numRight; indexR[j] == last - i) ? array[i] <= pivot : pivot <= array[i]);
+            //@ loop_invariant (startRight < BLOCKSIZE && startRight + numRight >= BLOCKSIZE) ==> (\forall int i; last - indexR[BLOCKSIZE - 1] < i < originalEnd; (\exists int j; startRight <= j < BLOCKSIZE; indexR[j] == last - i) ? array[i] <= pivot : pivot <= array[i]);
+            //@
             //@ // The elements in the range [originalBegin, begin + indexL[startLeft]) are less than or equal pivot
-            //@ loop_invariant startLeft < BLOCKSIZE ==> (\forall int i; originalBegin <= i < begin + indexL[startLeft]; array[i] <= pivot);
-            //@ loop_invariant startLeft == BLOCKSIZE ==> (\forall int i; originalBegin <= i < begin; array[i] <= pivot);
+            //@ loop_invariant startLeft < BLOCKSIZE && numLeft != 0 ==> (\forall int i; originalBegin <= i < begin + indexL[startLeft]; array[i] <= pivot);
+            //@ loop_invariant startLeft >= BLOCKSIZE || numLeft == 0 ==> (\forall int i; originalBegin <= i < begin; array[i] <= pivot);
             //@
             //@ // The elements in the range (last - indexR[startRight], originalEnd) are greater than or equal pivot 
-            //@ loop_invariant startRight < BLOCKSIZE ==> (\forall int i; last - indexR[startRight] < i < originalEnd; pivot <= array[i]);
-            //@ loop_invariant startRight == BLOCKSIZE ==> (\forall int i; last < i < originalEnd - 1; pivot <= array[i]);
+            //@ loop_invariant startRight < BLOCKSIZE && numRight != 0 ==> (\forall int i; last - indexR[startRight] < i < originalEnd; pivot <= array[i]);
+            //@ loop_invariant startRight >= BLOCKSIZE || numRight == 0 ==> (\forall int i; last < i < originalEnd - 1; pivot <= array[i]);
             //@
             //@ // Values inside the range [originalBegin, originalEnd) are a valid permutation. // TODO should be done with permutation()
             //@ loop_invariant (\forall int i; originalBegin <= i < originalEnd; (\num_of int j; originalBegin <= j < originalEnd; array[i] == array[j]) == (\num_of int j; originalBegin <= j < originalEnd; array[i] == \old(array[j])));
@@ -165,6 +180,10 @@ public class BlockQuickSort {
                         numRight += pivot >= array[last - j] ? 1 : 0;
                     }
                 }
+                indexL0 = indexL[0];
+                indexR0 = indexR[0];
+                indexL1 = indexL[1];
+                indexR1 = indexR[1];
 
                 num = (numLeft < numRight) ? numLeft : numRight;
                 if (num > 0) {
@@ -204,6 +223,10 @@ public class BlockQuickSort {
                 last -= (numRight == 0) ? BLOCKSIZE : 0;
             }
         }
+        indexL0 = indexL[0];
+        indexR0 = indexR[0];
+        indexL1 = indexL[1];
+        indexR1 = indexR[1];
 
         int[] afterLoopArray = new int[array.length];
         for (int i = 0; i < array.length; i++) {
@@ -225,6 +248,8 @@ public class BlockQuickSort {
         int afterLoopStartLeft = startLeft;
         int afterLoopStartRight = startRight;
         int afterLoopNum = num;
+        int afterLoopNumLeft = numLeft;
+        int afterLoopNumRight = numRight;
 
         int shiftR = 0, shiftL = 0;
         if (numRight == 0 && numLeft == 0) {
@@ -568,7 +593,6 @@ public class BlockQuickSort {
       @ requires array != null && array.length < 500;
       @ requires 0 <= begin && begin <= end && end <= array.length;
       @ requires 0 <= depth && depth <= depthLimit && depthLimit < 500;
-      @ requires (\forall int i; 0 <= i < array.length; 0 <= array[i] && array[i] <= array.length); // TODO: remove this - only for testing - fixes currently broken partitioning
       @ ensures array.length == \old(array.length);
       @
       @ // Values inside the range [begin, end) are in sorted order.
