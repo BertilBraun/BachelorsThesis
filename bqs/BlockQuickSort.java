@@ -524,18 +524,22 @@ public class BlockQuickSort {
     /*@
       @ public normal_behavior
       @ requires array != null && array.length < 500;
-      @ requires 0 <= begin && begin < end && end <= array.length;
+      @ requires 0 <= originalBegin && originalBegin < originalEnd && originalEnd <= array.length;
       @ ensures array.length == \old(array.length);
       @
-      @ // Values inside the range [begin, end) are in sorted order.
-      @ ensures (\forall int i; begin <= i < end - 1; array[i] <= array[i+1]);
+      @ // Values inside the range [originalBegin, originalEnd) are in sorted order.
+      @ ensures (\forall int i; originalBegin <= i < originalEnd - 1; array[i] <= array[i+1]);
       @
-      @ // Values inside the range [begin, end) are a valid permutation.
-      @ ensures permutation(array, \old(array), begin, end);
+      @ // Values inside the range [originalBegin, originalEnd) are a valid permutation.
+      @ ensures permutation(array, \old(array), originalBegin, originalEnd);
       @
-      @ assignable array[begin .. end-1];
+      @ assignable array[originalBegin .. originalEnd-1];
       @*/
-    public static void quickSort(int[] array, int begin, int end) {
+    public static void quickSort(int[] array, int originalBegin, int originalEnd) {
+
+        int begin = originalBegin;
+        int end = originalEnd;
+
         int[] stack = new int[STACK_SIZE];
         int top = 0;
         int depth = 0;
@@ -544,60 +548,52 @@ public class BlockQuickSort {
         stack[top++] = begin;
         stack[top++] = end;
 
-        /* TODO
-        //@ loop_invariant
-        //@   // Stack-related invariants:
-        //@   stack != null && stack.length == STACK_SIZE &&
-        //@   top % 2 == 0 && 0 <= top && top <= STACK_SIZE &&
-        //@   (\forall int i; 0 <= i < top; 0 <= stack[i] && stack[i] < array.length) &&
-        //@   (\forall int i; 0 <= i < top - 1; i % 2 == 0 ==> stack[i] < stack[i+1]) &&
-        //@
-        //@   // Subarray-related invariants:
-        //@   (\forall int i; 0 <= i < top; i % 2 == 0 ==> permutation(array, \old(array), stack[i], stack[i+1])) &&
-        //@
-        //@   // Depth-related invariants:
-        //@   0 <= depth && depth <= depthLimit &&
-        //@   depthLimit >= 0 &&
-        //@   depthLimit == (int) (2 * Math.log(end - begin) / Math.log(2)) + 3 &&
-        //@
-        //@   // Begin and end invariants:
-        //@   0 <= begin && begin < end && end <= array.length &&
-        //@
-        //@   // The subarray [begin, end) at the top of the stack is always sorted.
-        //@   (\forall int i; begin <= i < end - 1; array[i] <= array[i + 1]);
-        //@
-        //@ // Termination measure:
-        //@ loop_decreases (depthLimit - depth) * array.length + (\sum int i; 0 <= i < top; i % 2 == 0 ? stack[i+1] - stack[i] : 0);
-        //@
-        //@ loop_modifies array, stack, top, depth, begin, end;
-        */
+        // /*@ loop_invariant 0 <= top && top < STACK_SIZE;
+        //   @ loop_invariant 0 <= depth && depth <= depthLimit;
+        //   @ loop_invariant originalBegin <= begin && begin <= end && end <= originalEnd;
+        //   @ 
+        //   @ 
+        //   @ // for (originalBegin, min(begin, min(stack[0 .. top]))) is ordered
+        //   @ loop_invariant (\forall int i; originalBegin <= i < min(begin, \min int j; 0 <= j < top; stack[j]); array[i] <= array[i+1]);
+        //   @ 
+        //   @ // for (max(end, max(stack[0 .. top])), originalEnd) is ordered
+        //   @ loop_invariant (\forall int i; max(end, \max int j; 0 <= j < top; stack[j]) <= i < originalEnd; array[i] <= array[i+1]);
+        //   @
+        //   @ // Values inside the range [originalBegin, originalEnd) are a valid permutation.
+        //   @ loop_invariant (\forall int i; originalBegin <= i < originalEnd; (\num_of int k; originalBegin <= k < originalEnd; array[i] == array[k]) == (\num_of int k; originalBegin <= k < originalEnd; array[i] == \old(array[k])));
+        //   @
+        //   @ loop_modifies top, depth, stack[0 .. STACK_SIZE - 1], array[originalBegin .. originalEnd - 1];
+        //   @
+        //   @ // outer loop decreases sum of num of elements out of order, aka sum (num of elements later than e which are smaller than e)
+        //   @ loop_decreases (\sum int i; originalBegin <= i < originalEnd; (\num_of int j; i <= j < originalEnd; array[j] < array[i])); // TODO check this
+        //   @*/
         while (top > 0) {
             end = stack[--top];
             begin = stack[--top];
 
-            /* TODO
-            //@ loop_invariant stack != null && 0 <= top && top <= STACK_SIZE;
-            //@ loop_invariant top % 2 == 0; // The top index is always even
-            //@ loop_invariant 0 <= depth && depth <= depthLimit;
-            //@ loop_invariant 0 <= begin && begin < end && end <= array.length;
-            //@ // Stack holds valid indices
-            //@ loop_invariant (\forall int i; 0 <= i < top; stack[i] >= 0 && stack[i] < array.length);
-            //@ // Each segment in stack is sorted
-            //@ loop_invariant (\forall int i; 0 <= i < top / 2;
-            //@                  (\forall int j; stack[2 * i] <= j < stack[2 * i + 1] - 1;
-            //@                   array[j] <= array[j + 1]));
-            //@ // Each segment is a valid permutation
-            //@ loop_invariant (\forall int i; 0 <= i < top / 2;
-            //@                  (\forall int j; stack[2 * i] <= j < stack[2 * i + 1];
-            //@                   (\forall int k; stack[2 * i] <= k < stack[2 * i + 1]; array[k] == array[j] &&
-            //@                    (\num_of int l; stack[2 * i] <= l && l < stack[2 * i + 1]; array[l] == array[j]) ==
-            //@                    (\num_of int l; stack[2 * i] <= l && l < stack[2 * i + 1]; \old(array[l]) == array[j]))));
-            //@ // Adjacent segments are ordered
-            //@ loop_invariant (\forall int i; 0 <= i < top / 2 - 1;
-            //@                  array[stack[2 * i + 1] - 1] <= array[stack[2 * (i + 1)]]);
-            //@ loop_decreases end - begin;
-            //@ loop_modifies array, stack, top, depth, begin, end;
-            */
+            // /*@ loop_invariant top >= 0 && top < STACK_SIZE;
+            //   @ loop_invariant originalBegin <= begin && begin <= end && end <= originalEnd;
+            //   @ loop_invariant 0 <= depth && depth <= depthLimit;
+            //   @ loop_invariant (\forall int i; 0 <= i < top / 2; originalBegin <= stack[2 * i] && stack[2 * i] < stack[2 * i + 1] && stack[2 * i + 1] <= originalEnd);
+            //   @
+            //   @
+            //   @ // for each (start, end) and the min(start .. end) and max(start .. end) in the stack
+            //   @ //     there all e <= min in (0 .. start) and all e >= max in (end .. originalEnd)
+            //   @ loop_invariant (\forall int i; 0 <= i < top / 2;
+            //   @                 (\forall int j; 0 <= j < stack[2 * i]; 
+            //   @                                 array[j] <= (\min int k; stack[2 * i] <= k < stack[2 * i + 1]; array[k])));
+            //   @ loop_invariant (\forall int i; 0 <= i < top / 2;
+            //   @                 (\forall int j; stack[2 * i + 1] <= j < originalEnd; 
+            //   @                                 (\max int k; stack[2 * i] <= k < stack[2 * i + 1]; array[k]) <= array[j]));
+            //   @
+            //   @
+            //   @
+            //   @ // Values inside the range [originalBegin, originalEnd) are a valid permutation.
+            //   @ loop_invariant (\forall int i; originalBegin <= i < originalEnd; (\num_of int k; originalBegin <= k < originalEnd; array[i] == array[k]) == (\num_of int k; originalBegin <= k < originalEnd; array[i] == \old(array[k])));
+            //   @
+            //   @ loop_modifies top, depth, stack[0 .. STACK_SIZE - 1], array[originalBegin .. originalEnd - 1];
+            //   @ loop_decreases end - begin;
+            //   @*/
             while (end - begin > IS_THRESH && depth < depthLimit) {
                 int pivot = partition(array, begin, end);
                 if (pivot - begin > end - pivot) {
