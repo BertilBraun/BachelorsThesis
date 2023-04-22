@@ -21,6 +21,8 @@ ITERATIONS = 5
 MS_OF_1_HOUR = 60 * 60 * 1000
 MS_OF_2_HOURS = 2 * MS_OF_1_HOUR
 MS_OF_10_HOURS = 10 * MS_OF_1_HOUR
+DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME = MS_OF_1_HOUR  # Should be run with MS_OF_2_HOURS
+FUNCTION_TIMEOUT = MS_OF_2_HOURS  # Should be run with MS_OF_10_HOURS
 
 JJBMC_CMD = "java -jar ../../../../../../JJBMC.jar -mas {mas} -u {u} {inline} -tr -c -kt -timeout={timeout} BlockQuickSort.java {function} -j=--stop-on-fail"
 
@@ -31,28 +33,31 @@ MEDIUM_WORKERS = 24
 HARD_WORKERS = 12
 VERY_HARD_WORKERS = 4
 
+QUICK = 2  # Should be run with 3
+NOT_SO_QUICK = 1  # Should be run with 2
+
 INLINE_ARGS = ['', '-fil', '-fi']
 
 FOLDER_F_STRING = "{BASE_FOLDER}/bound_{bound}/{function}/iter_{iteration}"
 
 TASKS = [
     (EASY_WORKERS, [
-        ("swap", list(range(1, 15)), 3),  # unbounded
-        ("sortPair", list(range(1, 15)), 3),  # unbounded
+        ("swap", list(range(1, 15)), QUICK),  # unbounded
+        ("sortPair", list(range(1, 15)), QUICK),  # unbounded
     ]),
     (MEDIUM_WORKERS, [
-        ("partition", list(range(1, 9)), 3),
-        ("medianOf3", list(range(1, 10)), 3),
-        ("insertionSort", list(range(1, 9)), 3),
-        ("quickSortRec", list(range(1, 12)), 2),  # TODO no idea whether this is slow
+        ("partition", list(range(1, 9)), QUICK),
+        ("medianOf3", list(range(1, 10)), QUICK),
+        ("insertionSort", list(range(1, 9)), QUICK),
+        ("quickSortRec", list(range(1, 12)), NOT_SO_QUICK),  # TODO no idea whether this is slow
     ]),
     (HARD_WORKERS, [
-        ("permutation", list(range(1, 7)), 2),
-        ("hoareBlockPartition", list(range(1, 7)), 2),  # TODO no idea how slow this is
+        ("permutation", list(range(1, 7)), NOT_SO_QUICK),
+        ("hoareBlockPartition", list(range(1, 7)), NOT_SO_QUICK),  # TODO no idea how slow this is
     ]),
     (VERY_HARD_WORKERS, [
-        ("quickSortRecImpl", list(range(1, 5)), 2),  # TODO 6 should be possible, even though it takes about 15h
-        ("quickSort", list(range(1, 3)), 2),
+        ("quickSortRecImpl", list(range(1, 5)), NOT_SO_QUICK),  # TODO 6 should be possible, even though it takes about 15h
+        # ("quickSort", list(range(1, 3)), NOT_SO_QUICK),
     ])
 ]
 
@@ -76,7 +81,7 @@ def process_JJBMC_example(folder, bound, function, inline_arg):
         return
 
     # if runtime of previous bound is > MS_OF_2_HOURS, skip
-    if runtimes.get((function, bound - 1, inline_arg), 0) > MS_OF_2_HOURS:
+    if runtimes.get((function, bound - 1, inline_arg), 0) > DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME:
         print(
             f"Skipping function '{function}' with bound '{bound}' and inline arg '{inline_arg}' because previous bound took too long")
         return
@@ -87,7 +92,7 @@ def process_JJBMC_example(folder, bound, function, inline_arg):
     cmd = JJBMC_CMD.format(
         mas=bound,
         u=bound + 2,
-        timeout=MS_OF_10_HOURS,
+        timeout=FUNCTION_TIMEOUT,
         function=function,
         inline=inline_arg
     )
