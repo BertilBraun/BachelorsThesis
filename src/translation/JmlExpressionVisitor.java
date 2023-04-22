@@ -505,7 +505,6 @@ public class JmlExpressionVisitor extends JmlTreeCopier {
             init = TranslationUtils.replaceVarName(e.getKey(), e.getValue(), init);
             newStatements = TranslationUtils.replaceVarName(e.getKey(), e.getValue(), newStatements);
         }
-        System.out.println(value);
         JCStatement addToResultVar = maker
                 .Exec(maker.Assignop(Tag.PLUS_ASG, maker.Ident(resultVar), value).setType(syms.intType));
         newStatements = newStatements.append(addToResultVar);
