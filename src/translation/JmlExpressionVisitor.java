@@ -433,8 +433,11 @@ public class JmlExpressionVisitor extends JmlTreeCopier {
                 names.fromString((isMin ? "min_" : "max_") + minMaxVarCounter++),
                 currentSymbol,
                 treeutils.makeLit(TranslationUtils.getCurrentPosition(), syms.intType, initialValue));
-        // may not be in needed vars, since these have to be initialized before the loop. Otherwise nested loops would not work
-        newStatements = newStatements.append(resultVar);
+        neededVariableDefs = neededVariableDefs.append(resultVar);
+        // reinitialize resultVar to initialValue
+        newStatements = newStatements
+                .append(maker.Exec(maker.Assign(maker.Ident(resultVar),
+                        treeutils.makeLit(TranslationUtils.getCurrentPosition(), syms.intType, initialValue))));
 
         // Create a loop to iterate over the range and process the values
         List<JCStatement> oldStatements = newStatements;
@@ -486,8 +489,11 @@ public class JmlExpressionVisitor extends JmlTreeCopier {
                 names.fromString("sum_" + sumVarCounter++),
                 currentSymbol,
                 treeutils.makeLit(TranslationUtils.getCurrentPosition(), syms.intType, 0));
-        // may not be in needed vars, since these have to be initialized before the loop. Otherwise nested loops would not work
-        newStatements = newStatements.append(resultVar);
+        neededVariableDefs = neededVariableDefs.append(resultVar);
+        // reinitialize the result variable to 0
+        newStatements = newStatements
+                .append(maker.Exec(maker.Assign(maker.Ident(resultVar),
+                        treeutils.makeLit(TranslationUtils.getCurrentPosition(), syms.intType, 0))));
 
         List<JCStatement> oldStatements = newStatements;
         newStatements = List.nil();
