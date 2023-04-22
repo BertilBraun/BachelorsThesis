@@ -2,7 +2,7 @@ public class Testing {
 
     /*@ normal_behavior
       @ requires array != null;
-      @ ensures \result == (\num_of int i; 0 <= i && i < array.length; array[i] > 0);
+      @ ensures \result == (\num_of int i; 0 <= i < array.length; array[i] > 0);
       @*/
     public int testNumOf(int[] array) {
         int count = 0;
@@ -16,7 +16,7 @@ public class Testing {
 
     /*@ normal_behavior
       @ requires array != null;
-      @ ensures \result == (\sum int i; 0 <= i && i < array.length; array[i]);
+      @ ensures \result == (\sum int i; 0 <= i < array.length; array[i]);
       @*/
     public int testSum(int[] array) {
         int sum = 0;
@@ -24,6 +24,38 @@ public class Testing {
             sum += array[i];
         }
         return sum;
+    }
+
+    /*@ normal_behavior
+      @ requires array != null;
+      @ ensures \result == (\sum int i; 0 <= i < array.length; (\num_of int j; i <= j < array.length; array[j] < array[i]));
+      @*/
+    public int testSumNumOf(int[] array) {
+        int sum = 0;
+        for (int i = 0; i < array.length; i++) {
+            for (int j = i; j < array.length; j++) {
+                if (array[j] < array[i]) {
+                    sum++;
+                }
+            }
+        }
+        return sum;
+    }
+
+    /*@ normal_behavior
+      @ requires array != null;
+      @ requires (\forall int i; 0 <= i < array.length; \forall int j; i <= j < array.length; array[i] <= array[j]);
+      @ ensures \result == (\forall int i; 0 <= i < array.length; \forall int j; i <= j < array.length; array[i] <= array[j]);
+      @*/
+    public boolean testForFor(int[] array) {
+        for (int i = 0; i < array.length; i++) {
+            for (int j = i; j < array.length; j++) {
+                if (array[i] > array[j]) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     /*@ normal_behavior
@@ -41,7 +73,7 @@ public class Testing {
     }
 
     //@ requires array != null && array.length > 0;
-    //@ ensures \result == (\min int i; 0 <= i && i < array.length; array[i]);
+    //@ ensures \result == (\min int i; 0 <= i < array.length; array[i]);
     public int testMin(int[] array) {
         int minValue = array[0];
         for (int i = 1; i < array.length; i++) {
@@ -53,7 +85,7 @@ public class Testing {
     }
 
     //@ requires array != null && array.length > 0;
-    //@ ensures \result == (\max int i; 0 <= i && i < array.length; array[i]);
+    //@ ensures \result == (\max int i; 0 <= i < array.length; array[i]);
     public int testMax(int[] array) {
         int maxValue = array[0];
         for (int i = 1; i < array.length; i++) {
@@ -65,13 +97,13 @@ public class Testing {
     }
 
     //@ requires array != null && array.length == 0;
-    //@ ensures \result == (\min int i; 0 <= i && i < array.length; array[i]);
+    //@ ensures \result == (\min int i; 0 <= i < array.length; array[i]);
     public int testMinEmptyArray(int[] array) {
         return Integer.MAX_VALUE;
     }
 
     //@ requires array != null && array.length == 0;
-    //@ ensures \result == (\max int i; 0 <= i && i < array.length; array[i]);
+    //@ ensures \result == (\max int i; 0 <= i < array.length; array[i]);
     public int testMaxEmptyArray(int[] array) {
         return Integer.MIN_VALUE;
     }

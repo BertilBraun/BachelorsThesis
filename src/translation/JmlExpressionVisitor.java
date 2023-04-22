@@ -402,20 +402,16 @@ public class JmlExpressionVisitor extends JmlTreeCopier {
                 throw new TranslationException("Quantified expressions may not occur in Java-mode: " + that);
             }
         } else if (copy.op == JmlTokenKind.BSSUM) {
-            JCExpression value = super.copy(copy.value);
-            return generateSum(that, value, range, re);
+            return generateSum(that, copy.value, range, re);
         } else if (copy.op == JmlTokenKind.BSNUMOF) {
             // Quite obviously \num_of ...; R; V is equivalent to \sum ... ; R; V ? 1 : 0
-            JCExpression value = super.copy(copy.value);
             // Modify the value expression for num_of
-            value = maker.Conditional(value, maker.Literal(1), maker.Literal(0));
+            JCExpression value = maker.Conditional(copy.value, maker.Literal(1), maker.Literal(0));
             return generateSum(that, value, range, re);
         } else if (copy.op == JmlTokenKind.BSMIN) {
-            JCExpression value = super.copy(copy.value);
-            return generateMinMax(that, value, range, re, true);
+            return generateMinMax(that, copy.value, range, re, true);
         } else if (copy.op == JmlTokenKind.BSMAX) {
-            JCExpression value = super.copy(copy.value);
-            return generateMinMax(that, value, range, re, false);
+            return generateMinMax(that, copy.value, range, re, false);
         } else {
             throw new UnsupportedException("Unkown token type in quantified Expression: " + copy.op);
         }
@@ -437,14 +433,19 @@ public class JmlExpressionVisitor extends JmlTreeCopier {
                 names.fromString((isMin ? "min_" : "max_") + minMaxVarCounter++),
                 currentSymbol,
                 treeutils.makeLit(TranslationUtils.getCurrentPosition(), syms.intType, initialValue));
-        neededVariableDefs = neededVariableDefs.append(resultVar);
+        // may not be in needed vars, since these have to be initialized before the loop. Otherwise nested loops would not work
+        newStatements = newStatements.append(resultVar);
 
         // Create a loop to iterate over the range and process the values
-        List<JCStatement> loopBody = newStatements;
+        List<JCStatement> oldStatements = newStatements;
         newStatements = List.nil();
+        value = super.copy(value); // Global state is nice! :D Took two hours to find this bug
+        JCExpression init = super.copy(re.getMin());
         for (Map.Entry<String, String> e : variableReplacements.entrySet()) {
             value = TranslationUtils.replaceVarName(e.getKey(), e.getValue(), value);
             range = TranslationUtils.replaceVarName(e.getKey(), e.getValue(), range);
+            init = TranslationUtils.replaceVarName(e.getKey(), e.getValue(), init);
+            newStatements = TranslationUtils.replaceVarName(e.getKey(), e.getValue(), newStatements);
         }
 
         // Create a conditional assignment to update the resultVar based on the min or max operation
@@ -460,11 +461,14 @@ public class JmlExpressionVisitor extends JmlTreeCopier {
             loopVarName = variableReplacements.get(that.decls.get(0).getName().toString());
         }
         JCForLoop forLoop = TranslationUtils.makeStandardLoopFromRange(range, newStatements, loopVarName, currentSymbol,
-                re.getMin());
-        loopBody = loopBody.append(forLoop);
+                init);
+        List<JCStatement> list = List.of(forLoop);
+        list = TranslationUtils.replaceVarName(that.decls.get(0).getName().toString(),
+                variableReplacements.get(that.decls.get(0).getName().toString()), list);
+        oldStatements = oldStatements.appendList(list);
 
         // Restore the previous state and remove the variable replacements and quantifier variables
-        newStatements = loopBody;
+        newStatements = oldStatements;
         variableReplacements.remove(that.decls.get(0).getName().toString());
         quantifierVars.remove(that.decls.get(0).sym);
 
@@ -477,33 +481,40 @@ public class JmlExpressionVisitor extends JmlTreeCopier {
     private JCExpression generateSum(JmlQuantifiedExpr that, JCExpression value, JCExpression range,
             RangeExtractor re) {
         // Create a variable to store the result of the sum or count
-        JCVariableDecl resultVar = treeutils.makeVarDef(syms.intType, names.fromString("sum_" + sumVarCounter++),
+        JCVariableDecl resultVar = treeutils.makeVarDef(
+                syms.intType,
+                names.fromString("sum_" + sumVarCounter++),
                 currentSymbol,
                 treeutils.makeLit(TranslationUtils.getCurrentPosition(), syms.intType, 0));
-        neededVariableDefs = neededVariableDefs.append(resultVar);
+        // may not be in needed vars, since these have to be initialized before the loop. Otherwise nested loops would not work
+        newStatements = newStatements.append(resultVar);
 
-        // Create a loop to iterate over the range and process the values
-        List<JCStatement> loopBody = newStatements;
+        List<JCStatement> oldStatements = newStatements;
         newStatements = List.nil();
+        value = super.copy(value); // Global state is nice! :D Took two hours to find this bug
+        JCExpression init = super.copy(re.getMin());
         for (Map.Entry<String, String> e : variableReplacements.entrySet()) {
             value = TranslationUtils.replaceVarName(e.getKey(), e.getValue(), value);
             range = TranslationUtils.replaceVarName(e.getKey(), e.getValue(), range);
+            init = TranslationUtils.replaceVarName(e.getKey(), e.getValue(), init);
+            newStatements = TranslationUtils.replaceVarName(e.getKey(), e.getValue(), newStatements);
         }
+        System.out.println(value);
         JCStatement addToResultVar = maker
                 .Exec(maker.Assignop(Tag.PLUS_ASG, maker.Ident(resultVar), value).setType(syms.intType));
         newStatements = newStatements.append(addToResultVar);
 
-        // Create the for-loop with the loop body
         String loopVarName = that.decls.get(0).getName().toString();
         if (variableReplacements.containsKey(that.decls.get(0).getName().toString())) {
             loopVarName = variableReplacements.get(that.decls.get(0).getName().toString());
         }
-        JCForLoop forLoop = TranslationUtils.makeStandardLoopFromRange(range, newStatements, loopVarName, currentSymbol,
-                re.getMin());
-        loopBody = loopBody.append(forLoop);
+        List<JCStatement> list = List
+                .of(TranslationUtils.makeStandardLoopFromRange(range, newStatements, loopVarName, currentSymbol, init));
+        list = TranslationUtils.replaceVarName(that.decls.get(0).getName().toString(),
+                variableReplacements.get(that.decls.get(0).getName().toString()), list);
 
         // Restore the previous state and remove the variable replacements and quantifier variables
-        newStatements = loopBody;
+        newStatements = oldStatements.appendList(list);
         variableReplacements.remove(that.decls.get(0).getName().toString());
         quantifierVars.remove(that.decls.get(0).sym);
 
