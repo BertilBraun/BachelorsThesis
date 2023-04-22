@@ -4,31 +4,12 @@ public class BlockQuickSort {
     private static final int IS_THRESH = 3; // \paper(16) must be a minimum of 3, since we use 3 elements for pivot selection
     private static final int STACK_SIZE = 80;
 
-    // /*@ public normal_behavior
-    //   @ requires originalBegin <= last && last < originalEnd;
-    //   @ ensures \result != -1 ==> last == originalEnd - 2 - \result * BLOCKSIZE;
-    //   @ ensures \result == -1 ==> (\forall int i; 0 <= i < (originalEnd - originalBegin); last != originalEnd - 2 - i * BLOCKSIZE);
-    //   @ ensures 0 <= \result && \result < (originalEnd - originalBegin);
-    //   @ pure
-    //   @*/
-    // int calculateForEnd(int last, int originalBegin, int originalEnd) {
-    //     // (\exists int i; 0 <= i < (originalEnd - originalBegin); last == originalEnd - 2 - i * BLOCKSIZE);
-    //     for (int i = 0; i < (originalEnd - originalBegin); i++) {
-    //         if (last == originalEnd - 2 - i * BLOCKSIZE) {
-    //             return i;
-    //         }
-    //     }
-    //     return -1;
-    // }
-
     /*@
       @ public normal_behavior
       @ requires array != null && array.length < 500;
       @ requires (originalEnd - originalBegin) >= 1 && (originalEnd - originalBegin) <= 500;
       @ requires 0 <= originalBegin && originalBegin < originalEnd && originalEnd <= array.length;
       @ requires originalBegin <= pivotPosition && pivotPosition < originalEnd;
-      @ requires (\forall int i; 0 <= i < array.length; 0 <= array[i] && array[i] <= array.length); // TODO: remove this - only for testing
-      @ requires pivotPosition == (originalBegin + originalEnd) / 2; // TODO: remove this - only for testing
       @ ensures array.length == \old(array.length);
       @
       @ // The resulting pivot is inside the range [originalBegin, originalEnd).
@@ -56,14 +37,6 @@ public class BlockQuickSort {
         int[] indexL = new int[BLOCKSIZE];
         int[] indexR = new int[BLOCKSIZE];
 
-        int[] originalArray = new int[array.length];
-        for (int i = 0; i < array.length; i++) {
-            originalArray[i] = array[i];
-        }
-        originalArray[array.length - 1] = originalArray[array.length - 1];
-        int originalArrayLength = originalArray.length;
-        int originalPivotPosition = pivotPosition;
-
         int begin = originalBegin;
         int end = originalEnd;
 
@@ -79,13 +52,7 @@ public class BlockQuickSort {
         int startRight = 0;
         int num = 0;
 
-        int indexL0 = indexL[0];
-        int indexR0 = indexR[0];
-        int indexL1 = indexL[1];
-        int indexR1 = indexR[1];
-
         if (last - begin + 1 > 2 * BLOCKSIZE) {
-
             /*@ loop_invariant originalBegin <= begin && begin <= last && last < originalEnd - 1;
               @ loop_invariant 0 <= numLeft && numLeft <= BLOCKSIZE;
               @ loop_invariant 0 <= numRight && numRight <= BLOCKSIZE;
@@ -143,40 +110,10 @@ public class BlockQuickSort {
               @ loop_decreases last - begin;
               @*/
             while (last - begin + 1 > 2 * BLOCKSIZE) {
-                {
-                    boolean did_run_loop = true;
-                    int lastNumLeft = numLeft;
-                    int lastNumRight = numRight;
-                    int[] lastArray = new int[array.length];
-                    for (int i = 0; i < array.length; i++) {
-                        lastArray[i] = array[i];
-                    }
-                    lastArray[array.length - 1] = lastArray[array.length - 1];
-                    int lastBegin = begin;
-                    int lastLast = last;
-                    int[] lastIndexL = new int[BLOCKSIZE];
-                    for (int i = 0; i < BLOCKSIZE; i++) {
-                        lastIndexL[i] = indexL[i];
-                    }
-                    lastIndexL[BLOCKSIZE - 1] = lastIndexL[BLOCKSIZE - 1];
-                    int[] lastIndexR = new int[BLOCKSIZE];
-                    for (int i = 0; i < BLOCKSIZE; i++) {
-                        lastIndexR[i] = indexR[i];
-                    }
-                    lastIndexR[BLOCKSIZE - 1] = lastIndexR[BLOCKSIZE - 1];
-                    int lastStartLeft = startLeft;
-                    int lastStartRight = startRight;
-                    int lastNum = num;
-                    indexL0 = indexL[0];
-                    indexR0 = indexR[0];
-                    indexL1 = indexL[1];
-                    indexR1 = indexR[1];
-                }
 
                 if (numLeft == 0) {
                     startLeft = 0;
 
-                    /*
                     //@ loop_invariant 0 <= j <= BLOCKSIZE;
                     //@ // Maintain numLeft count
                     //@ loop_invariant numLeft == (\num_of int k; 0 <= k < j; pivot <= array[begin + k]);
@@ -187,7 +124,6 @@ public class BlockQuickSort {
                     //@
                     //@ loop_modifies numLeft, indexL[0 .. BLOCKSIZE - 1], j;
                     //@ loop_decreases BLOCKSIZE - j;
-                    */
                     for (int j = 0; j < BLOCKSIZE; j++) {
                         indexL[numLeft] = j;
                         numLeft += array[begin + j] >= pivot ? 1 : 0;
@@ -195,7 +131,6 @@ public class BlockQuickSort {
                 }
                 if (numRight == 0) {
                     startRight = 0;
-                    /*
                     //@ loop_invariant 0 <= j <= BLOCKSIZE;
                     //@ // Maintain numRight count
                     //@ loop_invariant numRight == (\num_of int k; 0 <= k < j; array[last - k] <= pivot);
@@ -206,20 +141,14 @@ public class BlockQuickSort {
                     //@
                     //@ loop_modifies numRight, indexR[0 .. BLOCKSIZE - 1], j;
                     //@ loop_decreases BLOCKSIZE - j;
-                    */
                     for (int j = 0; j < BLOCKSIZE; j++) {
                         indexR[numRight] = j;
                         numRight += pivot >= array[last - j] ? 1 : 0;
                     }
                 }
-                indexL0 = indexL[0];
-                indexR0 = indexR[0];
-                indexL1 = indexL[1];
-                indexR1 = indexR[1];
 
                 num = min(numLeft, numRight);
                 if (num > 0) {
-                    /*
                     //@ loop_invariant 0 <= j <= num;
                     //@ 
                     //@ // Values inside the range [originalBegin, begin + indexL[startLeft + j]) are less than or equal to pivot.
@@ -241,7 +170,6 @@ public class BlockQuickSort {
                     //@
                     //@ loop_modifies array[begin + indexL[startLeft] .. begin + indexL[startLeft + num - 1]], array[last - indexR[startRight + num - 1] .. last - indexR[startRight]], j;
                     //@ loop_decreases num - j;
-                    */
                     for (int j = 0; j < num; j++) {
                         swap(array, begin + indexL[startLeft + j], last - indexR[startRight + j]);
                     }
@@ -255,33 +183,6 @@ public class BlockQuickSort {
                 last -= (numRight == 0) ? BLOCKSIZE : 0;
             }
         }
-        indexL0 = indexL[0];
-        indexR0 = indexR[0];
-        indexL1 = indexL[1];
-        indexR1 = indexR[1];
-
-        int[] afterLoopArray = new int[array.length];
-        for (int i = 0; i < array.length; i++) {
-            afterLoopArray[i] = array[i];
-        }
-        afterLoopArray[array.length - 1] = array[array.length - 1];
-        int afterLoopBegin = begin;
-        int afterLoopLast = last;
-        int[] afterLoopIndexL = new int[BLOCKSIZE];
-        for (int i = 0; i < BLOCKSIZE; i++) {
-            afterLoopIndexL[i] = indexL[i];
-        }
-        afterLoopIndexL[BLOCKSIZE - 1] = afterLoopIndexL[BLOCKSIZE - 1];
-        int[] afterLoopIndexR = new int[BLOCKSIZE];
-        for (int i = 0; i < BLOCKSIZE; i++) {
-            afterLoopIndexR[i] = indexR[i];
-        }
-        afterLoopIndexR[BLOCKSIZE - 1] = afterLoopIndexR[BLOCKSIZE - 1];
-        int afterLoopStartLeft = startLeft;
-        int afterLoopStartRight = startRight;
-        int afterLoopNum = num;
-        int afterLoopNumLeft = numLeft;
-        int afterLoopNumRight = numRight;
 
         int shiftR = 0, shiftL = 0;
         if (numRight == 0 && numLeft == 0) {
@@ -289,7 +190,6 @@ public class BlockQuickSort {
             shiftR = (last - begin) + 1 - shiftL;
             startLeft = 0;
             startRight = 0;
-            /*
             //@ loop_invariant 0 <= j <= shiftL;
             //@ loop_invariant 0 <= numLeft && numLeft <= j;
             //@ loop_invariant 0 <= numRight && numRight <= j;
@@ -311,7 +211,6 @@ public class BlockQuickSort {
             //@
             //@ loop_decreases shiftL - j;
             //@ loop_modifies indexL[0 .. shiftL - 1], numLeft, indexR[0 .. shiftL - 1], numRight, j;
-            */
             for (int j = 0; j < shiftL; j++) {
                 indexL[numLeft] = j;
                 numLeft += array[begin + j] >= pivot ? 1 : 0;
@@ -326,7 +225,6 @@ public class BlockQuickSort {
             shiftL = (last - begin) - BLOCKSIZE + 1;
             shiftR = BLOCKSIZE;
             startLeft = 0;
-            /*
             //@ loop_invariant 0 <= j <= shiftL;
             //@ // Maintain numLeft count
             //@ loop_invariant numLeft == (\num_of int k; 0 <= k < j; pivot <= array[begin + k]);
@@ -337,7 +235,6 @@ public class BlockQuickSort {
             //@
             //@ loop_modifies numLeft, indexL[0 .. shiftL - 1], j;
             //@ loop_decreases shiftL - j;
-            */
             for (int j = 0; j < shiftL; j++) {
                 indexL[numLeft] = j;
                 numLeft += array[begin + j] >= pivot ? 1 : 0;
@@ -346,7 +243,6 @@ public class BlockQuickSort {
             shiftL = BLOCKSIZE;
             shiftR = (last - begin) - BLOCKSIZE + 1;
             startRight = 0;
-            /*
             //@ loop_invariant 0 <= j <= shiftR;
             //@ // Maintain numRight count
             //@ loop_invariant numRight == (\num_of int k; 0 <= k < j; array[last - k] <= pivot);
@@ -357,7 +253,6 @@ public class BlockQuickSort {
             //@
             //@ loop_modifies numRight, indexR[0 .. shiftR - 1], j;
             //@ loop_decreases shiftR - j;
-            */
             for (int j = 0; j < shiftR; j++) {
                 indexR[numRight] = j;
                 numRight += pivot >= array[last - j] ? 1 : 0;
@@ -366,7 +261,6 @@ public class BlockQuickSort {
 
         num = min(numLeft, numRight);
         if (num > 0) {
-            /*
             //@ loop_invariant 0 <= j <= num;
             //@ 
             //@ // Values inside the range [originalBegin, begin + indexL[startLeft + j]) are less than or equal to pivot.
@@ -388,7 +282,6 @@ public class BlockQuickSort {
             //@
             //@ loop_modifies array[begin + indexL[startLeft] .. begin + indexL[startLeft + num - 1]], array[last - indexR[startRight + num - 1] .. last - indexR[startRight]], j;
             //@ loop_decreases num - j;
-            */
             for (int j = 0; j < num; j++) {
                 swap(array, begin + indexL[startLeft + j], last - indexR[startRight + j]);
             }
@@ -401,34 +294,10 @@ public class BlockQuickSort {
         begin += (numLeft == 0) ? shiftL : 0;
         last -= (numRight == 0) ? shiftR : 0;
 
-        int[] secLoopArray = new int[array.length];
-        for (int i = 0; i < array.length; i++) {
-            secLoopArray[i] = array[i];
-        }
-        secLoopArray[array.length - 1] = array[array.length - 1];
-        int secLoopBegin = begin;
-        int secLoopLast = last;
-        int[] secLoopIndexL = new int[BLOCKSIZE];
-        for (int i = 0; i < BLOCKSIZE; i++) {
-            secLoopIndexL[i] = indexL[i];
-        }
-        secLoopIndexL[BLOCKSIZE - 1] = secLoopIndexL[BLOCKSIZE - 1];
-        int[] secLoopIndexR = new int[BLOCKSIZE];
-        for (int i = 0; i < BLOCKSIZE; i++) {
-            secLoopIndexR[i] = indexR[i];
-        }
-        secLoopIndexR[BLOCKSIZE - 1] = secLoopIndexR[BLOCKSIZE - 1];
-        int secLoopStartLeft = startLeft;
-        int secLoopStartRight = startRight;
-        int secLoopNum = num;
-        int secLoopNumLeft = numLeft;
-        int secLoopNumRight = numRight;
-
         if (numLeft != 0) {
             int lowerI = startLeft + numLeft - 1;
             int upper = last - begin;
 
-            /*
             //@ loop_invariant 0 <= startLeft && startLeft - 1 <= lowerI && lowerI < startLeft + numLeft && startLeft + numLeft <= BLOCKSIZE;
             //@ loop_invariant upper == last - begin - (startLeft + numLeft - 1 - lowerI);
             //@
@@ -439,13 +308,11 @@ public class BlockQuickSort {
             //@
             //@ loop_modifies lowerI, upper;
             //@ loop_decreases lowerI + 1;
-            */
             while (lowerI >= startLeft && indexL[lowerI] == upper) {
                 upper--;
                 lowerI--;
             }
 
-            /*
             //@ loop_invariant 0 <= startLeft && startLeft - 1 <= lowerI && lowerI < startLeft + numLeft && startLeft + numLeft <= BLOCKSIZE;
             //@ loop_invariant upper == last - begin - (startLeft + numLeft - 1 - lowerI);
             //@ loop_invariant (\forall int i; startLeft <= i < lowerI; indexL[i] == indexL[i + 1] - 1);
@@ -461,7 +328,6 @@ public class BlockQuickSort {
             //@
             //@ loop_modifies upper, lowerI, array[begin + indexL[startLeft] .. last];
             //@ loop_decreases lowerI + 1;
-            */
             while (lowerI >= startLeft) {
                 swap(array, begin + upper, begin + indexL[lowerI]);
                 upper--;
@@ -474,7 +340,6 @@ public class BlockQuickSort {
             int lowerI = startRight + numRight - 1;
             int upper = last - begin;
 
-            /*
             //@ loop_invariant 0 <= startRight && startRight - 1 <= lowerI && lowerI < startRight + numRight && startRight + numRight <= BLOCKSIZE;
             //@ loop_invariant upper == last - begin - (startRight + numRight - 1 - lowerI);
             //@ loop_invariant (\forall int i; lowerI < i < startRight + numRight - 1; indexR[i] == upper + (i - lowerI));
@@ -484,13 +349,11 @@ public class BlockQuickSort {
             //@
             //@ loop_modifies lowerI, upper;
             //@ loop_decreases lowerI + 1;
-            */
             while (lowerI >= startRight && indexR[lowerI] == upper) {
                 upper--;
                 lowerI--;
             }
 
-            /*
             //@ loop_invariant 0 <= startRight && startRight - 1 <= lowerI && lowerI < startRight + numRight && startRight + numRight <= BLOCKSIZE;
             //@ loop_invariant upper == last - begin - (startRight + numRight - 1 - lowerI);
             //@ loop_invariant (\forall int i; startRight <= i < lowerI; indexR[i] == indexR[i + 1] - 1);
@@ -506,7 +369,6 @@ public class BlockQuickSort {
             //@
             //@ loop_modifies upper, lowerI, array[begin .. last - indexR[startRight]];
             //@ loop_decreases lowerI + 1;
-            */
             while (lowerI >= startRight) {
                 swap(array, last - upper, last - indexR[lowerI]);
                 upper--;
