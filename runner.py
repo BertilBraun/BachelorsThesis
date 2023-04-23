@@ -112,7 +112,7 @@ def process_JJBMC_example(folder, bound, function, inline_arg):
         print(f"Timeout for function '{function}' with bound '{bound}' and inline arg '{inline_arg}'")
 
     # sleep for 5 seconds to make sure that jbmc has finished
-    time.sleep(5)
+    time.sleep(15)
 
     stdout = p.stdout.read().decode("utf-8")
     stderr = p.stderr.read().decode("utf-8")
@@ -125,27 +125,45 @@ def process_JJBMC_example(folder, bound, function, inline_arg):
         f.write(stdout)
         f.write(stderr)
 
+    if not "SUCCESS" in stdout and not "SUCCESS" in stderr:
+        try:
+            shutil.copyfile("tmp/xmlout.xml", "xmlout.xml")
+        except:
+            print("Error copying xmlout.xml")
+        try:
+            shutil.copyfile("tmp/BlockQuickSort.java", "BlockQuickSort_compiled.java")
+            shutil.copyfile("tmp/compilationErrors.txt", "compilationErrors.txt")
+        except:
+            print("Error copying BlockQuickSort.java or compilationErrors.txt")
+
     try:
-        shutil.copyfile("tmp/xmlout.xml", "xmlout.xml")
-        shutil.copyfile("tmp/BlockQuickSort.java", "BlockQuickSort_compiled.java")
-        shutil.copyfile("tmp/compilationErrors.txt", "compilationErrors.txt")
         # remove tmp and everything in it
         shutil.rmtree("tmp")
     except:
         print("Error cleaning up tmp folder")
 
-    try:
-        # parse runtime from output "JBMC took XXXms." parse XXX using regex
-        runtime = re.search(r"JBMC took (\d+)ms.", stdout).group(1)
-        # set runtime in ms for this function and bound and inline arg
-        runtimes[(function, bound, inline_arg)] = int(runtime)
-    except:
-        print("Error parsing runtime")
+    if "SUCCESS" in stdout or "SUCCESS" in stderr:
+        try:
+            # parse runtime from output "JBMC took XXXms." parse XXX using regex
+            runtime = re.search(r"JBMC took (\d+)ms.", stdout).group(1)
+            # set runtime in ms for this function and bound and inline arg
+            runtimes[(function, bound, inline_arg)] = int(runtime)
+        except:
+            print("Error parsing runtime")
+
+    os.chdir(HOME_FOLDER)
 
     if not "SUCCESS" in stdout and not "SUCCESS" in stderr:
         failed_examples[(function, inline_arg)] = min(failed_examples.get((function, inline_arg), MAX_BOUND), bound)
-
-    os.chdir(HOME_FOLDER)
+        print(
+            f"Failed function '{function}' with bound '{bound}' and inline arg '{inline_arg}'. Will not retry this function for bounds >= {failed_examples[(function, inline_arg)]}"
+        )
+        with open("failed_examples.txt", "a") as f:
+            f.write(f"Failed function '{function}' with bound '{bound}' and inline arg '{inline_arg}'\n")
+        with open("filter_for_examples.csv", "w") as f:
+            f.write("function,inline_arg,bound\n")
+            for (function, inline_arg), bound in failed_examples.items():
+                f.write(f"{function},{inline_arg},{bound}\n")
 
 
 def generate_tasks(iteration, bound, function):
