@@ -1,0 +1,17 @@
+> Task :compileJava UP-TO-DATE
+> Task :processResources UP-TO-DATE
+> Task :classes UP-TO-DATE
+> Task :fatJar UP-TO-DATE
+
+BUILD SUCCESSFUL in 1s
+3 actionable tasks: 3 up-to-date
+[WARN ] - Unwinds is set to less than maxArraySize + 2. This may lead to unsound behaviour.
+[WARN ] - Method calls in specifications only supported experimentally.
+[WARN ] - "pure" annotations a currently only translated as assignable \nothing.
+[INFO ] - Run jbmc for 1 functions.
+[INFO ] - Result for function "BlockQuickSort.quickSortVerf:([III)V":
+[INFO ] - JBMC took 10211278ms.
+[INFO ] - [1;32mSUCCESS
+[0m
+Results are stored in bqs\run\14_40_39\tmp\xmlout.xml and bqs\run\14_40_39\tmp\BlockQuickSort.java
+Results are stored in 14_40_39\tmp\xmlout.xml and 14_40_39\tmp\BlockQuickSort.java

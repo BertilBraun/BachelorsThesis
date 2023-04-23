@@ -25,8 +25,7 @@ copy bqs\BlockQuickSort.java bqs\run\%current_time%
 
 wsl ./gradlew fatJar
 
-java -jar JJBMC.jar -mas 4 -u 5 -tr -c -kt -timeout=36000000 bqs\run\%current_time%\BlockQuickSort.java quickSort -rv begin -rv end -rv originalBegin -rv originalEnd -rv pivot -rv top -rv depth -rv array -rv stack
-REM -j=--stop-on-fail
+java -jar JJBMC.jar -mas 7 -u 8 -tr -c -kt -timeout=36000000 bqs\run\%current_time%\BlockQuickSort.java quickSort -rv begin -rv end -rv originalBegin -rv originalEnd -rv pivot -rv top -rv depth -rv array -rv stack -j=--stop-on-fail
 
 echo Results are stored in bqs\run\%current_time%\tmp\xmlout.xml and bqs\run\%current_time%\tmp\BlockQuickSort.java
 echo Results are stored in %current_time%\tmp\xmlout.xml and %current_time%\tmp\BlockQuickSort.java

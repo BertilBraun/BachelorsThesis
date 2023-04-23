@@ -415,7 +415,7 @@ public class BlockQuickSort {
           @ loop_modifies top, depth, stack[0 .. STACK_SIZE - 1], array[originalBegin .. originalEnd - 1];
           @
           @ // outer loop decreases sum of num of elements out of order, aka sum (num of elements later than e which are smaller than e)
-          @ loop_decreases (\sum int i; originalBegin <= i < originalEnd; (\num_of int j; i <= j < originalEnd; array[j] < array[i])); // TODO check this
+          @ loop_decreases (\sum int i; originalBegin <= i < originalEnd; (\num_of int j; i <= j < originalEnd; array[j] < array[i]));
           @*/
         while (top > 0) {
             end = stack[--top];
