@@ -1,11 +1,7 @@
 package cli;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public class JBMCOutput {
@@ -37,12 +33,12 @@ public class JBMCOutput {
             return "";
         }
 
-        sb.append("----------------------START TRACE---------------\n");
+        sb.append("-----------------START TRACE-----------------\n");
         sb.append("Trace for PVC: " + property + " in line " + lineNumbers.get(idx) + "\n");
         trace.filterAssignments();
         trace.getFinalVals();
-        if (printGuesses && false) {
-            sb.append("----------- FILTERED ASSIGNMENTS ------------\n");
+        if (printGuesses) {
+            sb.append("------------FILTERED ASSIGNMENTS-------------\n");
             for (Assignment a : trace.filteredAssignments) {
                 if (a.guess != null) {
                     sb.append(a + "\n");
@@ -57,13 +53,15 @@ public class JBMCOutput {
             }
             sb.append("Fail in line " + lineNumbers.get(idx) + ": " + assertion + " (" + reasons.get(idx) + ")\n");
             sb.append("with concrete values: " + "\n");
+            sb.append("---------------------------------------------\n");
             sb.append(printFinalVals(traces.get(idx)));
         } else {
             sb.append("Fail in line " + lineNumbers.get(idx) + ": " + reasons.get(idx) + "\n");
+            sb.append("with concrete values: " + "\n");
+            sb.append("---------------------------------------------\n");
             sb.append(printFinalVals(traces.get(idx)));
         }
-        sb.append("-----------------END TRACE-------------------\n");
-        sb.append("\n");
+        sb.append("------------------END TRACE------------------\n\n");
         return sb.toString();
     }
 
