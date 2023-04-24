@@ -6,9 +6,9 @@ public class BlockQuickSort {
 
     /*@
       @ public normal_behavior
-      @ requires array != null && array.length < 500;
-      @ requires (originalEnd - originalBegin) >= 1 && (originalEnd - originalBegin) <= 500;
+      @ requires array != null;
       @ requires 0 <= originalBegin && originalBegin < originalEnd && originalEnd <= array.length;
+      @ requires (originalEnd - originalBegin) >= 1;
       @ requires originalBegin <= pivotPosition && pivotPosition < originalEnd;
       @ ensures array.length == \old(array.length);
       @
@@ -66,7 +66,7 @@ public class BlockQuickSort {
               @ loop_invariant (\exists int i; 0 <= i < (originalEnd - originalBegin); last == originalEnd - 2 - i * BLOCKSIZE);
               @
               @ loop_invariant (\forall int i; 0 <= i < BLOCKSIZE; 0 <= indexL[i] && indexL[i] < BLOCKSIZE);
-              @ loop_invariant (\forall int i; 0 <= i < numLeft; indexL[startLeft + i] < last - begin && pivot <= array[begin + indexL[startLeft + i]]); // TODO thrown error
+              @ loop_invariant (\forall int i; 0 <= i < numLeft; indexL[startLeft + i] < last - begin && pivot <= array[begin + indexL[startLeft + i]]);
               @ loop_invariant (\forall int i; 0 <= i < startLeft + numLeft - 1; indexL[i] < indexL[i + 1]);
               @ loop_invariant (numLeft != 0) ==> numLeft == (\num_of int i; startLeft <= i < BLOCKSIZE; pivot <= array[begin + i]);
               @
@@ -156,11 +156,6 @@ public class BlockQuickSort {
                         swap(array, begin + indexL[startLeft + j], last - indexR[startRight + j]);
                     }
                 }
-
-                int indexL0 = indexL[0];
-                int indexR0 = indexR[0];
-                int indexL1 = indexL[1];
-                int indexR1 = indexR[1];
 
                 numLeft -= num;
                 numRight -= num;
@@ -376,7 +371,7 @@ public class BlockQuickSort {
 
     /*@
       @ public normal_behavior
-      @ requires array != null && array.length < 500;
+      @ requires array != null;
       @ requires 0 <= originalBegin && originalBegin < originalEnd && originalEnd <= array.length;
       @ ensures array.length == \old(array.length);
       @
@@ -432,7 +427,6 @@ public class BlockQuickSort {
               @ loop_invariant 0 <= depth && depth <= depthLimit;
               @ loop_invariant (\forall int i; 0 <= i < top / 2; originalBegin <= stack[2 * i] && stack[2 * i] < stack[2 * i + 1] && stack[2 * i + 1] <= originalEnd);
               @
-              @
               @ // for each (start, end) and the min(start .. end) and max(start .. end) in the stack
               @ //     there all e <= min in (0 .. start) and all e >= max in (end .. originalEnd)
               @ loop_invariant (\forall int i; 0 <= i < top / 2;
@@ -441,8 +435,6 @@ public class BlockQuickSort {
               @ loop_invariant (\forall int i; 0 <= i < top / 2;
               @                 (\forall int j; stack[2 * i + 1] <= j < originalEnd; 
               @                                 (\max int k; stack[2 * i] <= k < stack[2 * i + 1]; array[k]) <= array[j]));
-              @
-              @
               @
               @ // Values inside the range [originalBegin, originalEnd) are a valid permutation.
               @ loop_invariant (\forall int i; originalBegin <= i < originalEnd; (\num_of int k; originalBegin <= k < originalEnd; array[i] == array[k]) == (\num_of int k; originalBegin <= k < originalEnd; array[i] == \old(array[k])));
@@ -474,7 +466,7 @@ public class BlockQuickSort {
 
     /*@
       @ public normal_behavior
-      @ requires array != null && array.length < 500;
+      @ requires array != null;
       @ requires 0 <= begin && begin < end && end <= array.length;
       @ ensures array.length == \old(array.length);
       @
@@ -497,9 +489,9 @@ public class BlockQuickSort {
 
     /*@
       @ public normal_behavior
-      @ requires array != null && array.length < 500;
+      @ requires array != null;
       @ requires 0 <= begin && begin <= end && end <= array.length;
-      @ requires 0 <= depth && depth <= depthLimit && depthLimit < 500;
+      @ requires 0 <= depth && depth <= depthLimit && depthLimit < Integer.MAX_VALUE;
       @ ensures array.length == \old(array.length);
       @
       @ // Values inside the range [begin, end) are in sorted order.
@@ -527,7 +519,7 @@ public class BlockQuickSort {
 
     /*@
       @ public normal_behavior
-      @ requires array != null && array.length < 500;
+      @ requires array != null;
       @ requires 0 <= begin && begin <= end && end <= array.length;
       @ ensures array.length == \old(array.length);
       @
@@ -554,7 +546,7 @@ public class BlockQuickSort {
 
     /*@
       @ public normal_behavior
-      @ requires array != null && array.length < 500;
+      @ requires array != null;
       @ requires 0 <= i < array.length;
       @ requires 0 <= j < array.length;
       @ ensures array.length == \old(array.length);
@@ -572,7 +564,7 @@ public class BlockQuickSort {
 
     /*@
       @ public normal_behavior
-      @ requires array != null && array.length < 500;
+      @ requires array != null;
       @ requires 0 <= i1 && i1 < array.length;
       @ requires 0 <= i2 && i2 < array.length;
       @ ensures array.length == \old(array.length);
@@ -592,9 +584,9 @@ public class BlockQuickSort {
 
     /*@
       @ public normal_behavior
-      @ requires array != null && array.length < 500;
-      @ requires end - begin >= 3;
+      @ requires array != null;
       @ requires 0 <= begin && begin < end && end <= array.length;
+      @ requires end - begin >= 3;
       @ ensures array.length == \old(array.length);
       @
       @ // Result is within the given range [begin, end)
@@ -621,9 +613,9 @@ public class BlockQuickSort {
 
     /*@
       @ public normal_behavior
-      @ requires array != null && array.length < 500;
-      @ requires end - begin >= 3;
+      @ requires array != null;
       @ requires 0 <= begin && begin < end && end <= array.length;
+      @ requires end - begin >= 3;
       @ ensures array.length == \old(array.length);
       @
       @ // The resulting pivot is inside the range [begin, end).
@@ -695,7 +687,7 @@ public class BlockQuickSort {
         return a > b ? a : b;
     }
 
-    /*@ 
+    /*@
       @ public normal_behavior
       @ requires array1 != null;
       @ requires array2 != null;
