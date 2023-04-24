@@ -31,7 +31,7 @@ OUTPUT_FILE_NAME = "output.txt"
 EASY_WORKERS = 24
 MEDIUM_WORKERS = 24
 HARD_WORKERS = 12
-VERY_HARD_WORKERS = 4
+VERY_HARD_WORKERS = 2
 
 QUICK = 2  # Should be run with 3
 NOT_SO_QUICK = 1  # Should be run with 2
@@ -54,10 +54,10 @@ TASKS = [
     (HARD_WORKERS, [
         ("permutation", list(range(1, 7)), NOT_SO_QUICK),
         ("hoareBlockPartition", list(range(1, 7)), NOT_SO_QUICK),  # TODO no idea how slow this is
+        ("quickSort", list(range(1, 5)), NOT_SO_QUICK),
     ]),
     (VERY_HARD_WORKERS, [
         ("quickSortRecImpl", list(range(1, 5)), NOT_SO_QUICK),  # TODO 6 should be possible, even though it takes about 15h
-        # ("quickSort", list(range(1, 3)), NOT_SO_QUICK),
     ])
 ]
 
