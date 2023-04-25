@@ -18,3 +18,9 @@ gradlew
 gradlew.bat
 JJBMC.jar
 
+bin/*
+bqs/results/*
+bqs/processed/*
+bqs/run/*
+**/out.csv
+**/processed.csv
