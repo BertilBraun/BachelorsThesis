@@ -6,7 +6,6 @@ from collections import defaultdict
 FUNCTIONS = [
     "swap",
     "sortPair",
-    "permutation",
     "medianOf3",
     "partition",
     "insertionSort",
