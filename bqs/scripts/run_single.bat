@@ -57,11 +57,11 @@ REM copy the source code to the folder
 echo Running in folder bqs\run\%current_time%
 echo Running in folder %current_time%
 
-copy bqs\BlockQuickSort.java bqs\run\%current_time%
+copy ..\BlockQuickSort.java ..\run\%current_time%
 
 wsl ./gradlew fatJar
 
-java -jar ..\JJBMC.jar -mas %max_array_size% -u %unwinding_bound% -tr -c -kt -timeout=72000000 ..\run\%current_time%\BlockQuickSort.java %function_name% %JBMC_parameters%
+java -jar ..\..\JJBMC.jar -mas %max_array_size% -u %unwinding_bound% -tr -c -kt -timeout=72000000 ..\run\%current_time%\BlockQuickSort.java %function_name% %JBMC_parameters%
 
 echo Results are stored in bqs\run\%current_time%\tmp\xmlout.xml and bqs\run\%current_time%\tmp\BlockQuickSort.java
 echo Results are stored in %current_time%\tmp\xmlout.xml and %current_time%\tmp\BlockQuickSort.java
