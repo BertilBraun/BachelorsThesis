@@ -13,8 +13,8 @@ from concurrent.futures import ProcessPoolExecutor
 # this file should run a command for multiple inputs sequentially
 
 
-HOME_FOLDER = os.getcwd()
-BASE_FOLDER = HOME_FOLDER + "/../results"
+HOME_FOLDER = os.getcwd() + "/../.."
+BASE_FOLDER = HOME_FOLDER + "/bqs/results"
 MAX_BOUND = 100
 ITERATIONS = 5
 
