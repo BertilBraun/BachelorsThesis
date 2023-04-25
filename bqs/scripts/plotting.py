@@ -105,7 +105,7 @@ def create_grid_layout(folder):
     plt.close()
 
 
-def process_data_file(file_path):
+def get_grouped_data_from_file(file_path):
     # Read the data
     data = pd.read_csv(file_path)
 
@@ -166,7 +166,7 @@ if __name__ == "__main__":
     for file in os.listdir(FOLDER):
         if file.endswith(".csv"):
             file_name = os.path.splitext(file)[0]
-            file_data_dict[file_name] = process_data_file(os.path.join(FOLDER, file))
+            file_data_dict[file_name] = get_grouped_data_from_file(os.path.join(FOLDER, file))
 
     plot_combined_data(file_data_dict, 'linear')
     plot_combined_data(file_data_dict, 'log')
