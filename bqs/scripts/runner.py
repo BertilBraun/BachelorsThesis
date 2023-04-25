@@ -42,8 +42,8 @@ FOLDER_F_STRING = "{BASE_FOLDER}/bound_{bound}/{function}/iter_{iteration}"
 
 TASKS = [
     (EASY_WORKERS, [
-        ("swap", list(range(1, 15)), QUICK),  # unbounded
-        ("sortPair", list(range(1, 15)), QUICK),  # unbounded
+        ("swap", list(range(1, 150)), QUICK),  # unbounded
+        ("sortPair", list(range(1, 150)), QUICK),  # unbounded
     ]),
     (MEDIUM_WORKERS, [
         ("partition", list(range(1, 9)), QUICK),
