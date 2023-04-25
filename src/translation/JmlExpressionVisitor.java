@@ -307,13 +307,18 @@ public class JmlExpressionVisitor extends JmlTreeCopier {
                 quantifierVars.remove(that.decls.get(0).sym);
                 return value;
             } else if (translationMode == VerifyFunctionVisitor.TranslationMode.ASSUME ||
-                translationMode == VerifyFunctionVisitor.TranslationMode.DEMONIC) {
+                    translationMode == VerifyFunctionVisitor.TranslationMode.DEMONIC) {
+                JCVariableDecl boolVar = treeutils.makeVarDef(syms.booleanType,
+                        names.fromString("b_" + boolVarCounter++), currentSymbol,
+                        treeutils.makeLit(TranslationUtils.getCurrentPosition(), syms.booleanType, true));
+                neededVariableDefs = neededVariableDefs.append(boolVar);
+                // reinitialize resultVar to initialValue
+                newStatements = newStatements
+                        .append(maker.Exec(maker.Assign(maker.Ident(boolVar),
+                                treeutils.makeLit(TranslationUtils.getCurrentPosition(), syms.booleanType, false))));
                 List<JCStatement> stmts = newStatements;
                 newStatements = List.nil();
                 JCExpression value = super.copy(copy.value);
-                JCVariableDecl boolVar = treeutils.makeVarDef(syms.booleanType, names.fromString("b_" + boolVarCounter++), currentSymbol,
-                    treeutils.makeLit(TranslationUtils.getCurrentPosition(), syms.booleanType, true));
-                neededVariableDefs = neededVariableDefs.append(boolVar);
                 JCBinary b = maker.Binary(Tag.AND, maker.Ident(boolVar), value);
                 JCExpression init = super.copy(re.getMin());
                 for (Map.Entry<String, String> e : variableReplacements.entrySet()) {
@@ -343,13 +348,19 @@ public class JmlExpressionVisitor extends JmlTreeCopier {
                 throw new TranslationException("Quantified expressions may not occur in Java-mode: " + that);
             }
         } else if (copy.op == JmlTokenKind.BSEXISTS) {
-            if (translationMode == VerifyFunctionVisitor.TranslationMode.ASSERT || translationMode == VerifyFunctionVisitor.TranslationMode.DEMONIC) {
+            if (translationMode == VerifyFunctionVisitor.TranslationMode.ASSERT
+                    || translationMode == VerifyFunctionVisitor.TranslationMode.DEMONIC) {
+                JCVariableDecl boolVar = treeutils.makeVarDef(syms.booleanType,
+                        names.fromString("b_" + boolVarCounter++), currentSymbol,
+                        treeutils.makeLit(TranslationUtils.getCurrentPosition(), syms.booleanType, false));
+                neededVariableDefs = neededVariableDefs.append(boolVar);
+                // reinitialize resultVar to initialValue
+                newStatements = newStatements
+                        .append(maker.Exec(maker.Assign(maker.Ident(boolVar),
+                                treeutils.makeLit(TranslationUtils.getCurrentPosition(), syms.booleanType, false))));
                 List<JCStatement> stmts = newStatements;
                 newStatements = List.nil();
                 JCExpression value = super.copy(copy.value);
-                JCVariableDecl boolVar = treeutils.makeVarDef(syms.booleanType, names.fromString("b_" + boolVarCounter++), currentSymbol,
-                    treeutils.makeLit(TranslationUtils.getCurrentPosition(), syms.booleanType, false));
-                neededVariableDefs = neededVariableDefs.append(boolVar);
                 JCBinary b = maker.Binary(Tag.OR, maker.Ident(boolVar), value);
                 JCExpression init = super.copy(re.getMin());
                 for (Map.Entry<String, String> e : variableReplacements.entrySet()) {
