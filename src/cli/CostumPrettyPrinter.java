@@ -1,5 +1,8 @@
 package cli;
 
+import com.sun.tools.javac.code.Symbol;
+import com.sun.tools.javac.tree.JCTree;
+import exceptions.TranslationException;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -7,14 +10,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
 import org.jmlspecs.openjml.JmlPretty;
 import org.jmlspecs.openjml.JmlTree;
-
-import com.sun.tools.javac.code.Symbol;
-import com.sun.tools.javac.tree.JCTree;
-
-import exceptions.TranslationException;
 import utils.TranslationUtils;
 
 public class CostumPrettyPrinter extends JmlPretty {

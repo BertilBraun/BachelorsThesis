@@ -1,13 +1,5 @@
 package utils;
 
-import static com.sun.tools.javac.tree.JCTree.JCBinary;
-import static com.sun.tools.javac.tree.JCTree.JCExpression;
-import static com.sun.tools.javac.tree.JCTree.JCUnary;
-import static com.sun.tools.javac.tree.JCTree.Tag;
-import static org.jmlspecs.openjml.JmlTree.JmlBinary;
-import static org.jmlspecs.openjml.JmlTree.JmlQuantifiedExpr;
-import static org.jmlspecs.openjml.JmlTree.Maker;
-
 import com.sun.source.tree.BinaryTree;
 import com.sun.source.tree.UnaryTree;
 import com.sun.tools.javac.code.TypeTag;
@@ -18,6 +10,14 @@ import org.jmlspecs.openjml.JmlTokenKind;
 import org.jmlspecs.openjml.JmlTree;
 import org.jmlspecs.openjml.JmlTreeCopier;
 import org.jmlspecs.openjml.JmlTreeUtils;
+
+import static com.sun.tools.javac.tree.JCTree.JCBinary;
+import static com.sun.tools.javac.tree.JCTree.JCExpression;
+import static com.sun.tools.javac.tree.JCTree.JCUnary;
+import static com.sun.tools.javac.tree.JCTree.Tag;
+import static org.jmlspecs.openjml.JmlTree.JmlBinary;
+import static org.jmlspecs.openjml.JmlTree.JmlQuantifiedExpr;
+import static org.jmlspecs.openjml.JmlTree.Maker;
 
 /**
  * Created by jklamroth on 1/17/19.
@@ -77,7 +77,10 @@ public class NormalizeVisitor extends JmlTreeCopier {
                 JCExpression expr1 = super.copy(binary.getLeftOperand());
                 negated = oldNegated;
                 JCExpression expr2 = super.copy(binary.getRightOperand());
-                JmlBinary b = treeutils.makeJmlBinary(TranslationUtils.getCurrentPosition(), JmlTokenKind.EQUIVALENCE, expr1, expr2);
+                JmlBinary b = treeutils.makeJmlBinary(TranslationUtils.getCurrentPosition(),
+                                                      JmlTokenKind.EQUIVALENCE,
+                                                      expr1,
+                                                      expr2);
                 negated = oldNegated;
                 selfNegated = false;
                 return super.copy(b);
@@ -89,7 +92,10 @@ public class NormalizeVisitor extends JmlTreeCopier {
                 JCExpression expr1 = super.copy(binary.getLeftOperand());
                 negated = oldNegated;
                 JCExpression expr2 = super.copy(binary.getRightOperand());
-                JmlBinary b = treeutils.makeJmlBinary(TranslationUtils.getCurrentPosition(), JmlTokenKind.INEQUIVALENCE, expr1, expr2);
+                JmlBinary b = treeutils.makeJmlBinary(TranslationUtils.getCurrentPosition(),
+                                                      JmlTokenKind.INEQUIVALENCE,
+                                                      expr1,
+                                                      expr2);
                 negated = oldNegated;
                 selfNegated = false;
                 return super.copy(b);
@@ -184,8 +190,14 @@ public class NormalizeVisitor extends JmlTreeCopier {
             JCExpression expr1 = super.copy(binary.lhs);
             negated = false;
             JCExpression expr2 = super.copy(binary.rhs);
-            JmlBinary b = treeutils.makeJmlBinary(TranslationUtils.getCurrentPosition(), JmlTokenKind.IMPLIES, expr1, expr2);
-            JmlBinary b1 = treeutils.makeJmlBinary(TranslationUtils.getCurrentPosition(), JmlTokenKind.IMPLIES, expr2, expr1);
+            JmlBinary b = treeutils.makeJmlBinary(TranslationUtils.getCurrentPosition(),
+                                                  JmlTokenKind.IMPLIES,
+                                                  expr1,
+                                                  expr2);
+            JmlBinary b1 = treeutils.makeJmlBinary(TranslationUtils.getCurrentPosition(),
+                                                   JmlTokenKind.IMPLIES,
+                                                   expr2,
+                                                   expr1);
             JCBinary b2 = M.Binary(Tag.AND, b, b1);
             b2.setType(binary.type);
             negated = oldNegated;
