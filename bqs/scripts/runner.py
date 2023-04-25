@@ -22,7 +22,7 @@ MS_OF_1_HOUR = 60 * 60 * 1000
 MS_OF_2_HOURS = 2 * MS_OF_1_HOUR
 MS_OF_10_HOURS = 10 * MS_OF_1_HOUR
 DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME = MS_OF_1_HOUR  # TODO Should be run with MS_OF_2_HOURS
-FUNCTION_TIMEOUT = MS_OF_2_HOURS  # TODO Should be run with MS_OF_10_HOURS
+FUNCTION_TIMEOUT = 5 * MS_OF_1_HOUR  # TODO Should be run with MS_OF_10_HOURS
 
 JJBMC_CMD = "java -jar ../../../../../../JJBMC.jar -mas {mas} -u {u} {inline} -tr -c -kt -timeout={timeout} BlockQuickSort.java {function} -j=--stop-on-fail"
 
@@ -33,7 +33,7 @@ MEDIUM_WORKERS = 24
 HARD_WORKERS = 12
 VERY_HARD_WORKERS = 2
 
-QUICK = 2  # TODO Should be run with 3
+QUICK = 1  # TODO Should be run with 3
 NOT_SO_QUICK = 1  # TODO Should be run with 2
 
 INLINE_ARGS = ['', '-fil', '-fi']
@@ -42,22 +42,22 @@ FOLDER_F_STRING = "{BASE_FOLDER}/bound_{bound}/{function}/iter_{iteration}"
 
 TASKS = [
     (EASY_WORKERS, [
-        ("swap", list(range(1, 150)), QUICK),  # unbounded
-        ("sortPair", list(range(1, 150)), QUICK),  # unbounded
+        ("swap", list(range(1, 70)), QUICK),  # unbounded
+        ("sortPair", list(range(1, 70)), QUICK),  # unbounded
     ]),
     (MEDIUM_WORKERS, [
-        ("partition", list(range(1, 9)), QUICK),
-        ("medianOf3", list(range(1, 10)), QUICK),
-        ("insertionSort", list(range(1, 9)), QUICK),
-        ("quickSortRec", list(range(1, 12)), NOT_SO_QUICK),  # TODO no idea whether this is slow
+        ("partition", list(range(1, 8)), QUICK),
+        ("medianOf3", list(range(1, 9)), QUICK),
+        ("insertionSort", list(range(1, 7)), QUICK),
+        ("quickSortRec", list(range(1, 7)), NOT_SO_QUICK),
     ]),
     (HARD_WORKERS, [
         ("permutation", list(range(1, 7)), NOT_SO_QUICK),
-        ("hoareBlockPartition", list(range(1, 7)), NOT_SO_QUICK),  # TODO no idea how slow this is
-        ("quickSort", list(range(1, 5)), NOT_SO_QUICK),
+        ("hoareBlockPartition", list(range(1, 9)), NOT_SO_QUICK),
+        ("quickSort", list(range(1, 7)), NOT_SO_QUICK),
     ]),
     (VERY_HARD_WORKERS, [
-        ("quickSortRecImpl", list(range(1, 5)), NOT_SO_QUICK),  # TODO 6 should be possible, even though it takes about 15h
+        ("quickSortRecImpl", list(range(1, 7)), NOT_SO_QUICK),
     ])
 ]
 

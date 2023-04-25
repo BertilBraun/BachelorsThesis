@@ -59,7 +59,7 @@ echo Running in folder %current_time%
 
 copy ..\BlockQuickSort.java ..\run\%current_time%
 
-wsl ./gradlew fatJar
+REM wsl ../../gradlew fatJar
 
 java -jar ..\..\JJBMC.jar -mas %max_array_size% -u %unwinding_bound% -tr -c -kt -timeout=72000000 ..\run\%current_time%\BlockQuickSort.java %function_name% %JBMC_parameters%
 
