@@ -59,9 +59,13 @@ echo Running in folder %current_time%
 
 copy ..\BlockQuickSort.java ..\run\%current_time%
 
-REM wsl ../../gradlew fatJar
+cd ..\..
 
-java -jar ..\..\JJBMC.jar -mas %max_array_size% -u %unwinding_bound% -tr -c -kt -timeout=72000000 ..\run\%current_time%\BlockQuickSort.java %function_name% %JBMC_parameters%
+wsl ./gradlew fatJar
+
+java -jar JJBMC.jar -mas %max_array_size% -u %unwinding_bound% -tr -c -kt -timeout=72000000 bqs\run\%current_time%\BlockQuickSort.java %function_name% %JBMC_parameters%
+
+cd bqs\scripts
 
 echo Results are stored in bqs\run\%current_time%\tmp\xmlout.xml and bqs\run\%current_time%\tmp\BlockQuickSort.java
 echo Results are stored in %current_time%\tmp\xmlout.xml and %current_time%\tmp\BlockQuickSort.java
