@@ -61,6 +61,29 @@ TASKS = [
     ])
 ]
 
+TASKS = [
+    (EASY_WORKERS, [
+        ("swap", list(range(1, 70)), QUICK),  # unbounded
+        ("sortPair", list(range(1, 70)), QUICK),  # unbounded
+    ]),
+    (MEDIUM_WORKERS, [
+        ("partition", list(range(5, 7)), QUICK),
+        # intentionally run twice, Bound 8 might be faster than 7 and if 7 fails, 8 wont be run
+        ("medianOf3", list(range(8, 9)), QUICK),
+        ("medianOf3", list(range(5, 9)), QUICK),
+        ("insertionSort", list(range(5, 7)), QUICK),
+        ("quickSortRec", list(range(4, 7)), NOT_SO_QUICK),
+    ]),
+    (HARD_WORKERS, [
+        ("permutation", list(range(5, 7)), NOT_SO_QUICK),
+        ("hoareBlockPartition", list(range(5, 9)), NOT_SO_QUICK),
+        ("quickSort", list(range(1, 7)), NOT_SO_QUICK),
+    ]),
+    (VERY_HARD_WORKERS, [
+        ("quickSortRecImpl", list(range(4, 6)), NOT_SO_QUICK),
+    ])
+]
+
 failed_examples = {}
 runtimes = {}
 
