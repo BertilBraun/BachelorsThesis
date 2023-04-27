@@ -1490,6 +1490,14 @@ public class JmlExpressionVisitor extends JmlTreeCopier {
             newStatements = List.nil();
             JCStatement copy = super.copy(st);
             if (newStatements.size() > 0) {
+                l = l.appendList(newStatements);
+            } else {
+                l = l.append(copy);
+            }
+        }
+        newStatements = orig.append(maker.Block(0L, l));
+        return that;
+    }
 
     @Override
     public JCTree visitJmlStatementSpec(JmlStatementSpec that, Void p) {
