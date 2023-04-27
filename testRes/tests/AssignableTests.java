@@ -32,7 +32,6 @@ public class AssignableTests {
     B b;
 
 
-
     /*@ assignable privInt;
       @ */
     @Verifyable
@@ -98,9 +97,16 @@ public class AssignableTests {
     }
 
     //@ assignable this.*;
-    @Fails
+    @Verifyable
     private void asteriskTest() {
         t2 = new TestSuite();
+        t2.pubInt = 1;
+    }
+
+    //@ requires t2 != null;
+    //@ assignable this.*;
+    @Fails
+    private void asteriskTest2() {
         t2.pubInt = 1;
     }
 
@@ -180,17 +186,15 @@ public class AssignableTests {
     }
 
 
-
     /*@ assignable t2.t2.pubInt;
       @ */
-    @Fails
+    @Verifyable
     private void assignalbeTest6(TestSuite t3) {
         t3 = new TestSuite();
         t3.pubInt = 5;
         t3.t2 = new TestSuite();
         t3.t2.pubInt = 10;
     }
-
 
 
     @Verifyable
@@ -220,6 +224,31 @@ public class AssignableTests {
     }
 
     //@ requires t2 != null;
+    //@ assignable \nothing;
+    @Fails
+    private void assignableTest113() {
+        TestSuite testSuite = t2;
+        testSuite.pubInt = 2;
+    }
+
+    //@ requires t2 != null;
+    //@ assignable t2.*;
+    @Verifyable
+    private void assignableTest112() {
+        TestSuite testSuite = t2;
+        testSuite.pubInt = 2;
+    }
+
+    //@ requires t2 != null;
+    //@ assignable t2.*;
+    @Verifyable
+    private void assignableTest114() {
+        TestSuite testSuite = null;
+        testSuite = t2;
+        testSuite.arr = new int[10];
+    }
+
+    //@ requires t2 != null;
     //@ assignable t2.*;
     @Verifyable
     private void assignableTest11() {
@@ -230,7 +259,7 @@ public class AssignableTests {
 
     //@ requires t2 != null;
     //@ assignable t2.*;
-    @Fails
+    @Verifyable
     private void assignableTest111() {
         TestSuite testSuite = new TestSuite();
         testSuite.arr = new int[10];
@@ -258,9 +287,21 @@ public class AssignableTests {
         assert i == 1;
     }
 
-    /*@ assignable t2.*;
+    /*@ requires t3 != null;
+      @ assignable t2.*;
       @ */
     @Fails
+    private void assignalbeTest51(TestSuite t3) {
+        t3.pubInt = 5;
+        t3.t2 = new TestSuite();
+        t3.t2.pubInt = 10;
+        t3.arr = new int[10];
+        t3.arr[5] = 10;
+    }
+
+    /*@ assignable t2.*;
+      @ */
+    @Verifyable
     private void assignalbeTest5(TestSuite t3) {
         t3 = new TestSuite();
         t3.pubInt = 5;
@@ -302,7 +343,7 @@ public class AssignableTests {
 
     //@ requires t2 != null;
     //@ assignable t2.t2;
-    @Fails
+    @Verifyable
     //i think this is theoretically wrong but its a sound overapproximation?
     private void assignableTest174() {
         TestSuite t2 = new TestSuite();
@@ -347,7 +388,7 @@ public class AssignableTests {
     @Verifyable
     @Unwind(number = 12)
     private void assignableTest19() {
-       for (; privInt < 10; privInt++) {
+        for (; privInt < 10; privInt++) {
             int i = 0;
         }
     }
@@ -358,7 +399,7 @@ public class AssignableTests {
     @Fails
     @Unwind(number = 11)
     private void assignableTest20() {
-       for (; privInt < 10; privInt++) {
+        for (; privInt < 10; privInt++) {
             int i = 0;
         }
     }
@@ -472,13 +513,13 @@ public class AssignableTests {
 
     //@ assignable this.*;
     //@ requires arr != null && arr.length > 3;
-    @Verifyable
+    @Fails
     private void methodInvAss4(int i) {
         test1();
     }
 
     //@ assignable t2;
-    @Fails
+    @Verifyable
     private void methodInvAss5(int i) {
         test();
     }
@@ -511,25 +552,30 @@ public class AssignableTests {
     }
 
 
-    //@ assignable \everything;
-    private void test() {}
+    //@ assignable t2;
+    private void test() {
+    }
 
     //@ assignable arr[1..3];
-    private void test1() {}
+    private void test1() {
+    }
 
     //@ assignable t2;
-    private void test2() {}
+    private void test2() {
+    }
 
     //@ assignable objects;
-    private void test3() {}
+    private void test3() {
+    }
 
     //@ assignable arr[*];
-    private void test4(int[] arr) {}
+    private void test4(int[] arr) {
+    }
 
     //@ requires t2 != null && t3 != null;
     //@ assignable t2, t2.t2;
     @Fails
-    private void testOld(){
+    private void testOld() {
         t2 = t3;
         t2.t2 = new TestSuite();
     }
@@ -598,7 +644,7 @@ public class AssignableTests {
     @Verifyable
     public void loopLocalVarTest() {
         //@ loop_modifies \nothing;
-       for (int i = 0; i < 3; ++i) {
+        for (int i = 0; i < 3; ++i) {
             int x = 0;
             x = 3;
         }
@@ -621,7 +667,7 @@ public class AssignableTests {
     void testLoopModField1() {
         //@ loop_invariant true;
         //@ assignable privInt;
-       for (int i = 0; i < 3; ++i) {
+        for (int i = 0; i < 3; ++i) {
             privInt = i;
         }
     }
@@ -633,10 +679,144 @@ public class AssignableTests {
     }
 
     @Verifyable
+    void testLoopModField2() {
+        int j = 0;
+        //@ loop_invariant true;
+        //@ assignable \nothing;
+        for (int i = 0; i < 3; ++i) {
+            j = i;
+        }
+    }
+
+    @Fails
     void testLoopModField() {
         //@ loop_invariant true;
-       for (int i = 0; i < 3; ++i) {
+        //@ assignable \nothing;
+        for (int i = 0; i < 3; ++i) {
             privInt = i;
         }
     }
+
+    //@ requires a != null && a.length > 1;
+    //@ assignable a[0];
+    @Verifyable
+    public void testAssignableParameterTest1(int[] a) {
+        a[0] = 0;
+    }
+
+    //@ requires a != null && a.length > 1;
+    //@ assignable a[1];
+    @Fails
+    public void testAssignableParameterTest2(int[] a) {
+        a[0] = 0;
+    }
+
+    //@ requires a != null && a.length > 0;
+    //@ assignable \nothing;
+    @Fails
+    public void testAssignableParameterTest3(int[] a) {
+        a[0] = 0;
+    }
+
+    //@ assignable \nothing;
+    @Verifyable
+    public void testAssignableParameterTest5(int[] a) {
+        a = new int[3];
+    }
+
+    //@ assignable \nothing;
+    @Verifyable
+    public void testAssignableParameterTest4(int[] a) {
+        a = new int[3];
+        a[0] = 0;
+    }
+
+    //@ requires t != null;
+    //@ assignable \nothing;
+    @Fails
+    public void freshTest(TestSuite t) {
+        t.pubInt = 0;
+    }
+
+    //@ requires t != null;
+    //@ assignable \nothing;
+    @Verifyable
+    public void freshTest2(TestSuite t) {
+        t = new TestSuite();
+        t.pubInt = 0;
+    }
+
+
+    //@ requires t != null;
+    //@ requires t2 != null;
+    //@ assignable \nothing;
+    @Fails
+    private void freshTest3(TestSuite t) {
+        t = new TestSuite();
+        t = this.t2;
+        t.pubInt = 0;
+    }
+
+
+    //@ requires arr != null && arr.length >= 3;
+    //@ assignable arr;
+    @Verifyable
+    private void loopModifiesTest() {
+        arr = new int[4];
+        //@ loop_modifies arr[0..2];
+        for (int i = 0; i < 3; ++i) {
+        }
+    }
+
+    //@ requires arr != null && arr.length >= 3;
+    //@ assignable arr[0];
+    @Fails
+    private void loopModifiesTest1() {
+        //@ loop_modifies arr[0..2];
+        for (int i = 0; i < 3; ++i) {
+        }
+    }
+
+    //@ requires arr != null && arr.length >= 3;
+    //@ assignable arr[*];
+    @Verifyable
+    private void loopModifiesTest2() {
+        //@ loop_modifies arr[0..2];
+        for(int i = 0; i < 3; ++i) {
+
+        }
+    }
+
+    //@ requires t2 != null;
+    //@ assignable t2.pubInt;
+    @Verifyable
+    private void assignableModular1(TestSuite t) {
+        callee4(t2);
+    }
+
+    //@ requires t2 != null;
+    //@ requires t != null;
+    //@ assignable t2;
+    @Fails
+    private void assignableModular2(TestSuite t) {
+        callee4(t);
+    }
+
+    //@ assignable t1.pubInt;
+    private void callee4(TestSuite t1) {
+    }
+
+    //@ assignable \nothing;
+    private void callee5(TestSuite t) {
+    }
+
+    //@ requires arr != null;
+    //@ requires 0 <= i < arr.length - 1;
+    //@ assignable arr[i];
+    @Fails
+    private void modifiedIndexTest(int i) {
+        i++;
+        arr[i] = 0;
+    }
+
 }
