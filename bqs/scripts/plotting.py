@@ -7,6 +7,7 @@ from matplotlib.image import imread
 
 FOLDER = "../processed"
 SUCCESS = "SUCCESS"
+FAILURE = "FAILURE"
 
 
 def process_data_file(file_path, y_scale):
@@ -14,9 +15,9 @@ def process_data_file(file_path, y_scale):
     data = pd.read_csv(file_path)
 
     # Calculate unsuccessful bounds
-    unsuccessful_bounds = data[(data['JJBMC_result'] != SUCCESS) |
-                               (data['FIL_result'] != SUCCESS) |
-                               (data['FI_result'] != SUCCESS)]['bound'].unique()
+    unsuccessful_bounds = data[(data['JJBMC_result'] == FAILURE) |
+                               (data['FIL_result'] == FAILURE) |
+                               (data['FI_result'] == FAILURE)]['bound'].unique()
 
     # Plot the data
     fig, ax = plt.subplots()
