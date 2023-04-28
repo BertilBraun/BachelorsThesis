@@ -86,7 +86,15 @@ public class BlockQuickSort {
               @ // Values inside the range [originalBegin, originalEnd) are a valid permutation. // TODO should be done with permutation()
               @ loop_invariant (\forall int i; originalBegin <= i < originalEnd; (\num_of int j; originalBegin <= j < originalEnd; array[i] == array[j]) == (\num_of int j; originalBegin <= j < originalEnd; array[i] == \old(array[j])));
               @
-              @ loop_modifies array[max(begin, originalBegin) .. min(begin + BLOCKSIZE - 1, originalEnd - 2)], array[max(last - BLOCKSIZE - 1, originalBegin) .. min(last, originalEnd - 2)], last, begin, numLeft, numRight, startLeft, startRight, indexL[0 .. BLOCKSIZE - 1], indexR[0 .. BLOCKSIZE - 1], num;
+              @ // loop_modifies array[max(begin, originalBegin) .. min(begin + BLOCKSIZE - 1, originalEnd - 2)], 
+              @ //               array[max(last - BLOCKSIZE - 1, originalBegin) .. min(last, originalEnd - 2)], 
+              @ //               last, begin, numLeft, numRight, startLeft, startRight, num,
+              @ //               indexL[0 .. BLOCKSIZE - 1], indexR[0 .. BLOCKSIZE - 1];
+              @
+              @ loop_modifies array[(begin > originalBegin ? begin : originalBegin) .. (begin + BLOCKSIZE - 1 > originalEnd - 2 ? originalEnd - 2 : begin + BLOCKSIZE - 1)], 
+              @               array[(last - BLOCKSIZE - 1 > originalBegin ? last - BLOCKSIZE - 1 : originalBegin) .. (last < originalEnd - 2 ? last : originalEnd - 2)], 
+              @               last, begin, numLeft, numRight, startLeft, startRight, num, 
+              @               indexL[0 .. BLOCKSIZE - 1], indexR[0 .. BLOCKSIZE - 1];
               @ loop_decreases last - begin;
               @*/
             while (last - begin + 1 > 2 * BLOCKSIZE) {
