@@ -39,8 +39,8 @@ def process_data_file(file_path, y_scale):
 
         # Add function line and modified label with successful iteration count
         lines.append(line)
-        max_count = int(agg_data['count'].max())
-        min_count = int(agg_data['count'].min())
+        max_count = agg_data['count'].max()
+        min_count = agg_data['count'].min()
         if max_count == min_count:
             labels.append(f"{func_name} ran {max_count} times")
         else:

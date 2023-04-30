@@ -23,11 +23,11 @@ MAX_ITERATIONS = MAX_BOUNDS * ITERATIONS * MAX_TIMES_PER_ITERATION
 
 BOUNDS = list(range(1, MAX_BOUNDS))
 
-HOME_FOLDER = os.getcwd() + "../../"
+HOME_FOLDER = os.getcwd() + "/../../"
 BASE_FOLDER = HOME_FOLDER + "bqs/results"
 
 EVAL_FILE = "out.csv"
-PROCESSED_FOLDER = "bqs/processed"
+PROCESSED_FOLDER = HOME_FOLDER + "bqs/processed"
 
 if not os.path.exists(PROCESSED_FOLDER):
     os.mkdir(PROCESSED_FOLDER)

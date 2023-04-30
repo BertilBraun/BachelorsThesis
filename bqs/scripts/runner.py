@@ -21,17 +21,17 @@ ITERATIONS = 5
 MS_OF_1_HOUR = 60 * 60 * 1000
 MS_OF_2_HOURS = 2 * MS_OF_1_HOUR
 MS_OF_10_HOURS = 10 * MS_OF_1_HOUR
-DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME = MS_OF_1_HOUR  # TODO Should be run with MS_OF_2_HOURS
-FUNCTION_TIMEOUT = 5 * MS_OF_1_HOUR  # TODO Should be run with MS_OF_10_HOURS
+DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME = MS_OF_2_HOURS  # TODO Should be run with MS_OF_2_HOURS
+FUNCTION_TIMEOUT = 3 * MS_OF_1_HOUR  # TODO Should be run with MS_OF_10_HOURS
 
 JJBMC_CMD = "java -jar ../../../../../../JJBMC.jar -mas {mas} -u {u} {inline} -tr -c -kt -timeout={timeout} BlockQuickSort.java {function} -j=--stop-on-fail"
 
 OUTPUT_FILE_NAME = "output.txt"
 
-EASY_WORKERS = 24
-MEDIUM_WORKERS = 24
-HARD_WORKERS = 12
-VERY_HARD_WORKERS = 2
+EASY_WORKERS = 23
+MEDIUM_WORKERS = 23
+HARD_WORKERS = 16
+VERY_HARD_WORKERS = 8
 
 QUICK = 1  # TODO Should be run with 3
 NOT_SO_QUICK = 1  # TODO Should be run with 2
@@ -46,9 +46,11 @@ TASKS = [
         ("sortPair", list(range(1, 70)), QUICK),  # unbounded
     ]),
     (MEDIUM_WORKERS, [
-        ("partition", list(range(1, 8)), QUICK),
+        ("partition", list(range(1, 7)), QUICK),
+        # intentionally run twice, Bound 8 might be faster than 7 and if 7 fails, 8 wont be run
+        ("medianOf3", list(range(8, 9)), QUICK),
         ("medianOf3", list(range(1, 9)), QUICK),
-        ("insertionSort", list(range(1, 7)), QUICK),
+        ("insertionSort", list(range(1, 6)), QUICK),  # TODO Bound 6 might be possible
         ("quickSortRec", list(range(1, 7)), NOT_SO_QUICK),
     ]),
     (HARD_WORKERS, [
@@ -57,30 +59,7 @@ TASKS = [
         ("quickSort", list(range(1, 7)), NOT_SO_QUICK),
     ]),
     (VERY_HARD_WORKERS, [
-        ("quickSortRecImpl", list(range(1, 7)), NOT_SO_QUICK),
-    ])
-]
-
-TASKS = [
-    (EASY_WORKERS, [
-        ("swap", list(range(1, 70)), QUICK),  # unbounded
-        ("sortPair", list(range(1, 70)), QUICK),  # unbounded
-    ]),
-    (MEDIUM_WORKERS, [
-        ("partition", list(range(5, 7)), QUICK),
-        # intentionally run twice, Bound 8 might be faster than 7 and if 7 fails, 8 wont be run
-        ("medianOf3", list(range(8, 9)), QUICK),
-        ("medianOf3", list(range(5, 9)), QUICK),
-        ("insertionSort", list(range(5, 7)), QUICK),
-        ("quickSortRec", list(range(4, 7)), NOT_SO_QUICK),
-    ]),
-    (HARD_WORKERS, [
-        ("permutation", list(range(5, 7)), NOT_SO_QUICK),
-        ("hoareBlockPartition", list(range(5, 9)), NOT_SO_QUICK),
-        ("quickSort", list(range(1, 7)), NOT_SO_QUICK),
-    ]),
-    (VERY_HARD_WORKERS, [
-        ("quickSortRecImpl", list(range(4, 6)), NOT_SO_QUICK),
+        ("quickSortRecImpl", list(range(1, 6)), NOT_SO_QUICK),
     ])
 ]
 
