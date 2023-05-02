@@ -1,4 +1,33 @@
 public class Testing {
+    public static final int N = 3;
+
+    /*@ normal_behavior
+      @ requires array != null && array.length <= N;
+      @ ensures \result == (\num_of int i; 0 <= i < array.length; array[i] > 0);
+      @*/
+    public int testUnwinding(int[] array) {
+        int[] newArray = new int[array.length * 2];
+        for (int i = 0; i < array.length; i++) {
+            newArray[2 * i] = array[i];
+            newArray[2 * i + 1] = array[i];
+        }
+        return testUnwindingSub(newArray) / 2;
+    }
+
+    /*@ normal_behavior
+      @ requires array != null && array.length <= N;
+      @ ensures \result == (\num_of int i; 0 <= i < array.length; array[i] > 0);
+      @ pure
+      @*/
+    public int testUnwindingSub(int[] array) {
+        int count = 0;
+        for (int i = 0; i < array.length; i++) {
+            if (array[i] > 0) {
+                count++;
+            }
+        }
+        return count;
+    }
 
     /*@ normal_behavior
       @ requires array != null;

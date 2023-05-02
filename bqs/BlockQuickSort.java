@@ -2,7 +2,8 @@ public class BlockQuickSort {
 
     private static final int BLOCKSIZE = 2; // \paper(128)
     private static final int IS_THRESH = 3; // \paper(16) must be a minimum of 3, since we use 3 elements for pivot selection
-    private static final int STACK_SIZE = 80;
+    private static final int STACK_SIZE = 10; // \paper(80)
+    private static final int DEPTH_STACK_SIZE = 10; // \paper(40)
 
     /*@
       @ public normal_behavior
@@ -385,80 +386,64 @@ public class BlockQuickSort {
       @ assignable array[originalBegin .. originalEnd-1];
       @*/
     public static void quickSort(int[] array, int originalBegin, int originalEnd) {
-
         int begin = originalBegin;
         int end = originalEnd;
 
+        int depthLimit = 2 * log2(end - begin) + 3;
         int[] stack = new int[STACK_SIZE];
-        int top = 0;
+        int[] depthStack = new int[DEPTH_STACK_SIZE];
+        int stackPointer = 0;
+        int depthPointer = 0;
         int depth = 0;
-        int depthLimit = (int) (2 * log(end - begin) / log(2)) + 3;
 
-        stack[top++] = begin;
-        stack[top++] = end;
+        stack[stackPointer] = begin;
+        stack[stackPointer + 1] = end;
+        stackPointer += 2;
+        depthStack[depthPointer] = depth;
+        depthPointer++;
 
-        /*@ loop_invariant 0 <= top && top < STACK_SIZE;
+        /*@ loop_invariant 0 <= stackPointer && stackPointer < STACK_SIZE;
           @ loop_invariant 0 <= depth && depth <= depthLimit;
           @ loop_invariant originalBegin <= begin && begin <= end && end <= originalEnd;
           @ 
+          @ // for (originalBegin, min(begin, min(stack[0 .. stackPointer]))) is ordered
+          @ loop_invariant (\forall int i; originalBegin <= i < min(begin, (\min int j; 0 <= j < stackPointer; stack[j])); array[i] <= array[i+1]);
           @ 
-          @ // for (originalBegin, min(begin, min(stack[0 .. top]))) is ordered
-          @ loop_invariant (\forall int i; originalBegin <= i < min(begin, (\min int j; 0 <= j < top; stack[j])); array[i] <= array[i+1]);
-          @ 
-          @ // for (max(end, max(stack[0 .. top])), originalEnd) is ordered
-          @ loop_invariant (\forall int i; max(end, (\max int j; 0 <= j < top; stack[j])) <= i < originalEnd; array[i] <= array[i+1]);
+          @ // for (max(end, max(stack[0 .. stackPointer])), originalEnd) is ordered
+          @ loop_invariant (\forall int i; max(end, (\max int j; 0 <= j < stackPointer; stack[j])) <= i < originalEnd; array[i] <= array[i+1]);
           @
           @ // Values inside the range [originalBegin, originalEnd) are a valid permutation.
           @ loop_invariant (\forall int i; originalBegin <= i < originalEnd; (\num_of int k; originalBegin <= k < originalEnd; array[i] == array[k]) == (\num_of int k; originalBegin <= k < originalEnd; array[i] == \old(array[k])));
           @
-          @ loop_modifies top, depth, stack[0 .. STACK_SIZE - 1], array[originalBegin .. originalEnd - 1];
+          @ loop_modifies stackPointer, depth, stack[0 .. STACK_SIZE - 1], array[originalBegin .. originalEnd - 1];
           @
           @ // outer loop decreases sum of num of elements out of order, aka sum (num of elements later than e which are smaller than e)
           @ loop_decreases (\sum int i; originalBegin <= i < originalEnd; (\num_of int j; i <= j < originalEnd; array[j] < array[i]));
           @*/
-        while (top > 0) {
-            end = stack[--top];
-            begin = stack[--top];
-
-            /*@ loop_invariant top >= 0 && top < STACK_SIZE;
-              @ loop_invariant originalBegin <= begin && begin <= end && end <= originalEnd;
-              @ loop_invariant 0 <= depth && depth <= depthLimit;
-              @ loop_invariant (\forall int i; 0 <= i < top / 2; originalBegin <= stack[2 * i] && stack[2 * i] < stack[2 * i + 1] && stack[2 * i + 1] <= originalEnd);
-              @
-              @ // for each (start, end) and the min(start .. end) and max(start .. end) in the stack
-              @ //     there all e <= min in (0 .. start) and all e >= max in (end .. originalEnd)
-              @ loop_invariant (\forall int i; 0 <= i < top / 2;
-              @                 (\forall int j; 0 <= j < stack[2 * i]; 
-              @                                 array[j] <= (\min int k; stack[2 * i] <= k < stack[2 * i + 1]; array[k])));
-              @ loop_invariant (\forall int i; 0 <= i < top / 2;
-              @                 (\forall int j; stack[2 * i + 1] <= j < originalEnd; 
-              @                                 (\max int k; stack[2 * i] <= k < stack[2 * i + 1]; array[k]) <= array[j]));
-              @
-              @ // Values inside the range [originalBegin, originalEnd) are a valid permutation.
-              @ loop_invariant (\forall int i; originalBegin <= i < originalEnd; (\num_of int k; originalBegin <= k < originalEnd; array[i] == array[k]) == (\num_of int k; originalBegin <= k < originalEnd; array[i] == \old(array[k])));
-              @
-              @ loop_modifies top, depth, stack[0 .. STACK_SIZE - 1], array[originalBegin .. originalEnd - 1];
-              @ loop_decreases end - begin;
-              @*/
-            while (end - begin > IS_THRESH && depth < depthLimit) {
+        while (stackPointer > 0) {
+            if (depth < depthLimit && (end - begin > IS_THRESH)) {
                 int pivot = partition(array, begin, end);
-                if (pivot - begin > end - pivot) {
-                    stack[top++] = begin;
-                    stack[top++] = pivot;
+                if (pivot - begin > end - pivot - 1) {
+                    stack[stackPointer] = begin;
+                    stack[stackPointer + 1] = pivot;
                     begin = pivot + 1;
                 } else {
-                    stack[top++] = pivot + 1;
-                    stack[top++] = end;
+                    stack[stackPointer] = pivot + 1;
+                    stack[stackPointer + 1] = end;
                     end = pivot;
                 }
+                stackPointer += 2;
                 depth++;
-            }
-
-            if (end - begin <= IS_THRESH || depth >= depthLimit) {
+                depthStack[depthPointer] = depth;
+                depthPointer++;
+            } else {
                 insertionSort(array, begin, end);
+                stackPointer -= 2;
+                begin = stack[stackPointer];
+                end = stack[stackPointer + 1];
+                depthPointer--;
+                depth = depthStack[depthPointer];
             }
-
-            depth--;
         }
     }
 
@@ -478,7 +463,7 @@ public class BlockQuickSort {
       @*/
     public static void quickSortRec(int[] array, int begin, int end) {
         int depth = 0;
-        int depthLimit = (int) (2 * log(end - begin) / log(2)) + 3;
+        int depthLimit = 2 * log2(end - begin) + 3;
         quickSortRecImpl(array, begin, end, depth, depthLimit);
     }
 
@@ -622,36 +607,20 @@ public class BlockQuickSort {
         return hoareBlockPartition(array, begin + 1, end - 1, mid);
     }
 
-    /*@ requires a > 0;
-      @ ensures 1 <= \result && \result < 100;
+    /*@ public normal_behavior
+      @ requires n > 0;
+      @ ensures 0 <= \result && (1 << (\result - 1)) < n && n <= (1 << \result) && \result <= 31;
       @ pure
       @*/
-    public static double log(double a) {
-        // The error is less than 10^-3 for all values of 0 < a < 1000 compared to Math.log().
-        if (a <= 0) {
-            throw new IllegalArgumentException("Argument must be positive.");
+    public static int log2(int n) {
+        int log2Value = 0;
+
+        while (n > 1) {
+            n /= 2;
+            log2Value++;
         }
 
-        int iterations = 1000;
-        double result = 0.0;
-        double x = (a - 1) / (a + 1);
-
-        for (int i = 0; i < iterations; i++) {
-            int exponent = 2 * i + 1;
-            result += power(x, exponent) / exponent;
-        }
-
-        return 2 * result;
-    }
-
-    private static double power(double base, int exponent) {
-        double result = 1.0;
-
-        for (int i = 0; i < exponent; i++) {
-            result *= base;
-        }
-
-        return result;
+        return log2Value;
     }
 
     // /*@ public normal_behavior

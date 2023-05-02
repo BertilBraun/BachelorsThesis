@@ -3,6 +3,7 @@ public class BlockQuickSort {
     private static final int BLOCKSIZE = 128;
     private static final int IS_THRESH = 16;
     private static final int STACK_SIZE = 80;
+    private static final int DEPTH_STACK_SIZE = 40;
 
     public static int hoareBlockPartition(
             int[] array,
@@ -145,37 +146,43 @@ public class BlockQuickSort {
     }
 
     public static void quickSort(int[] array, int begin, int end) {
+        int depthLimit = 2 * log2(end - begin) + 3;
         int[] stack = new int[STACK_SIZE];
-        int top = 0;
+        int[] depthStack = new int[DEPTH_STACK_SIZE];
+        int stackPointer = 0;
+        int depthPointer = 0;
         int depth = 0;
-        int depthLimit = (int) (2 * Math.log(end - begin) / Math.log(2)) + 3;
 
-        stack[top++] = begin;
-        stack[top++] = end;
+        stack[stackPointer] = begin;
+        stack[stackPointer + 1] = end;
+        stackPointer += 2;
+        depthStack[depthPointer] = depth;
+        depthPointer++;
 
-        while (top > 0) {
-            end = stack[--top];
-            begin = stack[--top];
-
-            while (end - begin > IS_THRESH && depth < depthLimit) {
+        while (stackPointer > 0) {
+            if (depth < depthLimit && (end - begin > IS_THRESH)) {
                 int pivot = partition(array, begin, end);
-                if (pivot - begin > end - pivot) {
-                    stack[top++] = begin;
-                    stack[top++] = pivot;
+                if (pivot - begin > end - pivot - 1) {
+                    stack[stackPointer] = begin;
+                    stack[stackPointer + 1] = pivot;
                     begin = pivot + 1;
                 } else {
-                    stack[top++] = pivot + 1;
-                    stack[top++] = end;
+                    stack[stackPointer] = pivot + 1;
+                    stack[stackPointer + 1] = end;
                     end = pivot;
                 }
+                stackPointer += 2;
                 depth++;
-            }
-
-            if (end - begin <= IS_THRESH || depth >= depthLimit) {
+                depthStack[depthPointer] = depth;
+                depthPointer++;
+            } else {
                 insertionSort(array, begin, end);
+                stackPointer -= 2;
+                begin = stack[stackPointer];
+                end = stack[stackPointer + 1];
+                depthPointer--;
+                depth = depthStack[depthPointer];
             }
-
-            depth--;
         }
     }
 
@@ -212,5 +219,19 @@ public class BlockQuickSort {
     public static int partition(int[] array, int begin, int end) {
         int mid = medianOf3(array, begin, end);
         return hoareBlockPartition(array, begin + 1, end - 1, mid);
+    }
+
+    public static int log2(int n) {
+        if (n <= 0) {
+            throw new IllegalArgumentException("Input must be a positive integer.");
+        }
+
+        int log2Value = 0;
+        while (n > 1) {
+            n /= 2;
+            log2Value++;
+        }
+
+        return log2Value;
     }
 }
