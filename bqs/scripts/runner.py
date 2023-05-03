@@ -28,8 +28,8 @@ JJBMC_CMD = "java -jar ../../../../../../JJBMC.jar -mas {mas} -u {u} {inline} -t
 
 OUTPUT_FILE_NAME = "output.txt"
 
-EASY_WORKERS = 23
-MEDIUM_WORKERS = 23
+EASY_WORKERS = 22
+MEDIUM_WORKERS = 22
 HARD_WORKERS = 16
 VERY_HARD_WORKERS = 8
 
@@ -60,6 +60,23 @@ TASKS = [
     ]),
     (VERY_HARD_WORKERS, [
         ("quickSortRecImpl", list(range(1, 6)), NOT_SO_QUICK),
+    ])
+]
+
+TASKS = [
+    (EASY_WORKERS, [
+        ("swap", list(range(1, 50)), QUICK),  # unbounded
+        ("sortPair", list(range(1, 30)), QUICK),  # unbounded
+        ("partition", list(range(1, 15)), QUICK),
+        ("medianOf3", list(range(1, 15)), QUICK),
+        ("insertionSort", list(range(1, 15)), QUICK),  # TODO Bound 6 might be possible
+        ("quickSortRec", list(range(1, 15)), NOT_SO_QUICK),
+        ("permutation", list(range(1, 15)), NOT_SO_QUICK),
+        ("hoareBlockPartition", list(range(1, 15)), NOT_SO_QUICK),
+        ("quickSort", list(range(1, 15)), NOT_SO_QUICK),
+    ]),
+    (VERY_HARD_WORKERS, [
+        ("quickSortRecImpl", list(range(1, 15)), NOT_SO_QUICK),
     ])
 ]
 
