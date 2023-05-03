@@ -42,11 +42,10 @@ FOLDER_F_STRING = "{BASE_FOLDER}/bound_{bound}/{function}/iter_{iteration}"
 
 TASKS = [
     (EASY_WORKERS, [
-
         ("swap", list(range(1, 25)), QUICK),  # unbounded
         ("sortPair", list(range(1, 20)), QUICK),  # unbounded
-    ]),
-    (MEDIUM_WORKERS, [
+        # ]),
+        # (MEDIUM_WORKERS, [
         ("partition", list(range(1, 7)), QUICK),
         # intentionally run twice, Bound 8 might be faster than 7 and if 7 fails, 8 wont be run
         ("medianOf3", list(range(8, 9)), QUICK),
