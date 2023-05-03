@@ -16,7 +16,7 @@ from concurrent.futures import ProcessPoolExecutor
 HOME_FOLDER = os.getcwd() + "/../.."
 BASE_FOLDER = HOME_FOLDER + "/bqs/results"
 MAX_BOUND = 100
-ITERATIONS = 5
+ITERATIONS = 2 # TODO Should be run with 5
 
 MS_OF_1_HOUR = 60 * 60 * 1000
 MS_OF_2_HOURS = 2 * MS_OF_1_HOUR
