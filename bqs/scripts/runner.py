@@ -42,6 +42,7 @@ FOLDER_F_STRING = "{BASE_FOLDER}/bound_{bound}/{function}/iter_{iteration}"
 
 TASKS = [
     (EASY_WORKERS, [
+
         ("swap", list(range(1, 25)), QUICK),  # unbounded
         ("sortPair", list(range(1, 20)), QUICK),  # unbounded
     ]),
@@ -93,7 +94,7 @@ def process_JJBMC_example(folder, bound, function, inline_arg):
 
     cmd = JJBMC_CMD.format(
         mas=bound,
-        u=bound + 2,
+        u=bound + 1,
         timeout=FUNCTION_TIMEOUT,
         function=function,
         inline=inline_arg
@@ -107,17 +108,14 @@ def process_JJBMC_example(folder, bound, function, inline_arg):
 
     # Run the command using subprocess and write output to file and wait for it to finish
     os.chdir(folder)
-    p = subprocess.Popen(subprocess_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    try:
-        p.wait()
-    except:
-        print(f"Timeout for function '{function}' with bound '{bound}' and inline arg '{inline_arg}'")
+    print(f"Running in folder {folder}")
+    p = subprocess.run(subprocess_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     # sleep for 5 seconds to make sure that jbmc has finished
-    time.sleep(15)
+    time.sleep(5)
 
-    stdout = p.stdout.read().decode("utf-8")
-    stderr = p.stderr.read().decode("utf-8")
+    stdout = p.stdout.decode("utf-8")
+    stderr = p.stderr.decode("utf-8")
     print(f"Finished running function '{function}' with bound '{bound}' and inline arg '{inline_arg}'")
     print(stdout)
     print(stderr)
