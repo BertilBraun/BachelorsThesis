@@ -127,7 +127,6 @@ def process_JJBMC_example(folder, bound, function, inline_arg):
 
     # Run the command using subprocess and write output to file and wait for it to finish
     os.chdir(folder)
-    print(f"Running in folder {folder}")
     p = subprocess.run(subprocess_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     # sleep for 5 seconds to make sure that jbmc has finished
