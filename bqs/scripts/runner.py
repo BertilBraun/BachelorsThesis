@@ -30,8 +30,8 @@ OUTPUT_FILE_NAME = "output.txt"
 
 EASY_WORKERS = 16
 MEDIUM_WORKERS = 16
-HARD_WORKERS = 16
-VERY_HARD_WORKERS = 8
+HARD_WORKERS = 8
+VERY_HARD_WORKERS = 4
 
 QUICK = 1  # TODO Should be run with 3
 NOT_SO_QUICK = 1  # TODO Should be run with 2
@@ -71,6 +71,8 @@ TASKS = [
         ("medianOf3", list(range(1, 15)), QUICK),
         ("insertionSort", list(range(1, 15)), QUICK),
         ("quickSortRec", list(range(1, 15)), NOT_SO_QUICK),
+    ]),
+    (HARD_WORKERS, [
         ("permutation", list(range(1, 15)), NOT_SO_QUICK),
         ("hoareBlockPartition", list(range(1, 15)), NOT_SO_QUICK),
         ("quickSort", list(range(1, 15)), NOT_SO_QUICK),
