@@ -34,8 +34,10 @@ def process_data_file(file_path, y_scale):
 
         bounds = agg_data.index
         line, = ax.plot(bounds, agg_data['runtime_median'], marker='o', color=color)
-        ax.errorbar(bounds, agg_data['runtime_median'], yerr=agg_data['runtime_std'],
-                    linestyle='None', capsize=5, color=color)
+        # only show error bar if std is not NaN
+        if not np.isnan(agg_data['runtime_std']).all():
+            ax.errorbar(bounds, agg_data['runtime_median'], yerr=agg_data['runtime_std'],
+                        linestyle='None', capsize=5, color=color)
 
         # Add function line and modified label with successful iteration count
         lines.append(line)

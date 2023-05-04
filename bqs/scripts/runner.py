@@ -1,4 +1,3 @@
-# pip install ushlex
 import os
 import re
 import time
@@ -16,7 +15,7 @@ from concurrent.futures import ProcessPoolExecutor
 HOME_FOLDER = os.getcwd() + "/../.."
 BASE_FOLDER = HOME_FOLDER + "/bqs/results"
 MAX_BOUND = 100
-ITERATIONS = 2 # TODO Should be run with 5
+ITERATIONS = 2  # TODO Should be run with 5
 
 MS_OF_1_HOUR = 60 * 60 * 1000
 MS_OF_2_HOURS = 2 * MS_OF_1_HOUR
@@ -28,8 +27,8 @@ JJBMC_CMD = "java -jar ../../../../../../JJBMC.jar -mas {mas} -u {u} {inline} -t
 
 OUTPUT_FILE_NAME = "output.txt"
 
-EASY_WORKERS = 22
-MEDIUM_WORKERS = 22
+EASY_WORKERS = 16
+MEDIUM_WORKERS = 16
 HARD_WORKERS = 16
 VERY_HARD_WORKERS = 8
 

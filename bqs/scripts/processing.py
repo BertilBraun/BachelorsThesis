@@ -43,6 +43,7 @@ def process_JJBMC_example(folder, bound, iter, function, inline_arg):
     if not os.path.exists(file):
         return
 
+    print(f"Processing {file}")
     with open(file) as f:
         content = f.read()
 
@@ -121,5 +122,6 @@ if __name__ == "__main__":
             for function in FUNCTIONS:
                 process(i, bound, function)
 
+    out_file.close()
     grouped_data = group_data_from_csv(open(EVAL_FILE).read())
     write_processed_csv(PROCESSED_FOLDER, grouped_data)
