@@ -24,7 +24,7 @@ MS_OF_10_HOURS = 10 * MS_OF_1_HOUR
 DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME = MS_OF_1_HOUR  # TODO Should be run with MS_OF_2_HOURS
 FUNCTION_TIMEOUT = 2 * MS_OF_1_HOUR  # TODO Should be run with MS_OF_10_HOURS
 
-JJBMC_CMD = "java -jar ../../../../../../JJBMC.jar -mas {mas} -u {u} {inline} -tr -c -kt -timeout={timeout} BlockQuickSort.java {function} -j=\"--stop-on-fail --external-sat-solver {solver}\""
+JJBMC_CMD = "java -jar JJBMC.jar -mas {mas} -u {u} {inline} -tr -c -kt -timeout={timeout} BlockQuickSort.java {function} -j=\"--stop-on-fail --external-sat-solver {solver}\""
 
 OUTPUT_FILE_NAME = "output.txt"
 
@@ -107,6 +107,9 @@ def process_JJBMC_example(folder, bound, function, inline_arg):
             f"Skipping function '{function}' with bound '{bound}' and inline arg '{inline_arg}' because previous bound took too long")
         return
 
+    if not os.path.exists(f"{folder}/JJBMC.jar"):
+        shutil.copyfile(f"{HOME_FOLDER}/JJBMC.jar", f"{folder}/JJBMC.jar")
+
     if not os.path.exists(f"{folder}/BlockQuickSort.java"):
         shutil.copyfile(f"{HOME_FOLDER}/bqs/BlockQuickSort.java", f"{folder}/BlockQuickSort.java")
 
@@ -157,6 +160,7 @@ def process_JJBMC_example(folder, bound, function, inline_arg):
     try:
         # remove tmp and everything in it
         shutil.rmtree("tmp")
+        os.remove("JJBMC.jar")
     except:
         print("Error cleaning up tmp folder")
 
