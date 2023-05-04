@@ -14,6 +14,7 @@ from concurrent.futures import ProcessPoolExecutor
 
 HOME_FOLDER = os.getcwd() + "/../.."
 BASE_FOLDER = HOME_FOLDER + "/bqs/results"
+SAT_SOLVER_FOLDER = "/home/bertil/kissat/build/kissat"
 MAX_BOUND = 100
 ITERATIONS = 2  # TODO Should be run with 5
 
@@ -23,7 +24,7 @@ MS_OF_10_HOURS = 10 * MS_OF_1_HOUR
 DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME = MS_OF_1_HOUR  # TODO Should be run with MS_OF_2_HOURS
 FUNCTION_TIMEOUT = 2 * MS_OF_1_HOUR  # TODO Should be run with MS_OF_10_HOURS
 
-JJBMC_CMD = "java -jar ../../../../../../JJBMC.jar -mas {mas} -u {u} {inline} -tr -c -kt -timeout={timeout} BlockQuickSort.java {function} -j=--stop-on-fail"
+JJBMC_CMD = "java -jar ../../../../../../JJBMC.jar -mas {mas} -u {u} {inline} -tr -c -kt -timeout={timeout} BlockQuickSort.java {function} -j=\"--stop-on-fail --external-sat-solver {solver_folder}\""
 
 OUTPUT_FILE_NAME = "output.txt"
 
@@ -64,11 +65,11 @@ TASKS = [
 
 TASKS = [
     (EASY_WORKERS, [
-        ("swap", list(range(1, 50)), QUICK),  # unbounded
-        ("sortPair", list(range(1, 30)), QUICK),  # unbounded
+        ("swap", list(range(1, 50)), QUICK),
+        ("sortPair", list(range(1, 30)), QUICK),
         ("partition", list(range(1, 15)), QUICK),
         ("medianOf3", list(range(1, 15)), QUICK),
-        ("insertionSort", list(range(1, 15)), QUICK),  # TODO Bound 6 might be possible
+        ("insertionSort", list(range(1, 15)), QUICK),
         ("quickSortRec", list(range(1, 15)), NOT_SO_QUICK),
         ("permutation", list(range(1, 15)), NOT_SO_QUICK),
         ("hoareBlockPartition", list(range(1, 15)), NOT_SO_QUICK),
@@ -112,7 +113,8 @@ def process_JJBMC_example(folder, bound, function, inline_arg):
         u=bound + 1,
         timeout=FUNCTION_TIMEOUT,
         function=function,
-        inline=inline_arg
+        inline=inline_arg,
+        solver_folder=SAT_SOLVER_FOLDER,
     )
     print("Running command: " + cmd)
     # if is windows
