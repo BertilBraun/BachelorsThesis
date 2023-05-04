@@ -16,7 +16,7 @@ HOME_FOLDER = os.getcwd() + "/../.."
 BASE_FOLDER = HOME_FOLDER + "/bqs/results"
 SAT_SOLVER = "/home/bertil/kissat/build/kissat"
 MAX_BOUND = 100
-ITERATIONS = 2  # TODO Should be run with 5
+ITERATIONS = 1  # TODO Should be run with 5
 
 MS_OF_1_HOUR = 60 * 60 * 1000
 MS_OF_2_HOURS = 2 * MS_OF_1_HOUR
@@ -70,16 +70,16 @@ TASKS = [
         ("partition", list(range(1, 15)), QUICK),
         ("medianOf3", list(range(1, 15)), QUICK),
         ("insertionSort", list(range(1, 15)), QUICK),
-        ("quickSortRec", list(range(1, 15)), NOT_SO_QUICK),
+        #    ("quickSortRec", list(range(1, 15)), NOT_SO_QUICK),
     ]),
     (HARD_WORKERS, [
         ("permutation", list(range(1, 15)), NOT_SO_QUICK),
         ("hoareBlockPartition", list(range(1, 15)), NOT_SO_QUICK),
         ("quickSort", list(range(1, 15)), NOT_SO_QUICK),
     ]),
-    (VERY_HARD_WORKERS, [
-        ("quickSortRecImpl", list(range(1, 15)), NOT_SO_QUICK),
-    ])
+    # (VERY_HARD_WORKERS, [
+    #     ("quickSortRecImpl", list(range(1, 15)), NOT_SO_QUICK),
+    # ])
 ]
 
 failed_examples = {}
