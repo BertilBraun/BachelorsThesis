@@ -16,7 +16,7 @@ HOME_FOLDER = os.getcwd() + "/../.."
 BASE_FOLDER = HOME_FOLDER + "/bqs/results"
 SAT_SOLVER = "/home/bertil/kissat/build/kissat"
 MAX_BOUND = 100
-ITERATIONS = 1  # TODO Should be run with 5
+ITERATIONS = 2  # TODO Should be run with 5
 
 MS_OF_1_HOUR = 60 * 60 * 1000
 MS_OF_2_HOURS = 2 * MS_OF_1_HOUR
@@ -75,14 +75,21 @@ TASKS = [
     (HARD_WORKERS, [
         ("permutation", list(range(1, 15)), NOT_SO_QUICK),
         ("hoareBlockPartition", list(range(1, 15)), NOT_SO_QUICK),
-        ("quickSort", list(range(1, 15)), NOT_SO_QUICK),
     ]),
-    # (VERY_HARD_WORKERS, [
-    #     ("quickSortRecImpl", list(range(1, 15)), NOT_SO_QUICK),
-    # ])
+    (VERY_HARD_WORKERS, [
+        ("quickSort", list(range(1, 15)), NOT_SO_QUICK),
+        #    ("quickSortRecImpl", list(range(1, 15)), NOT_SO_QUICK),
+    ])
 ]
 
-failed_examples = {}
+failed_examples = {
+    ("partition", "-fi"): 13,
+    ("quickSort", "-fi"): 6,
+    ("insertionSort", "-fil"): 10,
+    ("insertionSort", ""): 10,
+    ("permutation", "-fi"): 11,
+    ("permutation", "-fil"): 12,
+}
 runtimes = {}
 
 
@@ -97,7 +104,7 @@ def process_JJBMC_example(folder, bound, function, inline_arg):
         print(f"Skipping function '{function}' with bound '{bound}' and inline arg '{inline_arg}' because it already exists")
         return
 
-    if failed_examples.get((function, ''), MAX_BOUND) <= bound:
+    if failed_examples.get((function, inline_arg), MAX_BOUND) <= bound:
         print(f"Skipping function '{function}' with bound '{bound}' and inline arg '{inline_arg}' because it already failed")
         return
 
