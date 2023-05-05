@@ -71,7 +71,7 @@ TASKS = [
     (MEDIUM_WORKERS, [
         ("partition", list(range(1, 30)), QUICK),
         ("medianOf3", list(range(1, 25)), QUICK),
-        ("insertionSort", list(range(1, 20)), QUICK),
+        ("insertionSort", list(range(1, 100)), QUICK),
         #    ("quickSortRec", list(range(1, 15)), NOT_SO_QUICK),
     ]),
     (HARD_WORKERS, [
@@ -89,7 +89,7 @@ runtimes = {
     ("partition", "-fi", 13): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
     ("quickSort", "-fi", 6): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
     ("quickSort", "", 15): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
-    ("insertionSort", "", 10): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
+    # ("insertionSort", "", 10): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
     ("insertionSort", "-fil", 10): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
     ("insertionSort", "-fi", 11): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
     ("permutation", "-fi", 13): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
