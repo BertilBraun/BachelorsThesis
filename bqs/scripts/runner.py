@@ -113,7 +113,7 @@ def process_JJBMC_example(folder, bound, function, inline_arg):
         return
 
     # if runtime of previous bound is >= MS_OF_2_HOURS, skip
-    for b in range(bound - 1, MAX_BOUND):
+    for b in range(bound):
         if runtimes.get((function, b, inline_arg), 0) >= DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME:
             print(
                 f"Skipping function '{function}' with bound '{bound}' and inline arg '{inline_arg}' because previous bound took too long")
