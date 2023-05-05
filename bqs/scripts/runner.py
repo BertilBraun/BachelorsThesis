@@ -114,7 +114,7 @@ def process_JJBMC_example(folder, bound, function, inline_arg):
 
     # if runtime of previous bound is >= MS_OF_2_HOURS, skip
     for b in range(bound):
-        if runtimes.get((function, b, inline_arg), 0) >= DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME:
+        if runtimes.get((function, inline_arg, b), 0) >= DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME:
             print(
                 f"Skipping function '{function}' with bound '{bound}' and inline arg '{inline_arg}' because previous bound took too long")
             return
@@ -181,7 +181,7 @@ def process_JJBMC_example(folder, bound, function, inline_arg):
             # parse runtime from output "JBMC took XXXms." parse XXX using regex
             runtime = re.search(r"JBMC took (\d+)ms.", stdout).group(1)
             # set runtime in ms for this function and bound and inline arg
-            runtimes[(function, bound, inline_arg)] = int(runtime)
+            runtimes[(function, inline_arg, bound)] = int(runtime)
         except:
             print("Error parsing runtime")
 
