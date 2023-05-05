@@ -28,7 +28,7 @@ JJBMC_CMD = "java -jar JJBMC.jar -mas {mas} -u {u} {inline} -tr -c -kt -timeout=
 
 OUTPUT_FILE_NAME = "output.txt"
 
-EASY_WORKERS = 22
+EASY_WORKERS = 4
 MEDIUM_WORKERS = 22
 HARD_WORKERS = 12
 VERY_HARD_WORKERS = 4
@@ -65,19 +65,21 @@ TASKS = [
 
 TASKS = [
     (EASY_WORKERS, [
-        ("swap", list(range(1, 80)), QUICK),
-        ("sortPair", list(range(1, 50)), QUICK),
-        ("partition", list(range(1, 20)), QUICK),
-        ("medianOf3", list(range(1, 20)), QUICK),
+        ("swap", list(range(1, 150)), QUICK),
+        ("sortPair", list(range(1, 100)), QUICK),
+    ]),
+    (MEDIUM_WORKERS, [
+        ("partition", list(range(1, 30)), QUICK),
+        ("medianOf3", list(range(1, 25)), QUICK),
         ("insertionSort", list(range(1, 20)), QUICK),
         #    ("quickSortRec", list(range(1, 15)), NOT_SO_QUICK),
     ]),
     (HARD_WORKERS, [
-        ("permutation", list(range(1, 20)), NOT_SO_QUICK),
-        ("hoareBlockPartition", list(range(1, 20)), NOT_SO_QUICK),
+        ("permutation", list(range(1, 30)), NOT_SO_QUICK),
+        ("hoareBlockPartition", list(range(1, 25)), NOT_SO_QUICK),
     ]),
     (VERY_HARD_WORKERS, [
-        ("quickSort", list(range(1, 20)), NOT_SO_QUICK),
+        ("quickSort", list(range(1, 50)), NOT_SO_QUICK),
         #    ("quickSortRecImpl", list(range(1, 15)), NOT_SO_QUICK),
     ])
 ]
@@ -86,14 +88,14 @@ failed_examples = {}
 runtimes = {
     ("partition", "-fi", 13): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
     ("quickSort", "-fi", 6): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
-    ("quickSort", "", 13): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
+    ("quickSort", "", 15): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
     ("insertionSort", "", 10): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
     ("insertionSort", "-fil", 10): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
     ("insertionSort", "-fi", 11): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
-    ("permutation", "-fi", 11): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
-    ("permutation", "-fil", 12): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
-    ("hoareBlockPartition", "-fil", 12): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
-    ("hoareBlockPartition", "-fi", 12): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
+    ("permutation", "-fi", 13): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
+    ("permutation", "-fil", 14): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
+    ("hoareBlockPartition", "-fil", 13): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
+    ("hoareBlockPartition", "-fi", 13): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
 }
 
 
