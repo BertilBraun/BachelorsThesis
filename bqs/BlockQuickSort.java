@@ -509,8 +509,16 @@ public class BlockQuickSort {
       @ assignable array[begin .. end-1];
       @*/
     public static void insertionSort(int[] array, int begin, int end) {
+        //@ loop_invariant begin <= i && i <= end;
+        //@ loop_invariant (\forall int j; begin <= j < i; array[j] <= array[j+1]);
+        //@ loop_modifies array[begin .. end-1]; 
         for (int i = begin; i < end; i++) {
             int j = i;
+
+            //@ loop_invariant begin < j && j <= i;
+            //@ loop_invariant array[begin] <= array[j-1];
+            //@ loop_invariant (\forall int k; j < k && k < i; array[k-1] <= array[k]);
+            //@ loop_modifies array[begin .. i];
             while (j > begin && array[j - 1] > array[j]) {
                 swap(array, j, j - 1);
                 j--;
