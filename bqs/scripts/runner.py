@@ -113,10 +113,11 @@ def process_JJBMC_example(folder, bound, function, inline_arg):
         return
 
     # if runtime of previous bound is >= MS_OF_2_HOURS, skip
-    if runtimes.get((function, bound - 1, inline_arg), 0) >= DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME:
-        print(
-            f"Skipping function '{function}' with bound '{bound}' and inline arg '{inline_arg}' because previous bound took too long")
-        return
+    for b in range(bound - 1, MAX_BOUND):
+        if runtimes.get((function, b, inline_arg), 0) >= DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME:
+            print(
+                f"Skipping function '{function}' with bound '{bound}' and inline arg '{inline_arg}' because previous bound took too long")
+            return
 
     if not os.path.exists(f"{folder}/JJBMC.jar"):
         shutil.copyfile(f"{HOME_FOLDER}/JJBMC.jar", f"{folder}/JJBMC.jar")
