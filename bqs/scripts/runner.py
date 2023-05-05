@@ -65,32 +65,36 @@ TASKS = [
 
 TASKS = [
     (EASY_WORKERS, [
-        ("swap", list(range(1, 50)), QUICK),
-        ("sortPair", list(range(1, 30)), QUICK),
-        ("partition", list(range(1, 15)), QUICK),
-        ("medianOf3", list(range(1, 15)), QUICK),
-        ("insertionSort", list(range(1, 15)), QUICK),
+        ("swap", list(range(1, 80)), QUICK),
+        ("sortPair", list(range(1, 50)), QUICK),
+        ("partition", list(range(1, 20)), QUICK),
+        ("medianOf3", list(range(1, 20)), QUICK),
+        ("insertionSort", list(range(1, 20)), QUICK),
         #    ("quickSortRec", list(range(1, 15)), NOT_SO_QUICK),
     ]),
     (HARD_WORKERS, [
-        ("permutation", list(range(1, 15)), NOT_SO_QUICK),
-        ("hoareBlockPartition", list(range(1, 15)), NOT_SO_QUICK),
+        ("permutation", list(range(1, 20)), NOT_SO_QUICK),
+        ("hoareBlockPartition", list(range(1, 20)), NOT_SO_QUICK),
     ]),
     (VERY_HARD_WORKERS, [
-        ("quickSort", list(range(1, 15)), NOT_SO_QUICK),
+        ("quickSort", list(range(1, 20)), NOT_SO_QUICK),
         #    ("quickSortRecImpl", list(range(1, 15)), NOT_SO_QUICK),
     ])
 ]
 
-failed_examples = {
-    ("partition", "-fi"): 13,
-    ("quickSort", "-fi"): 6,
-    ("insertionSort", "-fil"): 10,
-    ("insertionSort", ""): 10,
-    ("permutation", "-fi"): 11,
-    ("permutation", "-fil"): 12,
+failed_examples = {}
+runtimes = {
+    ("partition", "-fi", 13): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
+    ("quickSort", "-fi", 6): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
+    ("quickSort", "", 13): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
+    ("insertionSort", "", 10): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
+    ("insertionSort", "-fil", 10): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
+    ("insertionSort", "-fi", 11): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
+    ("permutation", "-fi", 11): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
+    ("permutation", "-fil", 12): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
+    ("hoareBlockPartition", "-fil", 12): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
+    ("hoareBlockPartition", "-fi", 12): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
 }
-runtimes = {}
 
 
 def process_JJBMC_example(folder, bound, function, inline_arg):
@@ -108,8 +112,8 @@ def process_JJBMC_example(folder, bound, function, inline_arg):
         print(f"Skipping function '{function}' with bound '{bound}' and inline arg '{inline_arg}' because it already failed")
         return
 
-    # if runtime of previous bound is > MS_OF_2_HOURS, skip
-    if runtimes.get((function, bound - 1, inline_arg), 0) > DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME:
+    # if runtime of previous bound is >= MS_OF_2_HOURS, skip
+    if runtimes.get((function, bound - 1, inline_arg), 0) >= DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME:
         print(
             f"Skipping function '{function}' with bound '{bound}' and inline arg '{inline_arg}' because previous bound took too long")
         return
@@ -144,9 +148,9 @@ def process_JJBMC_example(folder, bound, function, inline_arg):
 
     stdout = p.stdout.decode("utf-8")
     stderr = p.stderr.decode("utf-8")
-    print(f"Finished running function '{function}' with bound '{bound}' and inline arg '{inline_arg}'")
     print(stdout)
     print(stderr)
+    print(f"Finished running function '{function}' with bound '{bound}' and inline arg '{inline_arg}'")
 
     with open(OUTPUT_FILE_NAME, "w") as f:
         # Write stdout and stderr to file
