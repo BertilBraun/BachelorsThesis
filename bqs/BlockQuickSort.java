@@ -413,7 +413,7 @@ public class BlockQuickSort {
           @ loop_invariant (\forall int i; max(end, (\max int j; 0 <= j < stackPointer; stack[j])) <= i < originalEnd; array[i] <= array[i+1]);
           @
           @ // Values inside the range [originalBegin, originalEnd) are a valid permutation.
-          @ loop_invariant (\forall int i; originalBegin <= i < originalEnd; (\num_of int k; originalBegin <= k < originalEnd; array[i] == array[k]) == (\num_of int k; originalBegin <= k < originalEnd; array[i] == \old(array[k])));
+          @ loop_invariant permutation(array, \old(array), originalBegin, originalEnd);
           @
           @ loop_modifies stackPointer, depth, stack[0 .. STACK_SIZE - 1], array[originalBegin .. originalEnd - 1];
           @
