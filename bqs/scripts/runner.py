@@ -41,7 +41,8 @@ INLINE_ARGS = ['', '-fil', '-fi']
 FOLDER_F_STRING = "{BASE_FOLDER}/bound_{bound}/{function}/iter_{iteration}"
 
 NO_SKIP = 1
-SUPER_HIGH_BOUND_SKIP = 10
+HIGH_BOUND_SKIP = 10
+SUPER_HIGH_BOUND_SKIP = 50
 
 TASKS = [
     (EASY_WORKERS, NO_SKIP, [
@@ -72,45 +73,40 @@ TASKS = [
         ("sortPair", list(range(1, 100)), QUICK),
     ]),
     (MEDIUM_WORKERS, NO_SKIP, [
-        ("partition", list(range(1, 30)), QUICK),
-        ("medianOf3", list(range(1, 25)), QUICK),
+        ("partition", list(range(1, 31)), QUICK),
+        ("medianOf3", list(range(1, 30)), QUICK),
         ("insertionSort", list(range(1, 100)), QUICK),
         #    ("quickSortRec", list(range(1, 15)), NOT_SO_QUICK),
     ]),
     (HARD_WORKERS, NO_SKIP, [
-        ("permutation", list(range(1, 30)), NOT_SO_QUICK),
+        ("permutation", list(range(1, 33)), NOT_SO_QUICK),
         ("hoareBlockPartition", list(range(1, 25)), NOT_SO_QUICK),
     ]),
     (VERY_HARD_WORKERS, NO_SKIP, [
         ("quickSort", list(range(1, 50)), NOT_SO_QUICK),
         #    ("quickSortRecImpl", list(range(1, 15)), NOT_SO_QUICK),
     ]),
-]
-
-TASKS = [
-    (HARD_WORKERS, SUPER_HIGH_BOUND_SKIP, [
+    (HARD_WORKERS, HIGH_BOUND_SKIP, [
         ("insertionSort", list(range(1, 1000)), QUICK),
         ("quickSort", list(range(1, 1000)), QUICK),
-    ])
-]
-
-TASKS = [
-    (HARD_WORKERS, NO_SKIP, [
-        ("quickSort", list(range(1, 1000)), QUICK),
+    ]),
+    (HARD_WORKERS, SUPER_HIGH_BOUND_SKIP, [
+        ("sortPair", list(range(1, 1000)), QUICK),
+        ("swap", list(range(1, 1000)), QUICK),
     ])
 ]
 
 failed_examples = {}
 runtimes = {
     ("partition", "-fi", 13): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
-    ("quickSort", "-fi", 0): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
-    ("quickSort", "-fil", 0): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
+    ("quickSort", "-fi", 6): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
     ("quickSort", "", 15): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
-    # ("insertionSort", "", 10): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
+    ("medianOf3", "", 28): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
+    ("medianOf3", "-fil", 28): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
     ("insertionSort", "-fil", 10): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
     ("insertionSort", "-fi", 11): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
-    ("permutation", "-fi", 13): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
-    ("permutation", "-fil", 14): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
+    ("permutation", "-fi", 11): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
+    ("permutation", "-fil", 11): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
     ("hoareBlockPartition", "-fil", 13): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
     ("hoareBlockPartition", "-fi", 13): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
 }
