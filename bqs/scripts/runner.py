@@ -94,10 +94,17 @@ TASKS = [
     ])
 ]
 
+TASKS = [
+    (HARD_WORKERS, NO_SKIP, [
+        ("quickSort", list(range(1, 1000)), QUICK),
+    ])
+]
+
 failed_examples = {}
 runtimes = {
     ("partition", "-fi", 13): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
-    ("quickSort", "-fi", 6): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
+    ("quickSort", "-fi", 0): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
+    ("quickSort", "-fil", 0): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
     ("quickSort", "", 15): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
     # ("insertionSort", "", 10): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
     ("insertionSort", "-fil", 10): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,

@@ -18,7 +18,7 @@ FUNCTIONS = [
 
 ITERATIONS = 5
 MAX_TIMES_PER_ITERATION = 3
-MAX_BOUNDS = 10000
+MAX_BOUNDS = 150  # 10000
 MAX_ITERATIONS = MAX_BOUNDS * ITERATIONS * MAX_TIMES_PER_ITERATION
 
 BOUNDS = list(range(1, MAX_BOUNDS))
@@ -123,5 +123,6 @@ if __name__ == "__main__":
                 process(i, bound, function)
 
     out_file.close()
+    print("Done writing to out.csv")
     grouped_data = group_data_from_csv(open(EVAL_FILE).read())
     write_processed_csv(PROCESSED_FOLDER, grouped_data)
