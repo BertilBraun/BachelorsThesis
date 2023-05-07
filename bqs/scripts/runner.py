@@ -15,7 +15,7 @@ from concurrent.futures import ProcessPoolExecutor
 HOME_FOLDER = os.getcwd() + "/../.."
 BASE_FOLDER = HOME_FOLDER + "/bqs/results"
 SAT_SOLVER = "/home/bertil/kissat/build/kissat"
-MAX_BOUND = 100
+MAX_BOUND = 10000
 ITERATIONS = 2  # TODO Should be run with 5
 
 MS_OF_1_HOUR = 60 * 60 * 1000
@@ -40,8 +40,11 @@ INLINE_ARGS = ['', '-fil', '-fi']
 
 FOLDER_F_STRING = "{BASE_FOLDER}/bound_{bound}/{function}/iter_{iteration}"
 
+NO_SKIP = 1
+SUPER_HIGH_BOUND_SKIP = 10
+
 TASKS = [
-    (EASY_WORKERS, [
+    (EASY_WORKERS, NO_SKIP, [
         ("swap", list(range(1, 25)), QUICK),  # unbounded
         ("sortPair", list(range(1, 20)), QUICK),  # unbounded
         # ]),
@@ -53,34 +56,41 @@ TASKS = [
         ("insertionSort", list(range(1, 6)), QUICK),  # TODO Bound 6 might be possible
         ("quickSortRec", list(range(1, 7)), NOT_SO_QUICK),
     ]),
-    (HARD_WORKERS, [
+    (HARD_WORKERS, NO_SKIP, [
         ("permutation", list(range(1, 7)), NOT_SO_QUICK),
         ("hoareBlockPartition", list(range(1, 9)), NOT_SO_QUICK),
         ("quickSort", list(range(1, 7)), NOT_SO_QUICK),
     ]),
-    (VERY_HARD_WORKERS, [
+    (VERY_HARD_WORKERS, NO_SKIP, [
         ("quickSortRecImpl", list(range(1, 6)), NOT_SO_QUICK),
     ])
 ]
 
 TASKS = [
-    (EASY_WORKERS, [
+    (EASY_WORKERS, NO_SKIP, [
         ("swap", list(range(1, 150)), QUICK),
         ("sortPair", list(range(1, 100)), QUICK),
     ]),
-    (MEDIUM_WORKERS, [
+    (MEDIUM_WORKERS, NO_SKIP, [
         ("partition", list(range(1, 30)), QUICK),
         ("medianOf3", list(range(1, 25)), QUICK),
         ("insertionSort", list(range(1, 100)), QUICK),
         #    ("quickSortRec", list(range(1, 15)), NOT_SO_QUICK),
     ]),
-    (HARD_WORKERS, [
+    (HARD_WORKERS, NO_SKIP, [
         ("permutation", list(range(1, 30)), NOT_SO_QUICK),
         ("hoareBlockPartition", list(range(1, 25)), NOT_SO_QUICK),
     ]),
-    (VERY_HARD_WORKERS, [
+    (VERY_HARD_WORKERS, NO_SKIP, [
         ("quickSort", list(range(1, 50)), NOT_SO_QUICK),
         #    ("quickSortRecImpl", list(range(1, 15)), NOT_SO_QUICK),
+    ]),
+]
+
+TASKS = [
+    (HARD_WORKERS, SUPER_HIGH_BOUND_SKIP, [
+        ("insertionSort", list(range(1, 1000)), QUICK),
+        ("quickSort", list(range(1, 1000)), QUICK),
     ])
 ]
 
@@ -218,12 +228,12 @@ def run(workers, tasks):
 
 if __name__ == "__main__":
     for i in range(ITERATIONS):
-        for (workers, functions) in TASKS:
+        for (workers, skip, functions) in TASKS:
             tasks = []
             for (function, bounds, times_per_iteration) in functions:
                 for j in range(times_per_iteration):
                     for bound in bounds:
-                        tasks += generate_tasks(i * times_per_iteration + j, bound, function)
+                        tasks += generate_tasks(i * times_per_iteration + j, bound * skip, function)
 
             tasks = list(sorted(tasks, key=lambda x: x[1]))
             run(workers, tasks)
