@@ -80,7 +80,7 @@ TASKS = [
     ]),
     (HARD_WORKERS, NO_SKIP, [
         ("permutation", list(range(1, 33)), NOT_SO_QUICK),
-        ("hoareBlockPartition", list(range(1, 25)), NOT_SO_QUICK),
+        ("hoareBlockPartition", list(range(1, 26)), NOT_SO_QUICK),
     ]),
     (VERY_HARD_WORKERS, NO_SKIP, [
         ("quickSort", list(range(1, 50)), NOT_SO_QUICK),
@@ -115,10 +115,6 @@ runtimes = {
 def process_JJBMC_example(folder, bound, function, inline_arg):
     folder = f"{folder}/inline{inline_arg}"
 
-    # Copy the java file in the folder
-
-    os.makedirs(folder, exist_ok=True)
-
     if os.path.exists(f"{folder}/{OUTPUT_FILE_NAME}"):
         print(f"Skipping function '{function}' with bound '{bound}' and inline arg '{inline_arg}' because it already exists")
         return
@@ -133,6 +129,10 @@ def process_JJBMC_example(folder, bound, function, inline_arg):
             print(
                 f"Skipping function '{function}' with bound '{bound}' and inline arg '{inline_arg}' because previous bound took too long")
             return
+
+    # Copy the java file in the folder
+
+    os.makedirs(folder, exist_ok=True)
 
     if not os.path.exists(f"{folder}/JJBMC.jar"):
         shutil.copyfile(f"{HOME_FOLDER}/JJBMC.jar", f"{folder}/JJBMC.jar")
