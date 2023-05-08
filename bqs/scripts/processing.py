@@ -17,9 +17,9 @@ FUNCTIONS = [
 ]
 
 ITERATIONS = 5
-MAX_TIMES_PER_ITERATION = 3
+MAX_TIMES_PER_ITERATION = 1
 MAX_BOUNDS = 500
-MAX_ITERATIONS = MAX_BOUNDS * ITERATIONS * MAX_TIMES_PER_ITERATION
+MAX_ITERATIONS = ITERATIONS * MAX_TIMES_PER_ITERATION
 
 BOUNDS = list(range(1, MAX_BOUNDS))
 
@@ -66,6 +66,7 @@ def process_JJBMC_example(folder, bound, iter, function, inline_arg):
 def process(iteration, bound, function):
     folder = f"{BASE_FOLDER}/bound_{bound}/{function}/iter_{iteration}"
     if not os.path.exists(folder):
+        print(f"Folder {folder} does not exist")
         return
 
     process_JJBMC_example(folder, bound, iteration, function, '')

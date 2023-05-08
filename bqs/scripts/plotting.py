@@ -43,10 +43,11 @@ def process_data_file(file_path, y_scale):
         lines.append(line)
         max_count = agg_data['count'].max()
         min_count = agg_data['count'].min()
-        if max_count == min_count:
-            labels.append(f"{func_name} ran {max_count} times")
-        else:
-            labels.append(f"{func_name} ran {max_count} times but min {min_count} times")
+        labels.append(func_name)
+        # if max_count == min_count:
+        #     labels.append(f"{func_name} ran {max_count} times")
+        # else:
+        #     labels.append(f"{func_name} ran {max_count} times but min {min_count} times")
 
     # Configure plot
     ax.set_xlabel('Bound')
