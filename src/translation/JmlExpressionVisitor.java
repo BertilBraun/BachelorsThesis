@@ -334,7 +334,7 @@ public class JmlExpressionVisitor extends JmlTreeCopier {
                 newStatements = newStatements.append(maker.Exec(maker.Assign(maker.Ident(boolVar),
                         treeutils.makeLit(TranslationUtils.getCurrentPosition(),
                                 syms.booleanType,
-                                false))));
+                                true))));
                 List<JCStatement> stmts = newStatements;
                 newStatements = List.nil();
                 JCExpression value = super.copy(copy.value);
