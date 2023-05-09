@@ -869,7 +869,7 @@ public class JmlExpressionVisitor extends JmlTreeCopier {
             assertInitInvs = assertInitInvs.appendList(makeAssignableAssertion(e));
         }
         for (JCVariableDecl decl : currentLoopVars) {
-            assignables = assignables.append(maker.Ident(decl));
+            // assignables = assignables.append(maker.Ident(decl));
         }
         //assignables = assignables.appendList(Utils.IdentifierVisitor.getAssignLocations(that.body));
         assignables = TranslationUtils.filterAssignables(assignables);
