@@ -28,10 +28,10 @@ JJBMC_CMD = "java -jar JJBMC.jar -mas {mas} -u {u} {inline} -tr -c -kt -timeout=
 
 OUTPUT_FILE_NAME = "output.txt"
 
-EASY_WORKERS = 6
+EASY_WORKERS = 8
 MEDIUM_WORKERS = 22
 HARD_WORKERS = 12
-VERY_HARD_WORKERS = 4
+VERY_HARD_WORKERS = 8
 
 QUICK = 1  # TODO Should be run with 3
 NOT_SO_QUICK = 1  # TODO Should be run with 2

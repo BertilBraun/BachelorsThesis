@@ -11,7 +11,6 @@ from concurrent.futures import ProcessPoolExecutor
 HOME_FOLDER = os.getcwd() + "/../.."
 BASE_FOLDER = HOME_FOLDER + "/bqs/results"
 SAT_SOLVER = "/home/bertil/kissat/build/kissat"
-MAX_BOUND = 100
 
 MS_OF_1_HOUR = 60 * 60 * 1000
 FUNCTION_TIMEOUT = 2 * MS_OF_1_HOUR

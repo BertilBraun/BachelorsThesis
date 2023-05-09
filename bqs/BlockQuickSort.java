@@ -517,7 +517,6 @@ public class BlockQuickSort {
     /*@ public normal_behavior
       @ requires array != null;
       @ requires 0 <= begin && begin <= end && end <= array.length;
-      @ requires \forall int i; 0 <= i < array.length; array[i] < array.length && array[i] >= 0;
       @
       @ // Values inside the range [begin, end) are in sorted order.
       @ ensures (\forall int i; begin <= i < end - 1; array[i] <= array[i+1]);
