@@ -15,7 +15,7 @@ from concurrent.futures import ProcessPoolExecutor
 HOME_FOLDER = os.getcwd() + "/../.."
 BASE_FOLDER = HOME_FOLDER + "/bqs/results"
 SAT_SOLVER = "/home/bertil/kissat/build/kissat"
-MAX_BOUND = 10000
+MAX_BOUND = 300
 ITERATIONS = 2  # TODO Should be run with 5
 
 MS_OF_1_HOUR = 60 * 60 * 1000
@@ -42,7 +42,6 @@ FOLDER_F_STRING = "{BASE_FOLDER}/bound_{bound}/{function}/iter_{iteration}"
 
 NO_SKIP = 1
 HIGH_BOUND_SKIP = 10
-SUPER_HIGH_BOUND_SKIP = 50
 
 TASKS = [
     (EASY_WORKERS, NO_SKIP, [
@@ -74,26 +73,19 @@ TASKS = [
     ]),
     (MEDIUM_WORKERS, NO_SKIP, [
         ("partition", list(range(1, 31)), QUICK),
-        ("medianOf3", list(range(1, 30)), QUICK),
-        ("insertionSort", list(range(1, 100)), QUICK),
-        #    ("quickSortRec", list(range(1, 15)), NOT_SO_QUICK),
+        ("medianOf3", list(range(1, 35)), QUICK),
+        ("insertionSort", list(range(1, 40)), QUICK),
     ]),
     (HARD_WORKERS, NO_SKIP, [
         ("permutation", list(range(1, 33)), NOT_SO_QUICK),
         ("hoareBlockPartition", list(range(1, 26)), NOT_SO_QUICK),
-        ("quickSort", list(range(1, 25)), NOT_SO_QUICK),  # TODO temp
     ]),
     (VERY_HARD_WORKERS, NO_SKIP, [
-        ("quickSort", list(range(1, 50)), NOT_SO_QUICK),
-        #    ("quickSortRecImpl", list(range(1, 15)), NOT_SO_QUICK),
+        ("quickSort", list(range(1, 30)), NOT_SO_QUICK),
     ]),
     (HARD_WORKERS, HIGH_BOUND_SKIP, [
-        ("insertionSort", list(range(1, 1000)), QUICK),
-        ("quickSort", list(range(1, 1000)), QUICK),
-    ]),
-    (HARD_WORKERS, SUPER_HIGH_BOUND_SKIP, [
-        ("sortPair", list(range(1, 1000)), QUICK),
-        ("swap", list(range(1, 1000)), QUICK),
+        ("sortPair", list(range(1, 30)), QUICK),
+        ("swap", list(range(1, 30)), QUICK),
     ])
 ]
 
