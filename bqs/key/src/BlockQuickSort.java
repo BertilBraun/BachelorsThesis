@@ -570,7 +570,10 @@ public class BlockQuickSort {
       @ ensures array[begin] <= array[\result] && array[\result] <= array[end - 1];
       @
       @ // The values at 'begin', 'end - 1', and 'begin + ((end - begin) / 2)' are a permutations of the values before. 
-      @ ensures permutation(array, \old(array), begin, end);
+      @ ensures (\forall int i; begin <= i && i < end; (
+      @                     (\num_of int j; begin <= j && j < end; array[i] == array[j]) ==
+      @                     (\num_of int j; begin <= j && j < end; array[i] == \old(array[j]))
+      @                    ));
       @
       @ assignable array[begin], array[begin + ((end - begin) / 2)], array[end - 1];
       @*/
