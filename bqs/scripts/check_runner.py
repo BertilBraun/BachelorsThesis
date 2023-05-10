@@ -204,14 +204,15 @@ if __name__ == "__main__":
     fails.close()
 
     for f in FUNCTIONS:
-        folder = FOLDER_F_STRING.format(BASE_FOLDER=BASE_FOLDER, function=f)
-        os.chdir(folder)
+        for check_type in ["sc", "ua-success", "ua-fail"]:
+            folder = FOLDER_F_STRING.format(BASE_FOLDER=BASE_FOLDER, function=f, check_type=check_type)
+            os.chdir(folder)
 
-        try:
-            # remove tmp and everything in it
-            shutil.rmtree("tmp")
-            os.remove("JJBMC.jar")
-        except:
-            print("Error cleaning up tmp folder")
+            try:
+                # remove tmp and everything in it
+                shutil.rmtree("tmp")
+                os.remove("JJBMC.jar")
+            except:
+                print("Error cleaning up tmp folder")
 
-        os.chdir(HOME_FOLDER)
+            os.chdir(HOME_FOLDER)
