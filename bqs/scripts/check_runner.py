@@ -89,7 +89,9 @@ def process(function):
     if not os.path.exists(f"{folder}/BlockQuickSort.java"):
         shutil.copyfile(f"{HOME_FOLDER}/bqs/BlockQuickSort.java", f"{folder}/BlockQuickSort.java")
 
-    if os.path.exists(f"{folder}/{OUTPUT_SC_FILE_NAME}"):
+    os.chdir(folder)
+
+    if os.path.exists(OUTPUT_SC_FILE_NAME):
         print(f"Skipping Sanity Check for function '{function}' because it already exists")
     else:
         cmd = JJBMC_CMD_SC.format(
@@ -104,11 +106,11 @@ def process(function):
         if SC_SUCCESS_STRING not in stdout and SC_SUCCESS_STRING not in stderr:
             print(f"Sanity Check failed for function '{function}'")
 
-        with open(f"{folder}/{OUTPUT_SC_FILE_NAME}", "w") as f:
+        with open(OUTPUT_SC_FILE_NAME, "w") as f:
             f.write(stdout)
             f.write(stderr)
 
-    if os.path.exists(f"{folder}/{OUTPUT_UNWINDING_ASSERT_FILE_NAME}"):
+    if os.path.exists(OUTPUT_UNWINDING_ASSERT_FILE_NAME):
         print(f"Skipping Unwinding Assertions for function '{function}' because it already exists")
     else:
         cmd = JJBMC_CMD_UNWIND_ASSERT.format(
@@ -123,7 +125,7 @@ def process(function):
         if SUCCESS not in stdout and SUCCESS not in stderr:
             print(f"Unwinding Assertions failed for function '{function}'")
 
-        with open(f"{folder}/{OUTPUT_UNWINDING_ASSERT_FILE_NAME}", "w") as f:
+        with open(OUTPUT_UNWINDING_ASSERT_FILE_NAME, "w") as f:
             f.write(stdout)
             f.write(stderr)
 
@@ -139,7 +141,7 @@ def process(function):
         if SUCCESS in stdout or SUCCESS in stderr:
             print(f"Unwinding Assertions succeeded for function '{function}' even though it should fail")
 
-        with open(f"{folder}/{OUTPUT_UNWINDING_ASSERT_FILE_NAME}", "a") as f:
+        with open(OUTPUT_UNWINDING_ASSERT_FILE_NAME, "a") as f:
             f.write("\n\n\n---------------------------------------------------\n\n\n")
             f.write(stdout)
             f.write(stderr)
