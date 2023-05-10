@@ -154,8 +154,8 @@ def process_JJBMC_example(folder, bound, function, inline_arg):
     # sleep for 5 seconds to make sure that jbmc has finished
     time.sleep(5)
 
-    stdout = p.stdout.decode("utf-8")
-    stderr = p.stderr.decode("utf-8")
+    stdout = p.stdout.decode("utf-8").replace("\x00", "")
+    stderr = p.stderr.decode("utf-8").replace("\x00", "")
     print(stdout)
     print(stderr)
     print(f"Finished running function '{function}' with bound '{bound}' and inline arg '{inline_arg}'")

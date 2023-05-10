@@ -69,9 +69,10 @@ def run_command(cmd):
     except:
         print("Error copying BlockQuickSort.java or compilationErrors.txt")
 
-    return p.stdout.decode("utf-8"), p.stderr.decode("utf-8")
+    return p.stdout.decode("utf-8").replace("\x00", ""), p.stderr.decode("utf-8").replace("\x00", "")
 
 
+os.makedirs(f"{BASE_FOLDER}/check", exist_ok=True)
 fails = open(f"{BASE_FOLDER}/check/fails.txt", "w")
 
 
