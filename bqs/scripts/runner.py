@@ -58,7 +58,7 @@ TASKS = [
         ("hoareBlockPartition", list(range(1, 9)), NOT_SO_QUICK),
     ]),
     (VERY_HARD_WORKERS, NO_SKIP, [
-        # TODO fix first ("quickSort", list(range(1, 30)), NOT_SO_QUICK),
+        ("quickSort", list(range(1, 10)), NOT_SO_QUICK),
     ])
 ]
 
@@ -68,8 +68,9 @@ runtimes = {
     ("insertionSort", "-fil", 8): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
     ("permutation", "", 10): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
     ("hoareBlockPartition", "", 6): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
-
     ("quickSort", "-fi", 6): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
+    ("quickSort", "-fil", 0): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,  # TODO Remove once QuickSort is correct
+    ("quickSort", "", 0): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,  # TODO Remove once QuickSort is correct
 }
 
 
@@ -189,6 +190,21 @@ def run(workers, tasks):
         for future in futures:
             future.result()
 
+
+if True:  # TODO change to False to disable cleanup
+    for function in ["quickSort"]:
+        for bound in range(MAX_BOUND):
+            for iteration in range(ITERATIONS):
+                for inline_arg in ["", "-fil"]:
+                    folder = FOLDER_F_STRING.format(
+                        BASE_FOLDER=BASE_FOLDER,
+                        bound=bound,
+                        function=function,
+                        iteration=iteration
+                    )
+
+                    if os.path.exists(folder):
+                        shutil.rmtree(folder)
 
 if __name__ == "__main__":
     for i in range(ITERATIONS):
