@@ -177,7 +177,7 @@ def process_ua_fail(function):
             print(f"Unwinding Assertions succeeded for function '{function}' even though it should fail")
             fails.write(f"Unwinding Assertions succeeded for function '{function}' even though it should fail\n")
 
-        with open(OUTPUT_UNWINDING_ASSERT_SUCCESS_FILE_NAME, "w") as f:
+        with open(OUTPUT_UNWINDING_ASSERT_FAIL_FILE_NAME, "w") as f:
             f.write(stdout)
             f.write(stderr)
 

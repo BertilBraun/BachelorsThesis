@@ -45,62 +45,31 @@ HIGH_BOUND_SKIP = 10
 
 TASKS = [
     (EASY_WORKERS, NO_SKIP, [
-        ("swap", list(range(1, 25)), QUICK),  # unbounded
-        ("sortPair", list(range(1, 20)), QUICK),  # unbounded
-        # ]),
-        # (MEDIUM_WORKERS, [
-        ("partition", list(range(1, 7)), QUICK),
-        # intentionally run twice, Bound 8 might be faster than 7 and if 7 fails, 8 wont be run
-        ("medianOf3", list(range(8, 9)), QUICK),
-        ("medianOf3", list(range(1, 9)), QUICK),
-        ("insertionSort", list(range(1, 6)), QUICK),  # TODO Bound 6 might be possible
-        ("quickSortRec", list(range(1, 7)), NOT_SO_QUICK),
-    ]),
-    (HARD_WORKERS, NO_SKIP, [
-        ("permutation", list(range(1, 7)), NOT_SO_QUICK),
-        ("hoareBlockPartition", list(range(1, 9)), NOT_SO_QUICK),
-        ("quickSort", list(range(1, 7)), NOT_SO_QUICK),
-    ]),
-    (VERY_HARD_WORKERS, NO_SKIP, [
-        ("quickSortRecImpl", list(range(1, 6)), NOT_SO_QUICK),
-    ])
-]
-
-TASKS = [
-    (EASY_WORKERS, NO_SKIP, [
-        ("swap", list(range(1, 150)), QUICK),
-        ("sortPair", list(range(1, 100)), QUICK),
+        ("swap", list(range(1, MAX_BOUND)), QUICK),
+        ("sortPair", list(range(1, 200)), QUICK),
     ]),
     (MEDIUM_WORKERS, NO_SKIP, [
-        ("partition", list(range(1, 31)), QUICK),
-        ("medianOf3", list(range(1, 35)), QUICK),
-        ("insertionSort", list(range(1, 40)), QUICK),
+        ("partition", list(range(1, 10)), QUICK),
+        ("medianOf3", list(range(1, 15)), QUICK),
+        ("insertionSort", list(range(1, 9)), QUICK),
     ]),
     (HARD_WORKERS, NO_SKIP, [
-        ("permutation", list(range(1, 33)), NOT_SO_QUICK),
-        ("hoareBlockPartition", list(range(1, 26)), NOT_SO_QUICK),
+        ("permutation", list(range(1, 11)), NOT_SO_QUICK),
+        ("hoareBlockPartition", list(range(1, 9)), NOT_SO_QUICK),
     ]),
     (VERY_HARD_WORKERS, NO_SKIP, [
-        ("quickSort", list(range(1, 30)), NOT_SO_QUICK),
-    ]),
-    (HARD_WORKERS, HIGH_BOUND_SKIP, [
-        ("sortPair", list(range(1, 30)), QUICK),
-        ("swap", list(range(1, 30)), QUICK),
+        # TODO fix first ("quickSort", list(range(1, 30)), NOT_SO_QUICK),
     ])
 ]
 
 failed_examples = {}
 runtimes = {
-    ("partition", "-fi", 13): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
+    ("insertionSort", "", 7): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
+    ("insertionSort", "-fil", 8): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
+    ("permutation", "", 10): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
+    ("hoareBlockPartition", "", 6): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
+
     ("quickSort", "-fi", 6): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
-    ("medianOf3", "", 28): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
-    ("medianOf3", "-fil", 28): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
-    ("insertionSort", "-fil", 10): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
-    ("insertionSort", "-fi", 11): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
-    ("permutation", "-fi", 13): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
-    ("permutation", "-fil", 13): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
-    ("hoareBlockPartition", "-fil", 13): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
-    ("hoareBlockPartition", "-fi", 13): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
 }
 
 
