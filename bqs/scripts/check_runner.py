@@ -19,7 +19,8 @@ JJBMC_CMD_SC = "java -jar JJBMC.jar -mas {mas} -u {u} -tr -c -kt -timeout={timeo
 JJBMC_CMD_UNWIND_ASSERT = "java -jar JJBMC.jar -mas {mas} -u {u} -tr -c -kt -timeout={timeout} BlockQuickSort.java {function} -j=\"--stop-on-fail --external-sat-solver {solver} --unwinding-assertions\""
 
 OUTPUT_SC_FILE_NAME = "output-sc.txt"
-OUTPUT_UNWINDING_ASSERT_FILE_NAME = "output-ua.txt"
+OUTPUT_UNWINDING_ASSERT_SUCCESS_FILE_NAME = "output-ua-success.txt"
+OUTPUT_UNWINDING_ASSERT_FAIL_FILE_NAME = "output-ua-fail.txt"
 
 FOLDER_F_STRING = "{BASE_FOLDER}/check/{function}/"
 
@@ -71,7 +72,7 @@ def run_command(cmd):
     return p.stdout.decode("utf-8"), p.stderr.decode("utf-8")
 
 
-def process(function):
+def process_sc(function):
     folder = FOLDER_F_STRING.format(BASE_FOLDER=BASE_FOLDER, function=function)
 
     os.makedirs(folder, exist_ok=True)
@@ -103,7 +104,23 @@ def process(function):
             f.write(stdout)
             f.write(stderr)
 
-    if os.path.exists(OUTPUT_UNWINDING_ASSERT_FILE_NAME):
+    os.chdir(HOME_FOLDER)
+
+
+def process_ua_success(function):
+    folder = FOLDER_F_STRING.format(BASE_FOLDER=BASE_FOLDER, function=function)
+
+    os.makedirs(folder, exist_ok=True)
+
+    if not os.path.exists(f"{folder}/JJBMC.jar"):
+        shutil.copyfile(f"{HOME_FOLDER}/JJBMC.jar", f"{folder}/JJBMC.jar")
+
+    if not os.path.exists(f"{folder}/BlockQuickSort.java"):
+        shutil.copyfile(f"{HOME_FOLDER}/bqs/BlockQuickSort.java", f"{folder}/BlockQuickSort.java")
+
+    os.chdir(folder)
+
+    if os.path.exists(OUTPUT_UNWINDING_ASSERT_SUCCESS_FILE_NAME):
         print(f"Skipping Unwinding Assertions for function '{function}' because it already exists")
     else:
         cmd = JJBMC_CMD_UNWIND_ASSERT.format(
@@ -118,10 +135,29 @@ def process(function):
         if SUCCESS not in stdout and SUCCESS not in stderr:
             print(f"Unwinding Assertions failed for function '{function}'")
 
-        with open(OUTPUT_UNWINDING_ASSERT_FILE_NAME, "w") as f:
+        with open(OUTPUT_UNWINDING_ASSERT_SUCCESS_FILE_NAME, "w") as f:
             f.write(stdout)
             f.write(stderr)
 
+    os.chdir(HOME_FOLDER)
+
+
+def process_ua_fail(function):
+    folder = FOLDER_F_STRING.format(BASE_FOLDER=BASE_FOLDER, function=function)
+
+    os.makedirs(folder, exist_ok=True)
+
+    if not os.path.exists(f"{folder}/JJBMC.jar"):
+        shutil.copyfile(f"{HOME_FOLDER}/JJBMC.jar", f"{folder}/JJBMC.jar")
+
+    if not os.path.exists(f"{folder}/BlockQuickSort.java"):
+        shutil.copyfile(f"{HOME_FOLDER}/bqs/BlockQuickSort.java", f"{folder}/BlockQuickSort.java")
+
+    os.chdir(folder)
+
+    if os.path.exists(OUTPUT_UNWINDING_ASSERT_FAIL_FILE_NAME):
+        print(f"Skipping Unwinding Assertions for function '{function}' because it already exists")
+    else:
         cmd = JJBMC_CMD_UNWIND_ASSERT.format(
             mas=BOUND,
             u=UNWIND_FAIL,
@@ -134,28 +170,39 @@ def process(function):
         if SUCCESS in stdout or SUCCESS in stderr:
             print(f"Unwinding Assertions succeeded for function '{function}' even though it should fail")
 
-        with open(OUTPUT_UNWINDING_ASSERT_FILE_NAME, "a") as f:
-            f.write("\n\n\n---------------------------------------------------\n\n\n")
+        with open(OUTPUT_UNWINDING_ASSERT_SUCCESS_FILE_NAME, "w") as f:
             f.write(stdout)
             f.write(stderr)
-
-    try:
-        # remove tmp and everything in it
-        shutil.rmtree("tmp")
-        os.remove("JJBMC.jar")
-    except:
-        print("Error cleaning up tmp folder")
 
     os.chdir(HOME_FOLDER)
 
 
 def run(workers, tasks):
     with ProcessPoolExecutor(max_workers=workers) as executor:
-        futures = [executor.submit(process, *task) for task in tasks]
+        futures = [executor.submit(func, arg) for (func, arg) in tasks]
 
         for future in futures:
             future.result()
 
 
 if __name__ == "__main__":
-    run(len(FUNCTIONS), [(f,) for f in FUNCTIONS])
+    tasks = []
+    for f in FUNCTIONS:
+        tasks.append((process_sc, f))
+        tasks.append((process_ua_success, f))
+        tasks.append((process_ua_fail, f))
+
+    run(len(tasks), tasks)
+
+    for f in FUNCTIONS:
+        folder = FOLDER_F_STRING.format(BASE_FOLDER=BASE_FOLDER, function=f)
+        os.chdir(folder)
+
+        try:
+            # remove tmp and everything in it
+            shutil.rmtree("tmp")
+            os.remove("JJBMC.jar")
+        except:
+            print("Error cleaning up tmp folder")
+
+        os.chdir(HOME_FOLDER)
