@@ -22,7 +22,7 @@ OUTPUT_SC_FILE_NAME = "output-sc.txt"
 OUTPUT_UNWINDING_ASSERT_SUCCESS_FILE_NAME = "output-ua-success.txt"
 OUTPUT_UNWINDING_ASSERT_FAIL_FILE_NAME = "output-ua-fail.txt"
 
-FOLDER_F_STRING = "{BASE_FOLDER}/check/{function}/"
+FOLDER_F_STRING = "{BASE_FOLDER}/check/{function}/{check_type}"
 
 BOUND = 5
 UNWIND_SUCCESS = 6
@@ -72,8 +72,11 @@ def run_command(cmd):
     return p.stdout.decode("utf-8"), p.stderr.decode("utf-8")
 
 
+fails = open(f"{BASE_FOLDER}/check/fails.txt", "w")
+
+
 def process_sc(function):
-    folder = FOLDER_F_STRING.format(BASE_FOLDER=BASE_FOLDER, function=function)
+    folder = FOLDER_F_STRING.format(BASE_FOLDER=BASE_FOLDER, function=function, check_type="sc")
 
     os.makedirs(folder, exist_ok=True)
 
@@ -99,6 +102,7 @@ def process_sc(function):
 
         if SC_SUCCESS_STRING not in stdout and SC_SUCCESS_STRING not in stderr:
             print(f"Sanity Check failed for function '{function}'")
+            fails.write(f"Sanity Check failed for function '{function}'\n")
 
         with open(OUTPUT_SC_FILE_NAME, "w") as f:
             f.write(stdout)
@@ -108,7 +112,7 @@ def process_sc(function):
 
 
 def process_ua_success(function):
-    folder = FOLDER_F_STRING.format(BASE_FOLDER=BASE_FOLDER, function=function)
+    folder = FOLDER_F_STRING.format(BASE_FOLDER=BASE_FOLDER, function=function, check_type="ua-success")
 
     os.makedirs(folder, exist_ok=True)
 
@@ -134,6 +138,7 @@ def process_ua_success(function):
 
         if SUCCESS not in stdout and SUCCESS not in stderr:
             print(f"Unwinding Assertions failed for function '{function}'")
+            fails.write(f"Unwinding Assertions failed for function '{function}'\n")
 
         with open(OUTPUT_UNWINDING_ASSERT_SUCCESS_FILE_NAME, "w") as f:
             f.write(stdout)
@@ -143,7 +148,7 @@ def process_ua_success(function):
 
 
 def process_ua_fail(function):
-    folder = FOLDER_F_STRING.format(BASE_FOLDER=BASE_FOLDER, function=function)
+    folder = FOLDER_F_STRING.format(BASE_FOLDER=BASE_FOLDER, function=function, check_type="ua-fail")
 
     os.makedirs(folder, exist_ok=True)
 
@@ -169,6 +174,7 @@ def process_ua_fail(function):
 
         if SUCCESS in stdout or SUCCESS in stderr:
             print(f"Unwinding Assertions succeeded for function '{function}' even though it should fail")
+            fails.write(f"Unwinding Assertions succeeded for function '{function}' even though it should fail\n")
 
         with open(OUTPUT_UNWINDING_ASSERT_SUCCESS_FILE_NAME, "w") as f:
             f.write(stdout)
@@ -193,6 +199,8 @@ if __name__ == "__main__":
         tasks.append((process_ua_fail, f))
 
     run(len(tasks), tasks)
+
+    fails.close()
 
     for f in FUNCTIONS:
         folder = FOLDER_F_STRING.format(BASE_FOLDER=BASE_FOLDER, function=f)
