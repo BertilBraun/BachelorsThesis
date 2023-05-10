@@ -27,7 +27,7 @@ BOUND = 5
 UNWIND_SUCCESS = 6
 UNWIND_FAIL = 4
 
-SC_SUCCESS_STRING = "Sanity check ok for:"
+SC_SUCCESS_STRING = "Sanity check ok for function:"
 SUCCESS = "SUCCESS"
 FAILURE = "FAILURE"
 
@@ -67,13 +67,6 @@ def run_command(cmd):
         shutil.copyfile("tmp/compilationErrors.txt", "compilationErrors.txt")
     except:
         print("Error copying BlockQuickSort.java or compilationErrors.txt")
-
-    try:
-        # remove tmp and everything in it
-        shutil.rmtree("tmp")
-        os.remove("JJBMC.jar")
-    except:
-        print("Error cleaning up tmp folder")
 
     return p.stdout.decode("utf-8"), p.stderr.decode("utf-8")
 
@@ -145,6 +138,13 @@ def process(function):
             f.write("\n\n\n---------------------------------------------------\n\n\n")
             f.write(stdout)
             f.write(stderr)
+
+    try:
+        # remove tmp and everything in it
+        shutil.rmtree("tmp")
+        os.remove("JJBMC.jar")
+    except:
+        print("Error cleaning up tmp folder")
 
     os.chdir(HOME_FOLDER)
 
