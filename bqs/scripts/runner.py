@@ -45,8 +45,8 @@ HIGH_BOUND_SKIP = 10
 
 TASKS = [
     (EASY_WORKERS, NO_SKIP, [
-        ("swap", list(range(1, MAX_BOUND)), QUICK),
-        ("sortPair", list(range(1, 200)), QUICK),
+        ("swap", list(range(1, 200)), QUICK),
+        ("sortPair", list(range(1, 150)), QUICK),
     ]),
     (MEDIUM_WORKERS, NO_SKIP, [
         ("partition", list(range(1, 10)), QUICK),
