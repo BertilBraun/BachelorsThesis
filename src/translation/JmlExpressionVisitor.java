@@ -944,9 +944,9 @@ public class JmlExpressionVisitor extends JmlTreeCopier {
         newStatements = statements.appendList(prepareOldVarsSt)
                 .appendList(assertInitInvs)
                 .appendList(havocStatements)
+                .appendList(assumeInvs)
                 .appendList(decreaseStatements)
                 .appendList(oldDecreases)
-                .appendList(assumeInvs)
                 .append(maker.If(that.cond, ifbody, null));
 
         oldInits = oldInitsOld;
