@@ -881,6 +881,10 @@ public class JmlExpressionVisitor extends JmlTreeCopier {
         JCVariableDecl oldD = null;
         JCExpression expression = null;
         List<JCStatement> oldDecreases = List.nil();
+
+        List<JCStatement> statements = newStatements;
+        newStatements = List.nil();
+
         for (JmlStatementLoop spec : that.loopSpecs) {
             if (spec instanceof JmlStatementLoopExpr && spec.clauseType.name().equals("loop_decreases")) {
                 if (oldD != null) {
@@ -894,7 +898,7 @@ public class JmlExpressionVisitor extends JmlTreeCopier {
             }
         }
 
-        List<JCStatement> statements = newStatements;
+        List<JCStatement> oldStatements = newStatements;
         newStatements = List.nil();
         JCStatement assumefalse = TranslationUtils
                 .makeAssumeStatement(treeutils.makeLit(TranslationUtils.getCurrentPosition(),
@@ -923,6 +927,7 @@ public class JmlExpressionVisitor extends JmlTreeCopier {
         currentAssignable = oldAssignbales;
         ifbodystatements = ifbodystatements.appendList(assertInvs);
         if (expression != null) {
+            ifbodystatements = ifbodystatements.appendList(oldStatements);
             ifbodystatements = ifbodystatements.append(TranslationUtils.makeAssertStatement(makeDereasesStatement(oldD,
                     expression)));
         }
@@ -939,6 +944,7 @@ public class JmlExpressionVisitor extends JmlTreeCopier {
         newStatements = statements.appendList(prepareOldVarsSt)
                 .appendList(assertInitInvs)
                 .appendList(havocStatements)
+                .appendList(oldStatements)
                 .appendList(oldDecreases)
                 .appendList(assumeInvs)
                 .append(maker.If(that.cond, ifbody, null));
