@@ -16,7 +16,7 @@ HOME_FOLDER = os.getcwd() + "/../.."
 BASE_FOLDER = HOME_FOLDER + "/bqs/results"
 SAT_SOLVER = "/home/bertil/kissat/build/kissat"
 MAX_BOUND = 300
-ITERATIONS = 2  # TODO Should be run with 5
+ITERATIONS = 3  # TODO Should be run with 5
 
 MS_OF_1_HOUR = 60 * 60 * 1000
 MS_OF_2_HOURS = 2 * MS_OF_1_HOUR
@@ -69,8 +69,6 @@ runtimes = {
     ("permutation", "", 10): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
     ("hoareBlockPartition", "", 6): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
     ("quickSort", "-fi", 6): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
-    ("quickSort", "-fil", 0): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,  # TODO Remove once QuickSort is correct
-    ("quickSort", "", 0): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,  # TODO Remove once QuickSort is correct
 }
 
 
@@ -191,7 +189,7 @@ def run(workers, tasks):
             future.result()
 
 
-if True:  # TODO change to False to disable cleanup
+if False:  # change to True and setup function and inline args for cleanup
     for function in ["quickSort"]:
         for bound in range(MAX_BOUND):
             for iteration in range(ITERATIONS):

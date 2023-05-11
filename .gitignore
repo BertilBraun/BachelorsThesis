@@ -24,3 +24,4 @@ bqs/processed/*
 bqs/run/*
 **/out.csv
 **/processed.csv
+**/**.zip
