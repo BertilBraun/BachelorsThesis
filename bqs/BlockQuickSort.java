@@ -8,7 +8,6 @@ public class BlockQuickSort {
     /*@ public normal_behavior
       @ requires array != null;
       @ requires 0 <= originalBegin && originalBegin < originalEnd && originalEnd <= array.length;
-      @ requires (originalEnd - originalBegin) >= 1;
       @ requires originalBegin <= pivotPosition && pivotPosition < originalEnd;
       @
       @ // The resulting pivot is inside the range [originalBegin, originalEnd).
@@ -93,7 +92,8 @@ public class BlockQuickSort {
               @ loop_modifies array[max(begin, originalBegin) .. min(begin + BLOCKSIZE - 1, originalEnd - 2)], 
               @               array[max(last - BLOCKSIZE - 1, originalBegin) .. min(last, originalEnd - 2)], 
               @               last, begin, numLeft, numRight, startLeft, startRight, num,
-              @               indexL[0 .. BLOCKSIZE-1], indexR[0 .. BLOCKSIZE-1];
+              @               indexL[0 .. min(array.length, BLOCKSIZE)-1], 
+              @               indexR[0 .. min(array.length, BLOCKSIZE)-1];
               @
               @ loop_decreases last - begin;
               @*/
@@ -111,7 +111,7 @@ public class BlockQuickSort {
                     //@ // Maintain sorted indexL
                     //@ loop_invariant (\forall int k; 0 <= k < numLeft - 1; indexL[k] < indexL[k + 1]);
                     //@
-                    //@ loop_modifies numLeft, indexL[0 .. BLOCKSIZE-1], j;
+                    //@ loop_modifies numLeft, indexL[0 .. min(array.length, BLOCKSIZE)-1], j;
                     //@ loop_decreases BLOCKSIZE - j;
                     for (int j = 0; j < BLOCKSIZE; j++) {
                         indexL[numLeft] = j;
@@ -129,7 +129,7 @@ public class BlockQuickSort {
                     //@ // Maintain sorted indexR
                     //@ loop_invariant (\forall int k; 0 <= k < numRight - 1; indexR[k] < indexR[k + 1]);
                     //@
-                    //@ loop_modifies numRight, indexR[0 .. BLOCKSIZE-1], j;
+                    //@ loop_modifies numRight, indexR[0 .. min(array.length, BLOCKSIZE)-1], j;
                     //@ loop_decreases BLOCKSIZE - j;
                     for (int j = 0; j < BLOCKSIZE; j++) {
                         indexR[numRight] = j;
@@ -381,9 +381,12 @@ public class BlockQuickSort {
         }
     }
 
+    // java -jar JJBMC.jar -tr -kt -c -mas 3 -u 4 -t 600000000 bqs/BlockQuickSort.java quickSort -sc
+    // run_single.bat quickSort 3 4 true
     /*@ public normal_behavior
       @ requires array != null;
       @ requires 0 <= originalBegin && originalBegin < originalEnd && originalEnd <= array.length;
+      @ requires (\forall int i; 0 <= i < array.length; 0 <= array[i] && array[i] < array.length);
       @
       @ // Values inside the range [originalBegin, originalEnd) are in sorted order.
       @ ensures (\forall int i; originalBegin <= i < originalEnd - 1; array[i] <= array[i+1]);
@@ -397,7 +400,7 @@ public class BlockQuickSort {
       @
       @ assignable array[originalBegin .. originalEnd-1];
       @*/
-    public static void quickSort(int[] array, int originalBegin, int originalEnd) {
+    public static void quickSortOld(int[] array, int originalBegin, int originalEnd) {
         int begin = originalBegin;
         int end = originalEnd;
 
@@ -414,27 +417,39 @@ public class BlockQuickSort {
         depthStack[depthPointer] = depth;
         depthPointer++;
 
-        /*@ loop_invariant 0 <= stackPointer && stackPointer < STACK_SIZE;
+        /*@ loop_invariant 0 <= stackPointer && stackPointer < STACK_SIZE && stackPointer % 2 == 0;
+          @ loop_invariant 0 <= depthPointer && depthPointer < DEPTH_STACK_SIZE && depthPointer == stackPointer / 2;
           @ loop_invariant 0 <= depth && depth <= depthLimit;
           @ loop_invariant originalBegin <= begin && begin <= end && end <= originalEnd;
           @ 
+          @ // TODO Stack
+          @ loop_invariant (\forall int i; 0 <= i < stackPointer - 1; stack[i] <= stack[i+1]);
+          @ loop_invariant (\forall int i; 0 <= i < stackPointer; originalBegin <= stack[i] && stack[i] <= originalEnd);
+          @ // TODO Depth stack
+          @ loop_invariant (\forall int i; 0 <= i < depthPointer; 0 <= depthStack[i] && depthStack[i] <= depthLimit);
+          @
           @ // for (originalBegin, min(begin, min(stack[0 .. stackPointer]))) is ordered
-          @ loop_invariant (\forall int i; originalBegin <= i < min(begin, (\min int j; 0 <= j < stackPointer; stack[j])); array[i] <= array[i+1]);
+          @ loop_invariant (\forall int i; originalBegin <= i < min(begin, (\min int j; 0 <= j < stackPointer; stack[j])) - 1; array[i] <= array[i+1]);
           @ 
           @ // for (max(end, max(stack[0 .. stackPointer])), originalEnd) is ordered
-          @ loop_invariant (\forall int i; max(end, (\max int j; 0 <= j < stackPointer; stack[j])) <= i < originalEnd; array[i] <= array[i+1]);
+          @ loop_invariant (\forall int i; max(end, (\max int j; 0 <= j < stackPointer; stack[j])) <= i < originalEnd - 1; array[i] <= array[i+1]);
+          @
+          @ loop_invariant stackPointer == 0 ==> (\forall int i; originalBegin <= i < originalEnd - 1; array[i] <= array[i+1]);
           @
           @ // Values inside the range [originalBegin, originalEnd) are a valid permutation.
           @ // loop_invariant permutation(array, \old(array), originalBegin, originalEnd);
           @ loop_invariant (\forall int i; originalBegin <= i < originalEnd; (
-          @          (\num_of int j; originalBegin <= j < originalEnd; array[i] == array[j]) ==
-          @          (\num_of int j; originalBegin <= j < originalEnd; array[i] == \old(array[j]))
-          @         ));
+          @                 (\num_of int j; originalBegin <= j < originalEnd; array[i] == array[j]) ==
+          @                 (\num_of int j; originalBegin <= j < originalEnd; array[i] == \old(array[j]))
+          @                ));
           @
-          @ loop_modifies stackPointer, depth, stack[0 .. STACK_SIZE-1], array[originalBegin .. originalEnd-1];
+          @ loop_modifies stackPointer, depth, 
+          @               array[originalBegin .. originalEnd-1], 
+          @               depthStack[0 .. min(array.length, DEPTH_STACK_SIZE)-1], 
+          @               stack[0 .. min(array.length, STACK_SIZE)-1]; 
           @
           @ // outer loop decreases sum of num of elements out of order, aka sum (num of elements later than e which are smaller than e)
-          @ loop_decreases (\sum int i; originalBegin <= i < originalEnd; (\num_of int j; i <= j < originalEnd; array[j] < array[i])); // TODO the translation of this is not correct - the quantor is not evaluated after loop body
+          @ loop_decreases stackPointer; // (\sum int i; originalBegin <= i < originalEnd; (\num_of int j; i <= j < originalEnd; array[j] < array[i])); // TODO the translation of this is not correct - the quantor is not evaluated after loop body
           @*/
         while (stackPointer > 0) {
             if (depth < depthLimit && (end - begin > IS_THRESH)) {
@@ -459,6 +474,109 @@ public class BlockQuickSort {
                 end = stack[stackPointer + 1];
                 depthPointer--;
                 depth = depthStack[depthPointer];
+            }
+        }
+    }
+
+    // java -jar JJBMC.jar -tr -kt -c -mas 3 -u 4 -t 600000000 bqs/BlockQuickSort.java quickSort -rv stack -rv stackPointer -rv depth -rv depthLimit -rv depthStack -rv begin -rv end -rv pivot -rv array -rv depthPointer
+    // run_single.bat quickSort 3 4 true
+    /*@ public normal_behavior
+      @ requires array != null;
+      @ requires 0 <= originalBegin && originalBegin < originalEnd && originalEnd <= array.length;
+      @ requires (\forall int i; 0 <= i < array.length; 0 <= array[i] && array[i] < array.length);
+      @
+      @ // Values inside the range [originalBegin, originalEnd) are in sorted order.
+      @ ensures (\forall int i; originalBegin <= i < originalEnd - 1; array[i] <= array[i+1]);
+      @
+      @ // Values inside the range [originalBegin, originalEnd) are a valid permutation.
+      @ // ensures permutation(array, \old(array), originalBegin, originalEnd);
+      @ ensures (\forall int i; originalBegin <= i < originalEnd; (
+      @          (\num_of int j; originalBegin <= j < originalEnd; array[i] == array[j]) ==
+      @          (\num_of int j; originalBegin <= j < originalEnd; array[i] == \old(array[j]))
+      @         ));
+      @
+      @ assignable array[originalBegin .. originalEnd-1];
+      @*/
+    public static void quickSort(int[] array, int originalBegin, int originalEnd) {
+        int begin = originalBegin;
+        int end = originalEnd;
+
+        int[] stack = new int[STACK_SIZE];
+        int stackPointer = 0;
+
+        stack[stackPointer] = begin;
+        stack[stackPointer + 1] = end;
+        stackPointer += 2;
+
+        /*@ loop_invariant 0 <= stackPointer && stackPointer < STACK_SIZE && stackPointer % 2 == 0;
+          @ loop_invariant originalBegin <= begin && begin <= end && end <= originalEnd;
+          @ 
+          @ loop_invariant (\forall int i; 0 <= i < stackPointer; originalBegin <= stack[i] && stack[i] <= originalEnd);
+          @ loop_invariant (\forall int i; 0 <= i < stackPointer / 2; stack[2*i] <= stack[2*i+1]);
+          @
+          @ // for (originalBegin, min(begin, min(stack[0 .. stackPointer]))) is ordered
+          @ // loop_invariant (\forall int i; originalBegin <= i < min(begin, (\min int j; 0 <= j < stackPointer; stack[j])) - 1; array[i] <= array[i+1]);
+          @ 
+          @ // for (max(end, max(stack[0 .. stackPointer])), originalEnd) is ordered
+          @ // loop_invariant (\forall int i; max(end, (\max int j; 0 <= j < stackPointer; stack[j])) <= i < originalEnd - 1; array[i] <= array[i+1]);
+          @
+          @
+          @ // all elements not pointed to by a range on the stack are already in sorted order
+          @ // For all indices, all elements to the left are smaller and all elements to the right are bigger than it (or equal) if they are not pointed to by a range on the stack // TODO does not work right now
+          @ loop_invariant (\forall int i; originalBegin <= i < originalEnd; (
+          @                 (\forall int j; 0 <= j < stackPointer / 2; i < stack[2*j] || stack[2*j+1] <= i) ==> (
+          @                  (\forall int j; originalBegin <= j < i; array[j] <= array[i]) &&
+          @                  (\forall int j; i < j < originalEnd; array[i] <= array[j])
+          @                 )
+          @                ));
+          @
+          @
+          @
+          @ // for each range on the stack:
+          @ // - there does not exist and elements to the left of the minimum Index indicated by the range that is greater than the Minimum Element pointed to by any element of that range
+          @ // - there does not exist and elements to the right of the maximum Index indicated by the range that is smaller than the Maximum Element pointed to by any element of that range
+          @ loop_invariant (\forall int i; 0 <= i < stackPointer / 2; (
+          @                 (\forall int j; originalBegin <= j < stack[2*i]; 
+          @                   array[j] <= (\min int k; stack[2*i] <= k < stack[2*i+1]; array[k])
+          @                 ) &&
+          @                 (\forall int j; stack[2*i+1] <= j < originalEnd;
+          @                   (\max int k; stack[2*i] <= k < stack[2*i+1]; array[k]) <= array[j]
+          @                 )
+          @                ));
+          @
+          @
+          @ // Values inside the range [originalBegin, originalEnd) are a valid permutation.
+          @ // loop_invariant permutation(array, \old(array), originalBegin, originalEnd);
+          @ loop_invariant (\forall int i; originalBegin <= i < originalEnd; (
+          @                 (\num_of int j; originalBegin <= j < originalEnd; array[i] == array[j]) ==
+          @                 (\num_of int j; originalBegin <= j < originalEnd; array[i] == \old(array[j]))
+          @                ));
+          @
+          @ loop_modifies stackPointer,  
+          @               array[originalBegin .. originalEnd-1],  
+          @               stack[0 .. min(array.length, STACK_SIZE)-1]; 
+          @
+          @ // the loop decreases the number of elements out of order (aka still on the stack)
+          @ loop_decreases (\sum int i; 0 <= i < stackPointer / 2; stack[2*i+1] - stack[2*i]);
+          @*/
+        while (stackPointer > 0) {
+            if (end - begin > IS_THRESH) {
+                int pivot = partition(array, begin, end);
+                if (pivot - begin > end - pivot - 1) {
+                    stack[stackPointer] = begin;
+                    stack[stackPointer + 1] = pivot;
+                    begin = pivot + 1;
+                } else {
+                    stack[stackPointer] = pivot + 1;
+                    stack[stackPointer + 1] = end;
+                    end = pivot;
+                }
+                stackPointer += 2;
+            } else {
+                insertionSort(array, begin, end);
+                stackPointer -= 2;
+                begin = stack[stackPointer];
+                end = stack[stackPointer + 1];
             }
         }
     }
