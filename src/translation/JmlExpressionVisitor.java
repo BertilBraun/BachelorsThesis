@@ -898,7 +898,7 @@ public class JmlExpressionVisitor extends JmlTreeCopier {
             }
         }
 
-        List<JCStatement> oldStatements = newStatements;
+        List<JCStatement> decreaseStatements = newStatements;
         newStatements = List.nil();
         JCStatement assumefalse = TranslationUtils
                 .makeAssumeStatement(treeutils.makeLit(TranslationUtils.getCurrentPosition(),
@@ -927,7 +927,7 @@ public class JmlExpressionVisitor extends JmlTreeCopier {
         currentAssignable = oldAssignbales;
         ifbodystatements = ifbodystatements.appendList(assertInvs);
         if (expression != null) {
-            ifbodystatements = ifbodystatements.appendList(oldStatements);
+            ifbodystatements = ifbodystatements.appendList(decreaseStatements);
             ifbodystatements = ifbodystatements.append(TranslationUtils.makeAssertStatement(makeDereasesStatement(oldD,
                     expression)));
         }
@@ -944,7 +944,7 @@ public class JmlExpressionVisitor extends JmlTreeCopier {
         newStatements = statements.appendList(prepareOldVarsSt)
                 .appendList(assertInitInvs)
                 .appendList(havocStatements)
-                .appendList(oldStatements)
+                .appendList(decreaseStatements)
                 .appendList(oldDecreases)
                 .appendList(assumeInvs)
                 .append(maker.If(that.cond, ifbody, null));
