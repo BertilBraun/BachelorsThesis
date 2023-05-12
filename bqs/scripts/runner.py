@@ -31,7 +31,7 @@ OUTPUT_FILE_NAME = "output.txt"
 EASY_WORKERS = 16
 MEDIUM_WORKERS = 20
 HARD_WORKERS = 12
-VERY_HARD_WORKERS = 8
+VERY_HARD_WORKERS = 4
 
 QUICK = 1  # TODO Should be run with 3
 NOT_SO_QUICK = 1  # TODO Should be run with 2
@@ -59,6 +59,8 @@ TASKS = [
     ]),
     (VERY_HARD_WORKERS, NO_SKIP, [
         ("quickSort", list(range(1, 10)), NOT_SO_QUICK),
+        ("quickSortRec", list(range(1, 10)), NOT_SO_QUICK),
+        ("quickSortRecImpl", list(range(1, 10)), NOT_SO_QUICK),
     ])
 ]
 
@@ -69,6 +71,8 @@ runtimes = {
     ("permutation", "", 10): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
     ("hoareBlockPartition", "", 6): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
     ("quickSort", "-fi", 6): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
+    ("quickSortRec", "-fi", 6): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
+    ("quickSortRecImpl", "-fi", 6): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
 }
 
 
