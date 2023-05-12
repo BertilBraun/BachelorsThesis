@@ -7,6 +7,7 @@ public class BlockQuickSort {
 
     /*@ public normal_behavior
       @ requires array != null;
+      @ requires (\forall int i; 0 <= i < array.length; 0 <= array[i] < array.length); // NOTE: Does not change the verification results, but speeds up the verification a lot.
       @ requires 0 <= originalBegin && originalBegin < originalEnd && originalEnd <= array.length;
       @ requires originalBegin <= pivotPosition && pivotPosition < originalEnd;
       @
@@ -383,6 +384,7 @@ public class BlockQuickSort {
 
     /*@ public normal_behavior
       @ requires array != null;
+      @ requires (\forall int i; 0 <= i < array.length; 0 <= array[i] < array.length); // NOTE: Does not change the verification results, but speeds up the verification a lot.
       @ requires 0 <= originalBegin && originalBegin < originalEnd && originalEnd <= array.length;
       @
       @ // Values inside the range [originalBegin, originalEnd) are in sorted order.
@@ -511,6 +513,7 @@ public class BlockQuickSort {
 
     /*@ public normal_behavior
       @ requires array != null;
+      @ requires (\forall int i; 0 <= i < array.length; 0 <= array[i] < array.length); // NOTE: Does not change the verification results, but speeds up the verification a lot.
       @ requires 0 <= begin && begin < end && end <= array.length;
       @
       @ // Values inside the range [begin, end) are in sorted order.
@@ -533,6 +536,7 @@ public class BlockQuickSort {
 
     /*@ public normal_behavior
       @ requires array != null;
+      @ requires (\forall int i; 0 <= i < array.length; 0 <= array[i] < array.length); // NOTE: Does not change the verification results, but speeds up the verification a lot.
       @ requires 0 <= begin && begin <= end && end <= array.length;
       @ requires 0 <= depth && depth <= depthLimit && depthLimit < Integer.MAX_VALUE;
       @
@@ -562,6 +566,7 @@ public class BlockQuickSort {
 
     /*@ public normal_behavior
       @ requires array != null;
+      @ requires (\forall int i; 0 <= i < array.length; 0 <= array[i] < array.length); // NOTE: Does not change the verification results, but speeds up the verification a lot.
       @ requires 0 <= begin && begin <= end && end <= array.length;
       @
       @ // Values inside the range [begin, end) are in sorted order.
@@ -633,6 +638,7 @@ public class BlockQuickSort {
 
     /*@ public normal_behavior
       @ requires array != null;
+      @ requires (\forall int i; 0 <= i < array.length; 0 <= array[i] < array.length); // NOTE: Does not change the verification results, but speeds up the verification a lot.
       @ requires 0 <= begin && begin < end && end <= array.length;
       @ requires end - begin >= 3;
       @
@@ -661,6 +667,7 @@ public class BlockQuickSort {
 
     /*@ public normal_behavior
       @ requires array != null;
+      @ requires (\forall int i; 0 <= i < array.length; 0 <= array[i] < array.length); // NOTE: Does not change the verification results, but speeds up the verification a lot.
       @ requires 0 <= begin && begin < end && end <= array.length;
       @ requires end - begin >= 3;
       @
@@ -724,6 +731,8 @@ public class BlockQuickSort {
     /*@ public normal_behavior
       @ requires array1 != null;
       @ requires array2 != null;
+      @ requires (\forall int i; 0 <= i < array1.length; 0 <= array1[i] < array1.length); // NOTE: Does not change the verification results, but speeds up the verification a lot.
+      @ requires (\forall int i; 0 <= i < array2.length; 0 <= array2[i] < array2.length); // NOTE: Does not change the verification results, but speeds up the verification a lot.
       @ requires 0 <= begin && begin <= end && end <= array1.length;
       @ requires array1.length == array2.length;
       @ ensures array1.length == \old(array1.length);
