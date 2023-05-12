@@ -13,6 +13,16 @@ set function_name=%1
 set max_array_size=%2
 set unwinding_bound=%3
 set stop_on_fail=%4
+for /L %%i in (1,1,4) do shift
+
+REM Store the remaining arguments in a variable
+set "remaining="
+:arg_loop
+if "%~1"=="" goto end_arg_loop
+set "remaining=!remaining! %~1"
+shift
+goto arg_loop
+:end_arg_loop
 
 REM If the maximum array size is not specified, set it to 5
 if "%max_array_size%" == "" set max_array_size=5
@@ -63,9 +73,13 @@ cd ..\..
 
 wsl ./gradlew fatJar
 
-java -jar JJBMC.jar -mas %max_array_size% -u %unwinding_bound% -tr -c -kt -timeout=72000000 bqs\run\%current_time%\BlockQuickSort.java %function_name% %JBMC_parameters%
+echo Running JBMC on BlockQuickSort.java
+
+java -jar JJBMC.jar -mas %max_array_size% -u %unwinding_bound% -tr -c -kt -timeout=72000000 bqs\run\%current_time%\BlockQuickSort.java %function_name% %JBMC_parameters% %remaining% > bqs\run\%current_time%\output.txt 2>&1
+
+type bqs\run\%current_time%\output.txt
 
 cd bqs\scripts
 
-echo Results are stored in bqs\run\%current_time%\tmp\xmlout.xml and bqs\run\%current_time%\tmp\BlockQuickSort.java
-echo Results are stored in %current_time%\tmp\xmlout.xml and %current_time%\tmp\BlockQuickSort.java
+echo Results are stored in bqs\run\%current_time%\tmp\xmlout.xml and bqs\run\%current_time%\tmp\BlockQuickSort.java and bqs\run\%current_time%\output.txt
+echo Results are stored in %current_time%\tmp\xmlout.xml and %current_time%\tmp\BlockQuickSort.java and %current_time%\output.txt
