@@ -384,7 +384,6 @@ public class BlockQuickSort {
     /*@ public normal_behavior
       @ requires array != null;
       @ requires 0 <= originalBegin && originalBegin < originalEnd && originalEnd <= array.length;
-      @ requires (\forall int i; 0 <= i < array.length; 0 <= array[i] && array[i] < array.length); // TODO remove
       @
       @ // Values inside the range [originalBegin, originalEnd) are in sorted order.
       @ ensures (\forall int i; originalBegin <= i < originalEnd - 1; array[i] <= array[i+1]);
@@ -415,8 +414,6 @@ public class BlockQuickSort {
         depthStack[depthPointer] = depth;
         depthPointer++;
 
-        // java -jar JJBMC.jar -tr -kt -c -mas 5 -u 6 -t 600000000 bqs/BlockQuickSort.java quickSort -rv stack -rv stackPointer -rv depth -rv depthLimit -rv depthStack -rv begin -rv end -rv pivot -rv array -rv depthPointer -rv originalArray -rv sum_80 -j=--stop-on-fail
-        // run_single.bat quickSort 4 5 false -rv stack -rv stackPointer -rv depth -rv depthLimit -rv depthStack -rv begin -rv end -rv pivot -rv array -rv depthPointer -rv originalArray
         /*@ loop_invariant 0 <= stackPointer && stackPointer % 2 == 0 && stackPointer <= STACK_SIZE;
           @ loop_invariant 0 <= depthPointer && depthPointer == stackPointer / 2;
           @ loop_invariant 0 <= depth && depth <= depthLimit;
@@ -426,9 +423,6 @@ public class BlockQuickSort {
           @ loop_invariant (\forall int i; 0 <= i < stackPointer / 2; originalBegin <= stack[2*i] && stack[2*i] < stack[2*i+1] && stack[2*i+1] <= originalEnd);
           @ loop_invariant stack[0] == originalBegin && stack[1] == originalEnd;
           @ loop_invariant (\forall int i; 0 <= i < depthPointer; 0 <= depthStack[i] && depthStack[i] <= depthLimit);
-          @
-          @ loop_invariant 0 <= begin && begin <= end && end <= originalEnd;
-          @ loop_invariant (\forall int i; 1 <= i < stackPointer / 2; end <= stack[2*i] || stack[2*i+1] <= begin); 
           @
           @ // stack is non overlapping i.e. no two ranges on the stack overlap and also begin and end are not inside any range on the stack
           @ loop_invariant (\forall int i; 1 <= i < stackPointer / 2; 
@@ -470,33 +464,18 @@ public class BlockQuickSort {
           @               stack[0 .. min(array.length, STACK_SIZE)-1]; 
           @
           @ // the loop decreases the number of elements out of order (aka still on the stack)
-          @ // in the upper case, by one (the pivot), in the lower case by (end - begin) (if end - begin == 0, then at least the stackPointer / 2)
+          @ // in the upper case, by one (the pivot), in the lower case by (end - begin) (which is at least one because of the added special case)
           @ // loop_decreases (\sum int i; 0 <= i < stackPointer / 2; stack[2*i+1] - stack[2*i]) + (end - begin + 1);       
           @*/
         while (stackPointer > 0) {
-            // TODO added stackPointer < STACK_SIZE - should not be necessary, should be cought by depth < depthLimit, thereby only allowing log(n) stack space, which means that 2^40 elements should be sort-able, which is more than enough
-            int oldEnd = end;
-            int oldBegin = begin;
-            int[] oldStack = new int[STACK_SIZE];
-            for (int i = 0; i < stackPointer; i++) {
-                oldStack[i] = stack[i];
-            }
-            oldStack[STACK_SIZE - 1] = stack[STACK_SIZE - 1];
-            int decreases = (end - begin + 1) + ((end == begin) ? 1 : 0);
-            for (int i = 0; i < stackPointer / 2; i++) {
-                decreases += stack[2 * i + 1] - stack[2 * i];
-            }
-
+            // TODO added stackPointer < STACK_SIZE - should not be necessary, should be cought by depth < depthLimit
             if (depth < depthLimit && (end - begin > IS_THRESH) && stackPointer < STACK_SIZE) {
                 int pivot = partition(array, begin, end);
-                boolean upper = true;
                 if (pivot - begin > end - pivot) {
                     // TODO added special case that empty ranges are not pushed on the stack
-                    if (end - pivot <= 0) {
-                        boolean badUpper1 = true;
+                    if (end - pivot <= 1) {
                         end = pivot;
                     } else {
-                        boolean goodUpper1 = true;
                         stack[stackPointer] = begin;
                         stack[stackPointer + 1] = pivot;
                         stackPointer += 2;
@@ -505,14 +484,11 @@ public class BlockQuickSort {
                         depthStack[depthPointer] = depth;
                         depthPointer++;
                     }
-                    boolean upper1 = true;
                 } else {
                     // TODO added special case that empty ranges are not pushed on the stack
-                    if (pivot - begin <= 0) {
-                        boolean badUpper2 = true;
+                    if (pivot - begin <= 1) {
                         begin = pivot + 1;
                     } else {
-                        boolean goodUpper2 = true;
                         stack[stackPointer] = pivot + 1;
                         stack[stackPointer + 1] = end;
                         stackPointer += 2;
@@ -521,20 +497,14 @@ public class BlockQuickSort {
                         depthStack[depthPointer] = depth;
                         depthPointer++;
                     }
-                    boolean upper2 = true;
                 }
             } else {
-                boolean lower = true;
                 insertionSort(array, begin, end);
                 stackPointer -= 2;
                 begin = stack[stackPointer];
                 end = stack[stackPointer + 1];
                 depthPointer--;
                 depth = depthStack[depthPointer];
-            }
-            int newDecreases = (end - begin + 1) + ((end == begin) ? 1 : 0);
-            for (int i = 0; i < stackPointer / 2; i++) {
-                newDecreases += stack[2 * i + 1] - stack[2 * i];
             }
         }
     }
