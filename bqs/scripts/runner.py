@@ -58,7 +58,7 @@ TASKS = [
         ("hoareBlockPartition", list(range(1, 11)), NOT_SO_QUICK),
     ]),
     (VERY_HARD_WORKERS, NO_SKIP, [
-        ("quickSort", list(range(1, 11)), NOT_SO_QUICK),
+        ("quickSort", list(range(1, 7)), NOT_SO_QUICK),
         # ("quickSortRec", list(range(1, 11)), NOT_SO_QUICK),
         # ("quickSortRecImpl", list(range(1, 11)), NOT_SO_QUICK),
     ])
@@ -72,7 +72,8 @@ runtimes = {
     ("insertionSort", "-fil", 10): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
     ("permutation", "", 11): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
     ("hoareBlockPartition", "", 7): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
-    ("quickSort", "-fi", 8): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
+    ("quickSort", "-fi", 5): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
+    ("quickSort", "-fil", 5): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
     ("quickSortRec", "-fi", 8): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
     ("quickSortRecImpl", "-fi", 8): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
 }
