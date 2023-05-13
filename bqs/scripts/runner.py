@@ -24,7 +24,7 @@ MS_OF_10_HOURS = 10 * MS_OF_1_HOUR
 DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME = MS_OF_1_HOUR  # TODO Should be run with MS_OF_2_HOURS
 FUNCTION_TIMEOUT = 2 * MS_OF_1_HOUR  # TODO Should be run with MS_OF_10_HOURS
 
-JJBMC_CMD = "java -jar JJBMC.jar -mas {mas} -u {u} {inline} -tr -c -kt -t {timeout} BlockQuickSort.java {function} -j \"--stop-on-fail\""
+JJBMC_CMD = "java -jar JJBMC.jar -mas {mas} -u {u} {inline} -tr -c -kt -t {timeout} BlockQuickSort.java {function} -j \"--stop-on-fail --external-sat-solver {solver}\""
 
 OUTPUT_FILE_NAME = "output.txt"
 
@@ -49,16 +49,16 @@ TASKS = [
         ("sortPair", list(range(1, 150)), QUICK),
     ]),
     (MEDIUM_WORKERS, NO_SKIP, [
-        ("partition", list(range(1, 14)), QUICK),
-        ("medianOf3", list(range(1, 24)), QUICK),
-        ("insertionSort", list(range(1, 13)), QUICK),
+        ("partition", list(range(1, 12)), QUICK),
+        ("medianOf3", list(range(1, 20)), QUICK),
+        ("insertionSort", list(range(1, 11)), QUICK),
     ]),
     (HARD_WORKERS, NO_SKIP, [
-        ("permutation", list(range(1, 14)), NOT_SO_QUICK),
-        ("hoareBlockPartition", list(range(1, 13)), NOT_SO_QUICK),
+        ("permutation", list(range(1, 12)), NOT_SO_QUICK),
+        ("hoareBlockPartition", list(range(1, 11)), NOT_SO_QUICK),
     ]),
     (VERY_HARD_WORKERS, NO_SKIP, [
-        ("quickSort", list(range(1, 9)), NOT_SO_QUICK),
+        ("quickSort", list(range(1, 7)), NOT_SO_QUICK),
         # ("quickSortRec", list(range(1, 11)), NOT_SO_QUICK),
         # ("quickSortRecImpl", list(range(1, 11)), NOT_SO_QUICK),
     ])
@@ -66,14 +66,14 @@ TASKS = [
 
 failed_examples = {}
 runtimes = {
-    ("partition", "", 12): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
-    ("partition", "-fil", 12): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
-    ("insertionSort", "", 11): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
-    ("insertionSort", "-fil", 12): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
-    ("permutation", "", 13): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
-    ("hoareBlockPartition", "", 9): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
-    ("quickSort", "-fi", 7): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
-    ("quickSort", "-fil", 7): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
+    ("partition", "", 10): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
+    ("partition", "-fil", 10): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
+    ("insertionSort", "", 9): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
+    ("insertionSort", "-fil", 10): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
+    ("permutation", "", 11): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
+    ("hoareBlockPartition", "", 7): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
+    ("quickSort", "-fi", 5): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
+    ("quickSort", "-fil", 5): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
     ("quickSortRec", "-fi", 8): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
     ("quickSortRecImpl", "-fi", 8): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
 }
@@ -113,7 +113,7 @@ def process_JJBMC_example(folder, bound, function, inline_arg):
         timeout=FUNCTION_TIMEOUT,
         function=function,
         inline=inline_arg,
-        # solver=SAT_SOLVER,
+        solver=SAT_SOLVER,
     )
     print("Running command: " + cmd)
     # if is windows
