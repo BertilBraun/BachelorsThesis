@@ -50,11 +50,11 @@ TASKS = [
     ]),
     (MEDIUM_WORKERS, NO_SKIP, [
         ("partition", list(range(1, 12)), QUICK),
-        ("medianOf3", list(range(1, 17)), QUICK),
+        ("medianOf3", list(range(1, 20)), QUICK),
         ("insertionSort", list(range(1, 11)), QUICK),
     ]),
     (HARD_WORKERS, NO_SKIP, [
-        ("permutation", list(range(1, 13)), NOT_SO_QUICK),
+        ("permutation", list(range(1, 12)), NOT_SO_QUICK),
         ("hoareBlockPartition", list(range(1, 11)), NOT_SO_QUICK),
     ]),
     (VERY_HARD_WORKERS, NO_SKIP, [
@@ -66,10 +66,12 @@ TASKS = [
 
 failed_examples = {}
 runtimes = {
+    ("partition", "", 10): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
+    ("partition", "-fil", 10): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
     ("insertionSort", "", 9): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
     ("insertionSort", "-fil", 10): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
-    ("permutation", "", 12): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
-    ("hoareBlockPartition", "", 8): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
+    ("permutation", "", 11): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
+    ("hoareBlockPartition", "", 7): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
     ("quickSort", "-fi", 8): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
     ("quickSortRec", "-fi", 8): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
     ("quickSortRecImpl", "-fi", 8): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
