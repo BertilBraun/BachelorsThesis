@@ -21,8 +21,8 @@ ITERATIONS = 2  # TODO Should be run with 5
 MS_OF_1_HOUR = 60 * 60 * 1000
 MS_OF_2_HOURS = 2 * MS_OF_1_HOUR
 MS_OF_10_HOURS = 10 * MS_OF_1_HOUR
-DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME = MS_OF_1_HOUR  # TODO Should be run with MS_OF_2_HOURS
-FUNCTION_TIMEOUT = 2 * MS_OF_1_HOUR  # TODO Should be run with MS_OF_10_HOURS
+DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME = MS_OF_2_HOURS  # TODO Should be run with MS_OF_2_HOURS
+FUNCTION_TIMEOUT = 3 * MS_OF_1_HOUR  # TODO Should be run with MS_OF_10_HOURS
 
 JJBMC_CMD = "java -jar JJBMC.jar -mas {mas} -u {u} {inline} -tr -c -kt -t {timeout} BlockQuickSort.java {function} -j \"--stop-on-fail --external-sat-solver {solver}\""
 
@@ -71,7 +71,7 @@ runtimes = {
     ("insertionSort", "", 9): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
     ("insertionSort", "-fil", 10): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
     ("permutation", "", 11): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
-    ("hoareBlockPartition", "", 7): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
+    ("hoareBlockPartition", "", 8): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
     ("quickSort", "-fi", 5): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
     ("quickSort", "-fil", 5): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,
     ("quickSortRec", "-fi", 8): DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME,

@@ -43,27 +43,40 @@ def process_data_file(file_path, y_scale):
 
         # Add function line and modified label with successful iteration count
         lines.append(line)
-        max_count = agg_data['count'].max()
-        min_count = agg_data['count'].min()
         labels.append(func_name)
 
-        # Log-linear regression for prediction
-        log_runtimes = np.log(agg_data['runtime_median'])
-        slope, intercept, r_value, p_value, std_err = stats.linregress(bounds, log_runtimes)
+        # Log-linear regression for prediction using all data points
+        log_runtimes_all = np.log(agg_data['runtime_median'])
+        slope_all, intercept_all, r_value, p_value, std_err = stats.linregress(bounds, log_runtimes_all)
+
+        # Log-linear regression for prediction using last 3 data points
+        if len(bounds) >= 3:
+            log_runtimes_last3 = np.log(agg_data['runtime_median'].iloc[-3:])
+            bounds_last3 = bounds[-3:]
+            slope_last3, intercept_last3, r_value, p_value, std_err = stats.linregress(bounds_last3, log_runtimes_last3)
+        else:
+            slope_last3 = slope_all
+            intercept_last3 = intercept_all
+
+        # Use the steeper slope for prediction
+        slope = max(slope_all, slope_last3)
+        intercept = intercept_all if slope == slope_all else intercept_last3
         next_bound = bounds[-1] + 1
         log_predicted_value = slope * next_bound + intercept
         predicted_value = np.exp(log_predicted_value)
         ax.plot([bounds[-1], next_bound], [agg_data['runtime_median'].iloc[-1], predicted_value], 'o--', color=color)
 
+    file_name = os.path.splitext(os.path.basename(file_path))[0]
+
     # Configure plot
     ax.set_xlabel('Bound')
     ax.set_ylabel('Runtime (minutes)')
     ax.set_yscale(y_scale)
-    ax.set_ylim(ymax=130)  # Set max y value to 2 hours (120 minutes)
+    if file_name not in ['swap', 'sortPair']:
+        ax.set_ylim(ymax=190)  # Set max y value to 3 hours (180 minutes)
     ax.legend(lines, labels)
 
     # Save plot
-    file_name = os.path.splitext(os.path.basename(file_path))[0]
     plt.savefig(os.path.join(FOLDER, f"{file_name}_{y_scale}.png"))
 
     plt.close()
@@ -173,14 +186,14 @@ if __name__ == "__main__":
             process_data_file(os.path.join(FOLDER, file), 'linear')
             process_data_file(os.path.join(FOLDER, file), 'log')
 
-    file_data_dict = {}
-    for file in os.listdir(FOLDER):
-        if file.endswith(".csv"):
-            file_name = os.path.splitext(file)[0]
-            file_data_dict[file_name] = get_grouped_data_from_file(os.path.join(FOLDER, file))
-
-    plot_combined_data(file_data_dict, 'linear')
-    plot_combined_data(file_data_dict, 'log')
+    # file_data_dict = {}
+    # for file in os.listdir(FOLDER):
+    #     if file.endswith(".csv"):
+    #         file_name = os.path.splitext(file)[0]
+    #         file_data_dict[file_name] = get_grouped_data_from_file(os.path.join(FOLDER, file))
+    #
+    # plot_combined_data(file_data_dict, 'linear')
+    # plot_combined_data(file_data_dict, 'log')
 
     create_grid_layout(FOLDER)
 
