@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from matplotlib.image import imread
+from scipy import stats
 
 FOLDER = "../processed"
 SUCCESS = "SUCCESS"
@@ -34,6 +35,7 @@ def process_data_file(file_path, y_scale):
 
         bounds = agg_data.index
         line, = ax.plot(bounds, agg_data['runtime_median'], marker='o', color=color)
+
         # only show error bar if std is not NaN
         if not np.isnan(agg_data['runtime_std']).all():
             ax.errorbar(bounds, agg_data['runtime_median'], yerr=agg_data['runtime_std'],
@@ -44,15 +46,20 @@ def process_data_file(file_path, y_scale):
         max_count = agg_data['count'].max()
         min_count = agg_data['count'].min()
         labels.append(func_name)
-        # if max_count == min_count:
-        #     labels.append(f"{func_name} ran {max_count} times")
-        # else:
-        #     labels.append(f"{func_name} ran {max_count} times but min {min_count} times")
+
+        # Log-linear regression for prediction
+        log_runtimes = np.log(agg_data['runtime_median'])
+        slope, intercept, r_value, p_value, std_err = stats.linregress(bounds, log_runtimes)
+        next_bound = bounds[-1] + 1
+        log_predicted_value = slope * next_bound + intercept
+        predicted_value = np.exp(log_predicted_value)
+        ax.plot([bounds[-1], next_bound], [agg_data['runtime_median'].iloc[-1], predicted_value], 'o--', color=color)
 
     # Configure plot
     ax.set_xlabel('Bound')
     ax.set_ylabel('Runtime (minutes)')
     ax.set_yscale(y_scale)
+    ax.set_ylim(ymax=130)  # Set max y value to 2 hours (120 minutes)
     ax.legend(lines, labels)
 
     # Save plot
