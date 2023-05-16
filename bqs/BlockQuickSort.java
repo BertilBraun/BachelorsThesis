@@ -467,7 +467,7 @@ public class BlockQuickSort {
           @
           @ // the loop decreases the number of elements out of order (aka still on the stack)
           @ // in the upper case, by one (the pivot), in the lower case by (end - begin) (which is at least one because of the added special case)
-          @ loop_decreases (\sum int i; 0 <= i < stackPointer / 2; stack[2*i+1] - stack[2*i]) + (end - begin + 1);       
+          @ loop_decreases (\sum int i; 0 <= i < stackPointer / 2; stack[2*i+1] - stack[2*i]) + (end - begin);       
           @*/
         while (stackPointer > 0) {
             // Added stackPointer < STACK_SIZE - should not be necessary, should be caught by depth < depthLimit

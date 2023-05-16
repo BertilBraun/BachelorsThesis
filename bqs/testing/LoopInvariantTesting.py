@@ -72,35 +72,44 @@ def quick_sort(array):
             depth_pointer -= 1
             depth = depth_stack[depth_pointer]
 
+    return array
+
 
 def partition(array, begin, end):
-    pivot = array[end - 1]
-    i = begin - 1
-    for j in range(begin, end - 1):
-        if array[j] <= pivot:
-            i += 1
-            array[i], array[j] = array[j], array[i]
-    array[i + 1], array[end - 1] = array[end - 1], array[i + 1]
-    return i + 1
+    # TODO partition array [begin, end) around pivot
+    # return the index of the pivot
+    pivot = array[begin]
+    left = begin + 1
+    right = end - 1
+    while left <= right:
+        while left <= right and array[left] <= pivot:
+            left += 1
+        while left <= right and array[right] >= pivot:
+            right -= 1
+        if left < right:
+            array[left], array[right] = array[right], array[left]
+    array[begin], array[right] = array[right], array[begin]
+    return right
 
 
 def insertion_sort(array, begin, end):
-    for i in range(begin + 1, end):
-        key = array[i]
-        j = i - 1
-        while j >= begin and key < array[j]:
-            array[j + 1] = array[j]
-            j -= 1
-        array[j + 1] = key
+    for i in range(begin, end):
+        for j in range(i, begin, -1):
+            if array[j - 1] > array[j]:
+                array[j - 1], array[j] = array[j], array[j - 1]
+            else:
+                break
 
 
 # run quick_sort on all possible arrays of length 1 to 10
-for i in range(1, 12):
+for i in range(1, 10):
     for permutation in itertools.permutations(range(i)):
-        quick_sort(list(permutation))
+        for j, v in enumerate(quick_sort(list(permutation))):
+            if j != v:
+                print("Error on", i)
 
 # print the maximum number of iterations for each array length
-for i in range(1, 11):
+for i in range(1, 10):
     print(i, max_iters[i])
 
 sys.exit(0)
