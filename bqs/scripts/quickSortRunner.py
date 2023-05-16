@@ -115,10 +115,10 @@ def process_JJBMC_example(folder, bound, unwind, function, inline_arg):
     os.chdir(HOME_FOLDER)
 
 
-def generate_tasks(iteration, bound, unwind, function):
+def generate_tasks(iteration, bound, unwind, function, inline_arg):
     folder = FOLDER_F_STRING.format(BASE_FOLDER=BASE_FOLDER, bound=bound, function=function, iteration=iteration)
 
-    return [(folder, bound, unwind, function, inline_arg) for inline_arg in ['', '-fi', '-fil']]
+    return [(folder, bound, unwind, function, inline_arg)]
 
 
 def run(workers, tasks):
@@ -148,10 +148,12 @@ if __name__ == "__main__":
     for i in range(ITERATIONS):
         tasks = []
         for bound in range(1, 6):
-            tasks += generate_tasks(i, bound, 6, "quickSort")
+            for inline_arg in ['', '-fi', '-fil']:
+                tasks += generate_tasks(i, bound, 6, "quickSort", inline_arg)
         for bound in range(6, 9):
             for unwind in range(bound + 1, bound + 5):
-                tasks += generate_tasks(i, bound, unwind, "quickSort")
+                for inline_arg in ['', '-fil']:
+                    tasks += generate_tasks(i, bound, unwind, "quickSort", inline_arg)
 
         tasks = list(sorted(tasks, key=lambda x: x[1]))
         run(WORKERS, tasks)
