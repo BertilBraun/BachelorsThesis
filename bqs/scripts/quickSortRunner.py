@@ -133,7 +133,7 @@ if True:  # change to True and setup function and inline args for cleanup
     for function in ["quickSort"]:
         for bound in range(MAX_BOUND):
             for iteration in range(ITERATIONS):
-                for inline_arg in [""]:
+                for inline_arg in ["", "-fil", "-fi"]:
                     folder = FOLDER_F_STRING.format(
                         BASE_FOLDER=BASE_FOLDER,
                         bound=bound,
