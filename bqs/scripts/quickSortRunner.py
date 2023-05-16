@@ -24,7 +24,7 @@ MS_OF_10_HOURS = 10 * MS_OF_1_HOUR
 DO_NOT_RETRY_FUNCTION_AFTER_THIS_TIME = MS_OF_2_HOURS  # TODO Should be run with MS_OF_2_HOURS
 FUNCTION_TIMEOUT = 3 * MS_OF_1_HOUR  # TODO Should be run with MS_OF_10_HOURS
 
-JJBMC_CMD = "java -jar JJBMC.jar -mas {mas} -u {u} {inline} -tr -c -kt -t {timeout} BlockQuickSort.java {function} -j \"--stop-on-fail --external-sat-solver {solver} --unwinding-assertions\""
+JJBMC_CMD = "java -jar JJBMC.jar -mas {mas} -u {u} {inline} -tr -c -kt -t {timeout} BlockQuickSort.java {function} -j \"--stop-on-fail --external-sat-solver {solver} --unwinding-assertions\" -rv array -rv originalBegin -rv originalEnd -rv begin -rv end -rv depth -rv depthLimit -rv stack -rv depthStack -rv stackPointer -rv depthPointer"
 
 OUTPUT_FILE_NAME = "output.txt"
 
@@ -118,7 +118,7 @@ def process_JJBMC_example(folder, bound, unwind, function, inline_arg):
 def generate_tasks(iteration, bound, function):
     folder = FOLDER_F_STRING.format(BASE_FOLDER=BASE_FOLDER, bound=bound, function=function, iteration=iteration)
 
-    return [(folder, bound, unwind, function, '') for unwind in range(bound + 1, 2 * bound + 1, 1)]
+    return [(folder, bound, unwind, function, '') for unwind in range(bound + 1, 2 * bound + 3, 1)]
 
 
 def run(workers, tasks):
@@ -147,7 +147,7 @@ if True:  # change to True and setup function and inline args for cleanup
 if __name__ == "__main__":
     for i in range(ITERATIONS):
         tasks = []
-        for bound in range(1, 6):
+        for bound in range(1, 7):
             tasks += generate_tasks(i, bound, "quickSort")
 
         tasks = list(sorted(tasks, key=lambda x: x[1]))

@@ -470,12 +470,12 @@ public class BlockQuickSort {
           @ loop_decreases (\sum int i; 0 <= i < stackPointer / 2; stack[2*i+1] - stack[2*i]) + (end - begin + 1);       
           @*/
         while (stackPointer > 0) {
-            // TODO added stackPointer < STACK_SIZE - should not be necessary, should be cought by depth < depthLimit
+            // Added stackPointer < STACK_SIZE - should not be necessary, should be caught by depth < depthLimit
             if (depth < depthLimit && (end - begin > IS_THRESH) && stackPointer < STACK_SIZE) {
                 int pivot = partition(array, begin, end);
                 if (pivot - begin > end - pivot) {
-                    // TODO added special case that empty ranges are not pushed on the stack
-                    if (end - pivot <= 1) {
+                    // Added special case that empty ranges are not pushed on the stack - only adds one iteration more
+                    if (end - (pivot + 1) <= 0) {
                         end = pivot;
                     } else {
                         stack[stackPointer] = begin;
@@ -487,8 +487,8 @@ public class BlockQuickSort {
                         depthPointer++;
                     }
                 } else {
-                    // TODO added special case that empty ranges are not pushed on the stack
-                    if (pivot - begin <= 1) {
+                    // Added special case that empty ranges are not pushed on the stack - only adds one iteration more
+                    if (pivot - begin <= 0) {
                         begin = pivot + 1;
                     } else {
                         stack[stackPointer] = pivot + 1;
