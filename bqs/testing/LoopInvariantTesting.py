@@ -1,3 +1,4 @@
+import itertools
 import math
 import sys
 
@@ -5,10 +6,12 @@ STACK_SIZE = 10
 DEPTH_STACK_SIZE = 10
 IS_THRESH = 3
 
+max_iters = {}
+
 
 def quick_sort(array):
     original_begin = 0
-    original_end = len(array) - 1
+    original_end = len(array)
 
     begin = original_begin
     end = original_end
@@ -29,25 +32,25 @@ def quick_sort(array):
     iter = 0
     while stack_pointer > 0:
         # print all the variables
-        print("---------------------")
-        print("array", array)
-        print("original_begin", original_begin)
-        print("original_end", original_end)
-        print("begin", begin)
-        print("end", end)
-        print("depth_limit", depth_limit)
-        print("stack", stack)
-        print("depth_stack", depth_stack)
-        print("stack_pointer", stack_pointer)
-        print("depth_pointer", depth_pointer)
-        print("depth", depth)
-        print("iter", iter)
-        print("end - begin", end - begin)
+        # print("---------------------")
+        # print("array", array)
+        # print("original_begin", original_begin)
+        # print("original_end", original_end)
+        # print("begin", begin)
+        # print("end", end)
+        # print("depth_limit", depth_limit)
+        # print("stack", stack)
+        # print("depth_stack", depth_stack)
+        # print("stack_pointer", stack_pointer)
+        # print("depth_pointer", depth_pointer)
+        # print("depth", depth)
+        # print("iter", iter)
+        # print("end - begin", end - begin)
 
         iter += 1
+        max_iters[len(array)] = max(max_iters.get(len(array), 0), iter)
 
         if depth < depth_limit and (end - begin > IS_THRESH) and stack_pointer < STACK_SIZE:
-            print("Ran upper")
             pivot = partition(array, begin, end)
             if pivot - begin > end - pivot:
                 stack[stack_pointer] = begin
@@ -62,7 +65,6 @@ def quick_sort(array):
             depth_stack[depth_pointer] = depth
             depth_pointer += 1
         else:
-            print("Ran lower")
             insertion_sort(array, begin, end)
             stack_pointer -= 2
             begin = stack[stack_pointer]
@@ -72,18 +74,18 @@ def quick_sort(array):
 
 
 def partition(array, begin, end):
-    pivot = array[end]
+    pivot = array[end - 1]
     i = begin - 1
-    for j in range(begin, end):
+    for j in range(begin, end - 1):
         if array[j] <= pivot:
             i += 1
             array[i], array[j] = array[j], array[i]
-    array[i + 1], array[end] = array[end], array[i + 1]
+    array[i + 1], array[end - 1] = array[end - 1], array[i + 1]
     return i + 1
 
 
 def insertion_sort(array, begin, end):
-    for i in range(begin + 1, end + 1):
+    for i in range(begin + 1, end):
         key = array[i]
         j = i - 1
         while j >= begin and key < array[j]:
@@ -92,7 +94,14 @@ def insertion_sort(array, begin, end):
         array[j + 1] = key
 
 
-quick_sort([5, 3, 3, 5, 4, 2])
+# run quick_sort on all possible arrays of length 1 to 10
+for i in range(1, 12):
+    for permutation in itertools.permutations(range(i)):
+        quick_sort(list(permutation))
+
+# print the maximum number of iterations for each array length
+for i in range(1, 11):
+    print(i, max_iters[i])
 
 sys.exit(0)
 
