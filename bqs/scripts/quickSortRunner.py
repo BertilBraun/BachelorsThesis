@@ -28,8 +28,6 @@ JJBMC_CMD = "java -jar JJBMC.jar -mas {mas} -u {u} {inline} -tr -c -kt -t {timeo
 
 OUTPUT_FILE_NAME = "output.txt"
 
-WORKERS = 16
-
 FOLDER_F_STRING = "{BASE_FOLDER}/bound_{bound}/{function}/iter_{iteration}"
 
 
@@ -150,12 +148,23 @@ if __name__ == "__main__":
     for i in range(ITERATIONS):
         tasks = []
         for bound in range(1, 6):
-            for inline_arg in ['', '-fi', '-fil']:
-                tasks += generate_tasks(i, bound, 6, "quickSort", inline_arg)
-        for bound in range(6, 9):
-            for unwind in range(bound + 1, bound + 5):
-                for inline_arg in ['', '-fil']:
-                    tasks += generate_tasks(i, bound, unwind, "quickSort", inline_arg)
+            tasks += generate_tasks(i, bound, 6, "quickSort", '')
+        for bound in range(6, 8):
+            for unwind in range(bound + 1, bound + 3):
+                tasks += generate_tasks(i, bound, unwind, "quickSort", '')
 
         tasks = list(sorted(tasks, key=lambda x: x[1]))
-        run(WORKERS, tasks)
+        run(16, tasks)
+        tasks = []
+        for bound in range(1, 6):
+            tasks += generate_tasks(i, bound, 6, "quickSort", '-fil')
+
+        tasks = list(sorted(tasks, key=lambda x: x[1]))
+        run(8, tasks)
+
+        tasks = []
+        for bound in range(1, 5):
+            tasks += generate_tasks(i, bound, 6, "quickSort", '-fi')
+
+        tasks = list(sorted(tasks, key=lambda x: x[1]))
+        run(3, tasks)
