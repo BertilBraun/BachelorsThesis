@@ -58,7 +58,7 @@ def process_JJBMC_example(folder, bound, unwind, function, inline_arg):
         inline=inline_arg,
         solver=SAT_SOLVER,
     )
-    print("Running command: " + cmd)
+    print(f"Running function '{function}' with bound '{bound}' and  unwind '{unwind}' and inline arg '{inline_arg}'")
     # if is windows
     if os.name == 'nt':
         subprocess_command = cmd.split(' ')
@@ -76,7 +76,8 @@ def process_JJBMC_example(folder, bound, unwind, function, inline_arg):
     stderr = p.stderr.decode("utf-8").replace("\x00", "")
     # print(stdout)
     # print(stderr)
-    print(f"Finished running function '{function}' with bound '{bound}' and  unwind '{unwind}'")
+    print(
+        f"Finished running function '{function}' with bound '{bound}' and  unwind '{unwind}' and inline arg '{inline_arg}'")
 
     with open(OUTPUT_FILE_NAME, "w") as f:
         # Write stdout and stderr to file
@@ -106,11 +107,12 @@ def process_JJBMC_example(folder, bound, unwind, function, inline_arg):
             # parse runtime from output "JBMC took XXXms." parse XXX using regex
             runtime = re.search(r"JBMC took (\d+)ms.", stdout).group(1)
             # set runtime in ms for this function and bound and inline arg
-            print(f"Runtime for function '{function}' with bound '{bound}' and unwind '{unwind}' was {runtime}ms")
+            print(
+                f"Runtime for function '{function}' with bound '{bound}' and unwind '{unwind}' and inline arg '{inline_arg}' was {runtime}ms")
         except:
             print("Error parsing runtime")
     else:
-        print(f"Failed function '{function}' with bound '{bound}' and unwind '{unwind}'")
+        print(f"Failed function '{function}' with bound '{bound}' and unwind '{unwind}' and inline arg '{inline_arg}'")
 
     os.chdir(HOME_FOLDER)
 
