@@ -77,7 +77,7 @@ def process_data_file(file_path, y_scale):
     ax.legend(lines, labels)
 
     # Save plot
-    plt.savefig(os.path.join(FOLDER, f"{file_name}_{y_scale}.png"))
+    plt.savefig(os.path.join(FOLDER, f"{file_name}_{y_scale}.png"), dpi=300)
 
     plt.close()
 
