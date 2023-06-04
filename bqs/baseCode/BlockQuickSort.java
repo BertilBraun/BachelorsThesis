@@ -146,7 +146,7 @@ public class BlockQuickSort {
     }
 
     public static void quickSort(int[] array, int begin, int end) {
-        int depthLimit = 2 * log2(end - begin) + 3;
+        int depthLimit = 2 * log2(end - begin + 1) + 3;
         int[] stack = new int[STACK_SIZE];
         int[] depthStack = new int[DEPTH_STACK_SIZE];
         int stackPointer = 0;

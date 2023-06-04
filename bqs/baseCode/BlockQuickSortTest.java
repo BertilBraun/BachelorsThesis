@@ -61,6 +61,42 @@ class BlockQuickSortTest {
         assertArrayEquals(arrayCopy, array);
     }
 
+    public static void testQuickSortArrayWithAllPermutations() {
+        final int MAX_BOUND = 12;
+        for (int bound = 1; bound <= MAX_BOUND; bound++) {
+            int[] array = new int[bound];
+            for (int i = 0; i < bound; i++) {
+                array[i] = i;
+            }
+            int[] arrayCopy = array.clone();
+            Arrays.sort(arrayCopy);
+
+            permuteAndTest(array, 0, array.length - 1, arrayCopy);
+        }
+    }
+
+    private static void permuteAndTest(int[] array, int l, int r, int[] sortedArray) {
+        if (l == r) {
+            // a permutation generated
+            int[] arrayToTest = array.clone();
+            quickSort(arrayToTest);
+            assertArrayEquals(sortedArray, arrayToTest);
+        } else {
+            for (int i = l; i <= r; i++) {
+                array = swap(array, l, i);
+                permuteAndTest(array, l + 1, r, sortedArray);
+                array = swap(array, l, i); // backtrack
+            }
+        }
+    }
+
+    private static int[] swap(int[] array, int i, int j) {
+        int temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+        return array;
+    }
+
     public static void assertArrayEquals(int[] expected, int[] actual) {
         if (!Arrays.equals(expected, actual)) {
             System.out.println("expected: " + Arrays.toString(expected) + " but was: " + Arrays.toString(actual));
@@ -76,6 +112,7 @@ class BlockQuickSortTest {
         testQuickSortArrayWithNegativeElements();
         testQuickSortArrayWithSameElements();
         testQuickSortArrayWithRandomElements();
+        testQuickSortArrayWithAllPermutations();
         System.out.println("All tests done.");
     }
 }
