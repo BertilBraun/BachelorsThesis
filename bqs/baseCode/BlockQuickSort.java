@@ -1,7 +1,7 @@
 public class BlockQuickSort {
 
-    private static final int BLOCKSIZE = 128;
-    private static final int IS_THRESH = 16;
+    private static final int BLOCKSIZE = 2; // paper(128)
+    private static final int IS_THRESH = 3; // paper(16)
     private static final int STACK_SIZE = 80;
     private static final int DEPTH_STACK_SIZE = 40;
 
