@@ -62,52 +62,42 @@ class BlockQuickSortTest {
     }
 
     public static void testQuickSortArrayWithAllPermutations() {
-        final int MAX_BOUND = 12;
+        final int MAX_BOUND = 9;
         System.out.println("Testing all permutations of arrays of size up to " + MAX_BOUND);
         long startTime = System.currentTimeMillis();
         for (int bound = 1; bound <= MAX_BOUND; bound++) {
             System.out.println("Testing all permutations of arrays of size " + bound);
             int[] array = new int[bound];
-            for (int i = 0; i < bound; i++) {
-                array[i] = i;
-            }
-            int[] arrayCopy = array.clone();
-            Arrays.sort(arrayCopy);
-
-            permuteAndTest(array, 0, array.length - 1, arrayCopy);
+            generateAndTest(array, 0);
         }
         long endTime = System.currentTimeMillis();
         System.out.println("Testing all permutations of arrays of size up to " + MAX_BOUND + " took "
                 + (endTime - startTime) + " milliseconds.");
     }
 
-    private static void permuteAndTest(int[] array, int l, int r, int[] sortedArray) {
-        if (l == r) {
-            // a permutation generated
+    private static void generateAndTest(int[] array, int index) {
+        if (index == array.length) {
             int[] arrayToTest = array.clone();
+            int[] sortedArray = array.clone();
+            Arrays.sort(sortedArray);
             quickSort(arrayToTest);
             assertArrayEquals(sortedArray, arrayToTest);
         } else {
-            for (int i = l; i <= r; i++) {
-                array = swap(array, l, i);
-                permuteAndTest(array, l + 1, r, sortedArray);
-                array = swap(array, l, i); // backtrack
+            for (int i = 1; i <= array.length; i++) {
+                array[index] = i;
+                generateAndTest(array, index + 1);
             }
         }
-    }
-
-    private static int[] swap(int[] array, int i, int j) {
-        int temp = array[i];
-        array[i] = array[j];
-        array[j] = temp;
-        return array;
     }
 
     public static void assertArrayEquals(int[] expected, int[] actual) {
         if (!Arrays.equals(expected, actual)) {
             System.out.println("expected: " + Arrays.toString(expected) + " but was: " + Arrays.toString(actual));
         }
+        count++;
     }
+
+    static int count = 0;
 
     public static void runAllTests() {
         testQuickSortEmptyArray();
@@ -120,5 +110,6 @@ class BlockQuickSortTest {
         testQuickSortArrayWithRandomElements();
         testQuickSortArrayWithAllPermutations();
         System.out.println("All tests done.");
+        System.out.println("Total tests: " + count);
     }
 }
