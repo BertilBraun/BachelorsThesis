@@ -62,7 +62,7 @@ class BlockQuickSortTest {
     }
 
     public static void testQuickSortArrayWithAllPermutations() {
-        final int MAX_BOUND = 9;
+        final int MAX_BOUND = 10;
         System.out.println("Testing all permutations of arrays of size up to " + MAX_BOUND);
         long startTime = System.currentTimeMillis();
         for (int bound = 1; bound <= MAX_BOUND; bound++) {
@@ -84,6 +84,8 @@ class BlockQuickSortTest {
             assertArrayEquals(sortedArray, arrayToTest);
         } else {
             for (int i = 1; i <= array.length; i++) {
+                if (index == 0)
+                    System.out.println("Testing all permutations of arrays of size " + array.length + " (" + i + ")");
                 array[index] = i;
                 generateAndTest(array, index + 1);
             }
