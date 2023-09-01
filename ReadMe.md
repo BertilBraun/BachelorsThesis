@@ -60,9 +60,9 @@ This file contains the compleatly annotated version of the Java implementation o
 
 ## Publications
 
-### My Bachelor's Thesis: (soon)
+### My Bachelor's Thesis:
 
-* Bernhard Beckert, Jonas Klamroth, and Bertil Braun: *[Evaluation of the Bounded Model Checkers JJBMC Based on a Case Study (BlockQuickSort)]()*. 
+* Bernhard Beckert, Jonas Klamroth, and Bertil Braun: *[Evaluation of the Bounded Model Checkers JJBMC Based on a Case Study (BlockQuickSort)](https://github.com/BertilBraun/BachelorsThesis/releases/download/Final/Bachelor_Thesis.pdf)*. 
 
 ### Publication introducing BlockQuickSort:
 
